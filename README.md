@@ -1,2 +1,2 @@
-# Onii-chan-Simulator
-A web-based, easy to use visual novel engine.
+# Everyone's Visual Novel
+A web & NodeJS-based, easy to use visual novel engine.
