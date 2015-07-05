@@ -49,13 +49,4 @@ module.exports = function(grunt) {
 	grunt.registerTask('docs', ['clean:docs', 'jsdoc:generate']);
 	grunt.registerTask('hint', ['jshint:validate']);
 	grunt.registerTask('nocache', ['jshint:validate', 'browserify:javascript', 'uglify:javascript']);
-
-	// Get metrics on how long grunt'ing took
-	//require('time-grunt')(grunt);
-
-	// Load configs
-	//require('load-grunt-config')(grunt, {
-	//	jitGrunt: true
-	//});
-
 };
