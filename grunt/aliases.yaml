@@ -1,0 +1,13 @@
+default:
+  - 'newer:jshint:validate'
+  - 'newer:browserify:javascript'
+  - 'newer:uglify:javascript'
+hint:
+  - 'jshint:validate'
+docs:
+  - 'clean:docs'
+  - 'jsdoc:generate'
+nocache:
+  - 'jshint:validate'
+  - 'browserify:javascript'
+  - 'uglify:javascript'

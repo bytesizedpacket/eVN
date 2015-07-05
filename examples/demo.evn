@@ -1,0 +1,55 @@
+{
+	"options": {
+		"textbox": {
+			"image": "http://i.imgur.com/xXjVYAl.png"
+		}
+	},
+
+	"images": {
+		"Kaoru": "http://i.imgur.com/qZULh95.png",
+		"Kaoru_startled": "http://i.imgur.com/LGZNr0h.png",
+		"Clouds": "http://i.imgur.com/EIs4e8b.png"
+	},
+
+	"characters": {
+		"k": {
+			"name": "Kaoru",
+			"color": "#EB8AFF",
+			"images": {
+		  		"default": "Kaoru",
+				"startled": "Kaoru_startled"
+			}
+		}
+	},
+	"scenes": {
+		"start": [
+			"Wow\nlook\nat\nall\nthese lines!",
+			["background", "#000"],
+			"eVN 0.0.1 RC 1a - Pre-development test edition.\nPress the canvas element to update the scene.",
+			["background", "#FFF", "fade"],
+			"(TODO: Add animations. This should've faded from black to white, but I haven't gotten that far yet.)",
+			["show", "k"],
+			["say", "Oh hi there! Let me introduce myself.", "???", "#EB8AFF"],
+			"k: I'm ${k.name}, nice to meet you! I'll be your guide through this example novel, so let's get along!",
+			"(TODO: I would've made a fancy warp menu where you can select a topic to cover, but I'm not that far yet)",
+			"k: Okay, let's get going!",
+			["jump", "late"]
+		],
+		"late": [
+			["background", "Clouds"],
+			"k: Woah! We just moved to a different coll-",
+			["setmood", "k", "startled"],
+			["say", "Hey, watch where you're going!", "Guy on street"],
+			"k: I'm terribly sorry! I'll be more careful from now on!",
+			"Man, she bumped into someone after the jump. She really is a klutz...",
+			["setmood", "k"],
+			"k: We just moved to a new scene! This can be done with the \"jump\" command.",
+			"k: As you can see, the background is an image, not a flat color! To do so, you simply set the \"background\" command's argument to the name of an image you defined im the image property of your .evn script, and the rest is done for you!",
+			["setmood", "k", "startled"],
+			"k: Wait, I haven't even introduced you to the basics of eVNML yet, have i?",
+			"k: Oh no, I've done this all backwards!\nI'm so sorry! Let's try this again, shall we?",
+			["setmood", "k"],
+			"Okay. Let's start with the basis .evn file!\nAn .evn file should be a valid JSON object. It's not as scary as it sounds, really!"
+		]
+	}
+}
