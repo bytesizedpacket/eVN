@@ -2,7 +2,7 @@
 	"name": "eVN",
 	"descripton": "HTML5-based engine for writing visual novels.",
 	"author": "Jacob Pedersen <jacob@bytesizedpacket.com>",
-	"license": "AAL BSP mod",
+	"license": "Attribution Assurance License BSP Modification (See LICENSE)",
 
 	"devDependencies": {
 		"grunt": "0.4.x",
