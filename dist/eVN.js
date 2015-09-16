@@ -146,6 +146,13 @@ module.exports = function Novel(canvas, eVNML, file) {
 		this.images[imgKeys].src = this.eVNML.images[imgKeys];
 	}
 
+	/* Import aduio */
+	this.audio = {};
+	for(var audioKeys in this.eVNML.audio) {
+		this.audio[audioKeys] = new Audio();
+		this.audio[audioKeys].src = this.eVNML.audio[audioKeys];
+	}
+
 	/* Instantiate characters */
 	for(var key in this.eVNML.characters) {
 		var eVNML_char = this.eVNML.characters[key];
@@ -255,6 +262,9 @@ module.exports.prototype = {
 			case 'background':
 				cd.background = scene[1];
 				break;
+			case 'music':
+				if(scene[1] in this.audio) this.audio[scene[1]].play();
+				break;
 			case 'say':
 				/*Process inline variables for text*/
 				var text = this.processVariables(scene[1]);
@@ -332,13 +342,22 @@ module.exports.prototype = {
 	processVariables: function(string) {
 		var splitAt = string.indexOf('${');
 		var endAt = string.indexOf('}', splitAt);
-		var output;
+		var output = '';
 		if(splitAt !== -1   &&   endAt !== -1){
 			var alpha = string.slice(0, splitAt);
 			var beta = string.slice(splitAt+2, endAt);
 			var gamma = string.slice(endAt+1);
+			output = beta;
 
-			output = alpha +'Uncle Touchy'+ gamma;
+			var varSplit = beta.split('.');
+			// If beta (variable name) exists in cdata.characters,it's
+			// probably referring to a property of a character
+			var characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);
+			if(varSplit[0] in this.characters) {
+				output = this.characters[varSplit[0]][varSplit[1]];
+			}
+
+			output = alpha + output + gamma;
 			if(output.indexOf('${') !== -1) return this.processVariables(output);
 			return output;
 		} else {
@@ -838,4 +857,4 @@ module.exports = function onPageLoad() {
 	}
 };
 
-},{"./comicNeue.b64":6}]},{},[1,2,3,4,5,6,7,8,9]);
+},{"./comicNeue.b64":6}]},{},[1,2,3,4,5,8,9]);

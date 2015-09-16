@@ -2,7 +2,9 @@ module.exports = function(grunt) {
 
 	grunt.initConfig({
 		browserify: {
-			files: { 'dist/eVN.js': ['src/**/*'] }
+			javascript: {
+				files: { 'dist/eVN.js': ['src/**/*.js'] }
+			}
 		},
 
 		clean: {
@@ -23,6 +25,7 @@ module.exports = function(grunt) {
 				eqnull: true, //Supress ===null warnings
 				browser: true, //Our .js file is for browsers
 				sub: true, //Supress warnings when using the [] notation
+				"-W004": true, //Supress "{a} is already defined - TO BE FIXED
 				"-W086": true //Allow switch() fall-through
 			},
 
