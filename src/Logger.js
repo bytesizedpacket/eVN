@@ -5,56 +5,66 @@
  * @param {string} [version=NaN] - Version parameter, will show up in logs.
  * @param {bool} [doLog=true] - Whether or not to skip non warn/error logs.
  */
-module.exports = function Logger(name, version, doLog) {
-	this.name = name || 'Na Logger';
-	this.version = version || 'NaN';
-	this.DEBUG = doLog || true;
-};
 
-module.exports.prototype = {
+export class Logger {
+	constructor (name='unnamed logger', version='0', verbose=false) {
+		this.name = name;
+		this.version = version;
+		this.verbose = verbose;
 
-	/**
-	 * A method for logging regular errors.
-	 * @param {string} message - Message to log.
-	 */
-	"log": function(message) {
-		if(this.DEBUG === false) { return; }
-		
-		/* append arguments[] to a debug logging array then apply it */
-		var argumentsArray = Array.prototype.slice.call(arguments);
-		var args = [this.name +' v'+ this.version +' debug message:'].concat(argumentsArray);
-		if(console) console.log.apply(console, args);
-	},
+		this.logName = `${this[name]} v${this.version}`;
+		this.logPrefix = `[${this.logName} INFO]`;
+		this.warnPrefix = `[${this.logName} WARN]`;
+		this.errPrefix = `[${this.logName} ERR]`;
+	}
 
 	/**
-	 * A method for sending warnings
-	 * @param {string} message - Warning to send.
+	 * A method for logging non-critical information.
+	 * @param {...Anything} message - Message to log.
 	 */
-	"warn": function(message) {
+	log(...msgs) {
+		var logMsg = [this.logPrefix];
+		if(msgs.length < 1 || !this.verbose) return;
 		
-		/* append arguments[] to a debug logging array then apply it */
-		var argumentsArray = Array.prototype.slice.call(arguments);
-		var args = [this.name +' v'+ this.version +' warning:'].concat(argumentsArray);
-		if(console) console.warn.apply(console, args);
-	},
+		if(msgs.length === 1 && typeof msgs[0] === 'string') logMsg[0] += ` ${msgs[0]}`;
+		else logMsg = [logMsg[0], ...msgs];
+		
+		if(console && console.log) return console.log.bind(console, ...logMsg);
+	}
+
+	/**
+	 * A method for logging warnings.
+	 * @param {...Anything} message - Message to log.
+	 */
+	warn(...msgs) {
+		var logMsg = [this.warnPrefix];
+		if(msgs.length < 1 || !this.verbose) return;
+		
+		if(msgs.length === 1 && typeof msgs[0] === 'string') logMsg[0] += ` ${msgs[0]}`;
+		else logMsg = [logMsg[0], ...msgs];
+		
+		if(console && console.warn) return console.warn.bind(console, ...logMsg);
+	}
 
 	/**
 	 * A method for throwing errors.
 	 * @param {string|Error} message - Message of the error to throw.
 	 * @param {string} [name=Unknown error] - Name of the error. Message will be used if none passed.
 	 */
-	"throw": function(message, name) {
-		if(message instanceof Error   &&   console) {
-			console.error((name? name : 'Unspecified') + ' error from ' + this.name + ' v' + this.version + ': ', message.message);
-			console.error('Stacktrace:', message.stack);
-			throw message;
-		} else {
-			var err = new Error();
-			err.name = (name? name : 'Unspecified') + ' error from ' + this.name + ' v' + this.version;
-			err["Error message"] = message;
-			err.message = err.name + ': ' + message || 'Unspecified error. Refer to the stacktrace for help.';
-	
-			throw err;
-		}
+	throw(error='unspecified error', message) {
+		var eErr;
+		
+		if(error instanceof Error) eErr = error;
+		else { eErr = new Error(error); if(message) eErr.stack = message;	};
+
+		eErr.name = `${this.errPrefix} ${eErr.name}`;
+
+		return ()=> {
+			if(console && console.error) {
+				if(message) console.error(`${this.errPrefix} ${eErr.message}`);
+				console.error(eErr.stack);
+				throw `${this.logName} halted`;
+			} else throw eErr;
+		};
 	}
 };

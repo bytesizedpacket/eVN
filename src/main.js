@@ -9,19 +9,19 @@
  */
 
 /* Import some modules */
-var Logger = require('./Logger.js');
+import { Logger } from './Logger.js';
+//var Logger = require('./Logger.js');
 var onPageLoad = require('./onPageLoad.js');
 var Novel = require('./Novel.js');
 
+var logger = new Logger('eVN', '0.1a', true);
+
+if(!!window.eVN) { logger.throw('`window.eVN` is already declared'); exit; }
 /** @namespace eVN */
-window.eVN = window.eVN || {};
-
-/** Version */
-eVN.VERSION = '0.0.1a';
-
+else window.eVN = {};
 
 /** @see module:eVN/Logger */
-eVN.logger = new Logger('eVN Logger', eVN.VERSION, true);
+eVN.getLogger = ()=> logger;
 
 /** @see module:eVN/onPageLoad */
 eVN.onPageLoad = onPageLoad;
