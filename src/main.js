@@ -22,6 +22,10 @@ else window.eVN = {};
 
 /** @see module:eVN/Logger */
 eVN.getLogger = ()=> logger;
+logger.log('test')();
+logger2.log('test')();
+logger.log('test')();
+
 
 /** @see module:eVN/onPageLoad */
 eVN.onPageLoad = onPageLoad;
