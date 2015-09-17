@@ -1,11 +1,3 @@
-var name = Symbol();
-var version = Symbol();
-var verbose = Symbol();
-var logName = Symbol();
-var logPrefix = Symbol();
-var warnPrefix = Symbol();
-var errPrefix = Symbol();
-
 /**
  * A logging class, covering debug logs, warnings & errors
  * IMPORTANT: Each method returns a <code>function</code>!
@@ -20,15 +12,15 @@ export class Logger {
  * @param {string} [_version=NaN] - Version parameter, will show up in logs.
  * @param {bool} [_verbose=true] - Whether or not to skip non warn/error logs.
  */
-	constructor (_name='Unnamedlogger', _version='NaN', _verbose=true) {
-		this[name] = _name;
-		this[version] = _version;
-		this[verbose] = _verbose;
+	constructor (name='Unnamedlogger', version='NaN', verbose=true) {
+		this.name = name;
+		this.version = version;
+		this.verbose = verbose;
 
-		this[logName] = `${this[name]} v${this[version]}`;
-		this[logPrefix] = `[${this[logName]} INFO]`;
-		this[warnPrefix] = `[${this[logName]} WARN]`;
-		this[errPrefix] = `[${this[logName]} ERR]`;
+		this.logName = `${this.name} v${this.version}`;
+		this.logPrefix = `[${this.logName} INFO]`;
+		this.warnPrefix = `[${this.logName} WARN]`;
+		this.errPrefix = `[${this.logName} ERR]`;
 	}
 
 	/**
@@ -38,8 +30,8 @@ export class Logger {
 	 * appropriate scope & arguments
 	 */
 	log(...msgs) {
-		var logMsg = [this[logPrefix]];
-		if(msgs.length < 1 || !this[verbose]) return ()=>{};
+		var logMsg = [this.logPrefix];
+		if(msgs.length < 1 || !this.verbose) return ()=>{};
 		
 		if(msgs.length === 1 && typeof msgs[0] === 'string') logMsg[0] += ` ${msgs[0]}`;
 		else logMsg = [logMsg[0], ...msgs];
@@ -54,8 +46,8 @@ export class Logger {
 	 * appropriate scope & arguments
 	 */
 	warn(...msgs) {
-		var logMsg = [this[warnPrefix]];
-		if(msgs.length < 1 || !this[verbose]) return ()=>{};
+		var logMsg = [this.warnPrefix];
+		if(msgs.length < 1) return ()=>{};
 		
 		if(msgs.length === 1 && typeof msgs[0] === 'string') logMsg[0] += ` ${msgs[0]}`;
 		else logMsg = [logMsg[0], ...msgs];
@@ -78,13 +70,13 @@ export class Logger {
 		if(error instanceof Error) eErr = error;
 		else { eErr = new Error(error); if(message) eErr.stack = message;	};
 
-		eErr.name = `${this[errPrefix]} ${eErr.name}`;
+		eErr.name = `${this.errPrefix} ${eErr.name}`;
 
 		return ()=> {
 			if(console && console.error) {
-				if(message) console.error(`${this[errPrefix]} ${eErr.message}`);
+				if(message) console.error(`${this.errPrefix} ${eErr.message}`);
 				console.error(eErr.stack);
-				throw `${this[logName]} halted`;
+				throw `${this.logName} halted`;
 			} else throw eErr;
 		};
 	}

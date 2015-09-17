@@ -7,11 +7,9 @@
  */
 module.exports = function onPageLoad() {
 	
-	/* Load Comic Neue as a default/fallback font */
-	eVN.stylesheet.insertRule('@font-face{font-family: "Comic Neue"; src: url("data:application/font-woff;charset=utf-8;base64,' + require('./comicNeue.b64') + '") format("woff"); font-weight: normal; font-style: normal;}', 0);
 
 	/* Add style for fullscren viewing */
-	(function attempt(selectorIndex) {
+	/*(function attempt(selectorIndex) {
 		var pseudoSelectors = [':fullscreen', ':-webkit-full-screen', ':-moz-full-screen', ':-ms-fullscreen'];
 		var index = selectorIndex || 0;
 
@@ -25,7 +23,7 @@ module.exports = function onPageLoad() {
 				attempt(index+1);
 			}
 		}
-	})();
+	})();*/
 
 	/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 	var canvases = document.getElementsByTagName('canvas');
