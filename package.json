@@ -2,17 +2,23 @@
 	"name": "eVN",
 	"descripton": "HTML5-based engine for writing visual novels.",
 	"author": "Jacob Pedersen <jacob@bytesizedpacket.com>",
-	"license": "Attribution Assurance License BSP Modification (See LICENSE)",
+	"repository": "bytesizedpacket/eVN",
+	"license": "SEE LICENSE IN LICENSE",
 
-	"devDependencies": {
-		"grunt": "0.4.x",
-		"grunt-browserify": "3.8.x",
-		"grunt-contrib-uglify": "0.9.x",
-		"grunt-contrib-jshint": "0.11.x",
-		"grunt-contrib-clean": "0.6.x",
-		"grunt-jsdoc": "0.6.x",
-		"grunt-newer": "1.1.x"
+	"scripts": {
+		"build": "node ./node_modules/gulp/bin/gulp.js build",
+		"watch": "node ./node_modules/gulp/bin/gulp.js watch",
+		"docs": "jsdoc src/main.js -d docs/"
 	},
 
-	"engine": "node >= 0.12.x"
+	"devDependencies": {
+		"gulp": "3.9.x",
+		"gulp-load-plugins": "*",
+		"gulp-rename": "1.2.x",
+		"gulp-webpack": "1.5.x",
+		"babel-loader": "5.3.x",
+		"gulp-uglify": "1.4.x"
+	},
+
+	"engine": "node >= 4.0.0"
 }
