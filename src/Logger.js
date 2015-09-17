@@ -13,19 +13,26 @@ export class Logger {
  * @param {bool} [_verbose=true] - Whether or not to skip non warn/error logs.
  */
 	constructor (name='Unnamedlogger', version='NaN', verbose=true) {
+		/** @ignore */
 		this.name = name;
+		/** @ignore */
 		this.version = version;
+		/** @ignore */
 		this.verbose = verbose;
 
+		/** @ignore */
 		this.logName = `${this.name} v${this.version}`;
+		/** @ignore */
 		this.logPrefix = `[${this.logName} INFO]`;
+		/** @ignore */
 		this.warnPrefix = `[${this.logName} WARN]`;
+		/** @ignore */
 		this.errPrefix = `[${this.logName} ERR]`;
 	}
 
 	/**
 	 * A method for logging non-critical information.
-	 * @param {...Anything} message - Message to log.
+	 * @param {*} message - Message to log.
 	 * @returns {Function} - <code>console.log</code> binded with the
 	 * appropriate scope & arguments
 	 */
@@ -41,7 +48,7 @@ export class Logger {
 
 	/**
 	 * A method for logging warnings.
-	 * @param {...Anything} message - Message to log.
+	 * @param {*} message - Message to log.
 	 * @returns {Function} - <code>console.warn</code> binded with the
 	 * appropriate scope & arguments
 	 */
