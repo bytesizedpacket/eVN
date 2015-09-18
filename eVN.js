@@ -104,28 +104,31 @@
 		/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 		var canvases = Array.prototype.slice.call(document.getElementsByTagName('canvas'));
 
-		/* Function to run on canvases with loaded `data-evn` attributes */
-		var onEvnDataReady = function onEvnDataReady() {
-			if (xhr.readyState === 4 && xhr.status === 200) {
-				new _NovelJs.Novel(canvas, xhr.responseText, evnData);
-			}
-		};
-
 		var _iteratorNormalCompletion = true;
 		var _didIteratorError = false;
 		var _iteratorError = undefined;
 
 		try {
-			for (var _iterator = canvases[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var _canvas = _step.value;
+			var _loop = function () {
+				var canvas = _step.value;
+				evnData = canvas.getAttribute('data-evn');
 
-				var evnData = _canvas.getAttribute('data-evn');
 				if (evnData) {
-					var xhr = new XMLHttpRequest();
+					xhr = new XMLHttpRequest();
+
 					xhr.open('GET', evnData, true);
-					xhr.onreadystatechange = onEvnDataReady;
+					xhr.onreadystatechange = function () {
+						if (xhr.readyState === 4 && xhr.status === 200) new _NovelJs.Novel(canvas, xhr.responseText, evnData);
+					};
 					xhr.send();
 				}
+			};
+
+			for (var _iterator = canvases[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+				var evnData;
+				var xhr;
+
+				_loop();
 			}
 		} catch (err) {
 			_didIteratorError = true;

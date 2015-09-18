@@ -34,19 +34,14 @@ document.addEventListener('DOMContentLoaded', function() {
 	/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 	var canvases = Array.prototype.slice.call( document.getElementsByTagName('canvas') );
 
-	/* Function to run on canvases with loaded `data-evn` attributes */
-	var onEvnDataReady = function() {
-		if(xhr.readyState === 4 && xhr.status === 200){
-			new Novel(canvas, xhr.responseText, evnData);
-		}
-	};
-
 	for(let canvas of canvases) {
 		var evnData = canvas.getAttribute('data-evn');
 		if(evnData){
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', evnData, true);
-			xhr.onreadystatechange = onEvnDataReady;
+			xhr.onreadystatechange = ()=> {
+				if(xhr.readyState === 4 && xhr.status === 200) new Novel(canvas, xhr.responseText, evnData);
+			};
 			xhr.send();
 		}
 	}
