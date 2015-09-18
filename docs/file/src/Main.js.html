@@ -57,10 +57,9 @@
  * @license {@link https://github.com/bytesizedpacket/eVN/blob/master/LICENSE | Attribution Assurance License (BSP edit)}
  * @version: 0.0.1a Pre-development version */
 
-/* Import some modules */
-import { Logger } from &apos;./Logger.js&apos;;
+/* Fire up our logger */
 import { Novel } from &apos;./Novel.js&apos;;
-
+import { Logger } from &apos;./Logger.js&apos;;
 var logger = new Logger(&apos;eVN&apos;, &apos;0.1a&apos;, true);
 
 /**Main class keeping the system together
@@ -80,7 +79,8 @@ if(!!window.eVN) logger.throw(&apos;`window.eVN` is already declared&apos;)();
 /** @namespace eVN */
 else window.eVN = new Main();
 
-/* Execute our onPageLoad() function as soon as the browser has everything loaded */
+/* Find &lt;code&gt;&amp;lt;canvas&amp;gt;&lt;/code&gt; tags with &lt;code&gt;data-evn&lt;/code&gt;
+ * attributes and instantiate them as novels */
 document.addEventListener(&apos;DOMContentLoaded&apos;, function() {
 	/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 	var canvases = Array.prototype.slice.call( document.getElementsByTagName(&apos;canvas&apos;) );
@@ -92,7 +92,7 @@ document.addEventListener(&apos;DOMContentLoaded&apos;, function() {
 		}
 	};
 
-	for(var canvas of canvases) {
+	for(let canvas of canvases) {
 		var evnData = canvas.getAttribute(&apos;data-evn&apos;);
 		if(evnData){
 			var xhr = new XMLHttpRequest();

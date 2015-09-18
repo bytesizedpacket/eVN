@@ -188,6 +188,8 @@
 			this.context = canvas.getContext('2d');
 			/** Map containing all <code>Image</code> instances for this novel */
 			this.images = {};
+			/** Map containing all <code>Audio</code> instances for this novel */
+			this.audio = {};
 			/** Object containing character instances */
 			this.characters = {};
 			/** JSON object containing all end-developer input (from .evn scripts) */
@@ -228,6 +230,7 @@
 				return _this.parseScene.call(_this);
 			});
 
+			/* Update this.cdata.mouse values */
 			this.canvas.addEventListener('mousemove', function (e) {
 				var target = e.target || e.srcElement;
 				var rect = target.getBoundingClientRect();
@@ -239,14 +242,11 @@
 				_this.cdata.mouseY = (e.clientY - rect.top) / fsModY | 0;
 			});
 
-			/* Import images */
+			/* Import images & audio */
 			for (var key in this.eVNML.images) {
 				this.images[key] = new Image();
 				this.images[key].src = this.eVNML.images[key];
 			}
-
-			/* Import aduio */
-			this.audio = {};
 			for (var key in this.eVNML.audio) {
 				this.audio[key] = new Audio();
 				this.audio[key].src = this.eVNML.audio[key];
@@ -255,6 +255,7 @@
 			/* Instantiate characters */
 			for (var key in this.eVNML.characters) {
 				var eVNML_char = this.eVNML.characters[key];
+				// NOTE TO SELF: Create character class
 				this.characters[key] = {
 					name: eVNML_char['first name'] || eVNML_char['name'],
 					lname: eVNML_char['last name'],
