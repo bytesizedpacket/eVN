@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Novel.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+</head>
+<body class="layout-container">
+
+<header>
+  <a href="./">Home</a>
+  <a href="identifiers.html">Identifier</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/bytesizedpacket/eVN" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div data-ice="classWrap">
+  <h2>Class</h2>
+  <ul>
+    
+  <li data-ice="classDoc"><span><a href="class/src/Logger.js~Logger.html">Logger</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Main.js~Main.html">Main</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Novel.js~Novel.html">Novel</a></span></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Novel.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">var Visuals = require(&apos;./Visuals.js&apos;);
+
+/** Core novel class */
+export class Novel {
+	/**@param {object} canvas - The canvas element to attach.
+	 * @param {string} eVNML - The eVN script to load. &lt;b&gt;Must be valid JSON!&lt;/b&gt;
+	 * @param {string} [file=&apos;undefined&apos;] - The name of the .evn script passed.
+	 */
+	constructor(canvas, eVNML, file=&apos;undefined&apos;) {
+		/** Filename of the eVNL the novel was instantiated with */
+		this.file = file;
+		/** The canvas attached to the instance */
+		this.canvas = canvas;
+		/** The drawing context of {@link Novel#canvas} */
+		this.context = canvas.getContext(&apos;2d&apos;);
+		/** Map containing all &lt;code&gt;Image&lt;/code&gt; instances for this novel */
+		this.images = {};
+		/** Object containing character instances */
+		this.characters = {};
+		/** Map containing dynamic data for handling the current scene */
+		this.cdata = {
+			background: null,
+			characters: [],
+			collection: &apos;start&apos;,
+			collectionIndex: 0,
+			dialogue: &apos;&apos;,
+			dialogueLines: [],
+			mouseX: -1,
+			mouseY: -1,
+			jobs: [],
+			startLine: 0,
+			speaker: &apos;&apos;
+		};
+
+		/* Add the CSS class `eVN-canvas` to the canvas */
+		this.canvas.className = this.canvas.className + &apos; eVN-canvas&apos;;
+
+		/**An instance that controls all graphic/drawing related stuff for the novel.
+		 * @see module:eVN/Visuals */
+		this.visuals = new Visuals(this);
+		
+		/** JSON object containing all end-developer input (from .evn scripts) */
+		this.eVNML = this.parse_eVNML(eVNML);
+
+		/* Create an Image() from the passed textbox and optional speakerbox objects */
+		if(this.eVNML.options.textbox.image) {
+			this.images.textbox = new Image();
+			this.images.textbox.src = this.eVNML.options.textbox.image;
+		}
+		if(this.eVNML.options.textbox.speakerbox.image) {
+			this.images.speakerbox = new Image();
+			this.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;
+		}
+
+		/* Go to the next scene on regular click */
+		this.canvas.addEventListener(&apos;click&apos;, ()=&gt; this.parseScene.call(this));
+
+		this.canvas.addEventListener(&apos;mousemove&apos;, e=&gt; {
+			var target = e.target || e.srcElement;
+			var rect = target.getBoundingClientRect();
+			/* Two variables to modify the mouse coords relative to the scaling of the canvas */
+			var fsModX = rect.width / target.width;
+			var fsModY = rect.height / target.height;
+			/* Export to Novel.cdata */
+			this.cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
+			this.cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
+		});
+
+		var cd = this.cdata;
+
+		/* Import images */
+		for(var imgKeys in this.eVNML.images) {
+			this.images[imgKeys] = new Image();
+			this.images[imgKeys].src = this.eVNML.images[imgKeys];
+		}
+
+		/* Import aduio */
+		this.audio = {};
+		for(var audioKeys in this.eVNML.audio) {
+			this.audio[audioKeys] = new Audio();
+			this.audio[audioKeys].src = this.eVNML.audio[audioKeys];
+		}
+
+		/* Instantiate characters */
+		for(var key in this.eVNML.characters) {
+			var eVNML_char = this.eVNML.characters[key];
+			this.characters[key] = {
+				name: eVNML_char[&apos;first name&apos;] || eVNML_char[&apos;name&apos;],
+				lname: eVNML_char[&apos;last name&apos;],
+				color: eVNML_char[&apos;color&apos;] || eVNML_char[&apos;colour&apos;],
+				images: {}
+			};
+			var char = this.characters[key];
+
+			for(var imgKey in eVNML_char.images) {
+				char.images[imgKey] = /*new Image();
+				char.images[imgKey].src =*/ eVNML_char.images[imgKey];
+			}
+			char.cImage = char.images.default;
+		}
+
+		this.parseScene(cd.currentCollection, cd.collectionIndex);
+
+		/* Push ourself to an array for easy debugging/hacking */
+		var instanceIndex = eVN.instances.push(this) - 1;
+		eVN.logger.log(&apos;Created new eVN instance from file `&apos; + this.file + &apos;` under eVN.instances[&apos;+ instanceIndex +&apos;]&apos;);
+	}
+
+	// --------------------------- //
+	
+	/** Validates the end-developer input and applies it on top of a set of default values */
+	parse_eVNML(eVNML) {
+		var defaults = require(&apos;./defaults.evn&apos;);
+		var userData = eVNML;
+		var returned_eVNML = defaults;
+
+		try {
+			userData = JSON.parse(eVNML);
+
+			/**Returns an object of &lt;code&gt;alpha&lt;/code&gt; obtrusively laid on top of &lt;code&gt;beta&lt;/code&gt;
+			 * param {object} alpha - The obtrusive object literal to apply on top of &lt;code&gt;beta&lt;/code&gt;
+			 * param {object beta - The submissive object literal to use as base for &lt;code&gt;alpha&lt;/code&gt;
+			 * returns {object} */
+			var merge = function(alpha, beta) {
+				var out = beta;
+				for(var prop in alpha) {
+					if( !(prop in beta) ) out[prop] = alpha[prop];
+
+					// If both properties are object literals, try merging those
+					else if( alpha[prop].constructor === Object &amp;&amp; beta[prop].constructor === Object) {
+						out[prop] = merge(alpha[prop], beta[prop]);
+
+					// Warn the end-developer if he possibly made a type mistake
+					} else if ( alpha[prop].constructor !== beta[prop].constructor ) {
+						eVN.logger.warn(&apos;Possible type mismatch on property &quot;&apos;+prop+&apos;&quot; while parsing eVNML.&apos;);
+						out[prop] = alpha[prop];
+
+					// Fall back to just overwriting the property
+					}  else out[prop] = alpha[prop];
+				}
+
+				return out;
+			};
+			returned_eVNML = merge(userData, defaults);
+		} catch(e) {
+			eVN.logger.throw(e);
+		}
+	
+		return returned_eVNML;
+	}
+
+	/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it
+	 * @param {Object} scene - The scene to import
+	 * @see &lt;eVNML scene syntax&gt; */
+	parseScene(collection, index) {
+		var cd = this.cdata;
+		var eVNML = this.eVNML;
+		var textbox = eVNML.options.textbox;
+		collection = collection || cd.collection;
+		index = (typeof index !== &apos;undefined&apos;)? index : cd.collectionIndex;
+
+		if(cd.startLine + textbox.lines &lt; cd.dialogueLines.length) return cd.startLine += textbox.lines;
+
+		var scene = this.eVNML.scenes[collection][index];
+		cd.collection = collection;
+		cd.collectionIndex = index+1;
+		if(!scene) eVN.logger.throw(&apos;Undefined scene &quot;&apos;+ collection +&apos;[&apos;+ index +&apos;]&quot;! Did we run out of scenes?&apos;);
+
+		/* These are values that only live one scene - they should be reset on each scene load */
+		cd.speakerColor = null;
+
+		/* If the scene is a string, it&apos;s using the dialogue shorthand */
+		if(typeof scene === &apos;string&apos;) {
+			var splitAt = scene.indexOf(&apos;: &apos;);
+			var alpha = scene.slice(0, splitAt);
+			var beta = scene.slice(splitAt+2);
+
+			/* If the alpha exists as a key in the characters object, it&apos;s dialogue, if not monologue */
+			var isDialogue = splitAt &lt; scene.indexOf(&apos; &apos;)   &amp;&amp;   alpha in this.characters;
+			scene = isDialogue? [&quot;say&quot;, beta, alpha] : [&quot;say&quot;, scene];
+		}
+
+		switch(scene[0].toLowerCase()) {
+		/* Cases ending with &apos;break&apos; will not take up a scene shift and jump to the next scene automatically.
+		   Cases ending with &apos;return&apos; will not jump to the next scene when done */
+
+			case &apos;background&apos;:
+				cd.background = scene[1];
+				break;
+			case &apos;music&apos;:
+				if(scene[1] in this.audio) this.audio[scene[1]].play();
+				break;
+			case &apos;say&apos;:
+				/*Process inline variables for text*/
+				var text = this.processVariables(scene[1]);
+
+				if(scene[2]) {
+					cd.speaker = scene[2];
+					cd.dialogue = &apos;&quot;&apos;+ text +&apos;&quot;&apos;;
+					cd.speakerColor = scene[3] || null;
+				} else {
+					cd.speaker = null;
+					cd.dialogue = text;
+				}
+
+				//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);
+				var maxWidth = textbox.maxWidth;
+				cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
+				cd.startLine = 0;
+				return;
+			case &apos;setmood&apos;:
+				var charIndex = -1;
+				for(var i=0,l=cd.characters.length; i&lt;l; i++) {
+					if(cd.characters[i][&apos;character&apos;] === scene[1]) {
+						charIndex = i;
+						break;
+					}
+				}
+				if(charIndex &gt; -1){
+					cd.characters[charIndex].mood = scene[2] || &apos;default&apos;;
+				}
+				break;
+			case &apos;hide&apos;:
+				cd.characters[scene[1]] = null;
+				break;
+			case &apos;show&apos;:
+				/* Since characters are stored in an array and not an object literal,
+				   checking if it exists takes a little extra effort */
+
+				/* Check if we already have an index mapped to scene[1]||charName */
+				var charIndex = -1;
+				for(var i=0,l=cd.characters.length; i&lt;l; i++) {
+					if(cd.characters[i][&apos;character&apos;] === scene[1]) {
+						charIndex = i;
+						break;
+					}
+				}
+
+				if(charIndex &gt; -1) {
+					var cdChar = cd.characters[charIndex];
+					cdChar = {
+						character: cdChar.character,
+						position: scene[2] || cdChar.position || &apos;middle&apos;,
+						mood: cdChar.mood || &apos;default&apos;,
+						priority: scene[4] || cdChar.priority || 1
+					};
+				} else {
+					cd.characters.push({ character: scene[1], position: scene[2]||&apos;middle&apos;, mood: &apos;default&apos; });
+				}
+				break;
+			case &apos;goto&apos;:
+			case &apos;jump&apos;:
+				cd.collection = scene[1];
+				cd.collectionIndex = 0;
+				break;
+			default:
+				eVN.logger.warn(&apos;Unknown command &quot;&apos;+ scene[0] +&apos;&quot; at &quot;&apos;+ collection +&apos;[&apos;+ index +&apos;]&quot;&apos;);
+		}
+
+		this.parseScene();
+	}
+
+	/**Looks for ${varName} variables and returns the processed string
+	 * @param {string} string - the string to process */
+	processVariables(string) {
+		var splitAt = string.indexOf(&apos;${&apos;);
+		var endAt = string.indexOf(&apos;}&apos;, splitAt);
+		var output = &apos;&apos;;
+		if(splitAt !== -1   &amp;&amp;   endAt !== -1){
+			var alpha = string.slice(0, splitAt);
+			var beta = string.slice(splitAt+2, endAt);
+			var gamma = string.slice(endAt+1);
+			output = beta;
+
+			var varSplit = beta.split(&apos;.&apos;);
+			// If beta (variable name) exists in cdata.characters,it&apos;s
+			// probably referring to a property of a character
+			var characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);
+			if(varSplit[0] in this.characters) {
+				output = this.characters[varSplit[0]][varSplit[1]];
+			}
+
+			output = alpha + output + gamma;
+			if(output.indexOf(&apos;${&apos;) !== -1) return this.processVariables(output);
+			return output;
+		} else {
+			return string;
+		}
+	}
+
+	/**  */
+	constructCharacter(data) {
+		var name = data.name;
+		this.characters[name] = {};
+	}
+};
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.2.6)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

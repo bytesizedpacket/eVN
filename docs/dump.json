@@ -1,0 +1,1946 @@
+[
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "src/Logger.js",
+    "memberof": null,
+    "longname": "src/Logger.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 7,
+    "content": "/**A logging class, covering debug logs, warnings & errors\n * IMPORTANT: Each method returns a <code>function</code>!\n * Use like so:\n * @example\n * var logger = new Logger('myLog', 'v0.5b', false);\n * logger.warn('Something may be wrong!')(); */\nexport class Logger {\n/**@param {string} [name='UnnamedLogger'] - The name of the logger. Will show up in logs.\n * @param {string} [version=NaN] - Version parameter, will show up in logs.\n * @param {bool} [verbose=true] - Whether or not to skip non warn/error logs. */\n\tconstructor (name='Unnamedlogger', version='NaN', verbose=true) {\n\t\t/** @ignore */\n\t\tthis.name = name;\n\t\t/** @ignore */\n\t\tthis.version = version;\n\t\t/** @ignore */\n\t\tthis.verbose = verbose;\n\n\t\t/** @ignore */\n\t\tthis.logName = `${this.name} v${this.version}`;\n\t\t/** @ignore */\n\t\tthis.logPrefix = `[${this.logName} INFO]`;\n\t\t/** @ignore */\n\t\tthis.warnPrefix = `[${this.logName} WARN]`;\n\t\t/** @ignore */\n\t\tthis.errPrefix = `[${this.logName} ERR]`;\n\t}\n\n\t/**A method for logging non-critical information.\n\t * @param {*} message - Message to log.\n\t * @returns {Function} - <code>console.log</code> binded with the\n\t * appropriate scope & arguments */\n\tlog(...msgs) {\n\t\tvar logMsg = [this.logPrefix];\n\t\tif(msgs.length < 1 || !this.verbose) return ()=>{};\n\t\t\n\t\tif(msgs.length === 1 && typeof msgs[0] === 'string') logMsg[0] += ` ${msgs[0]}`;\n\t\telse logMsg = [logMsg[0], ...msgs];\n\t\t\n\t\tif(console && console.log) return console.log.bind(console, ...logMsg);\n\t}\n\n\t/**A method for logging warnings.\n\t * @param {*} message - Message to log.\n\t * @returns {Function} - <code>console.warn</code> binded with the\n\t * appropriate scope & arguments */\n\twarn(...msgs) {\n\t\tvar logMsg = [this.warnPrefix];\n\t\tif(msgs.length < 1) return ()=>{};\n\t\t\n\t\tif(msgs.length === 1 && typeof msgs[0] === 'string') logMsg[0] += ` ${msgs[0]}`;\n\t\telse logMsg = [logMsg[0], ...msgs];\n\t\t\n\t\tif(console && console.warn) return console.warn.bind(console, ...logMsg);\n\t}\n\n\t/**A method for throwing errors.\n\t * @param {string|Error} error - Name/Type/Error to throw.\n\t * @param {string} [message='UnknownError'] - Message to log. If\n\t * <code>error instanceof Error</code> is true,\n\t * <code>error.stack</code> will be used.\n\t * @returns {Function} - <code>throw</code> and <code>console.error</code>\n\t * binded with the appropriate scope & arguments */\n\tthrow(error='UnknownError', message) {\n\t\tvar eErr;\n\t\t\n\t\tif(error instanceof Error) eErr = error;\n\t\telse { eErr = new Error(error); if(message) eErr.stack = message;\t};\n\n\t\teErr.name = `${this.errPrefix} ${eErr.name}`;\n\n\t\treturn ()=> {\n\t\t\tif(console && console.error) {\n\t\t\t\tif(message) console.error(`${this.errPrefix} ${eErr.message}`);\n\t\t\t\tconsole.error(eErr.stack);\n\t\t\t\tthrow `${this.logName} halted`;\n\t\t\t} else throw eErr;\n\t\t};\n\t}\n};\n"
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "Logger",
+    "memberof": "src/Logger.js",
+    "longname": "src/Logger.js~Logger",
+    "access": null,
+    "export": true,
+    "importPath": "eVN/src/Logger.js",
+    "importStyle": "{Logger}",
+    "description": "A logging class, covering debug logs, warnings & errors\nIMPORTANT: Each method returns a <code>function</code>!\nUse like so:",
+    "examples": [
+      "var logger = new Logger('myLog', 'v0.5b', false);\nlogger.warn('Something may be wrong!')();"
+    ],
+    "lineNumber": 7,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 11,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'UnnamedLogger'",
+        "defaultRaw": "'UnnamedLogger'",
+        "name": "name",
+        "description": "The name of the logger. Will show up in logs."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "NaN",
+        "defaultRaw": "NaN",
+        "name": "version",
+        "description": "Version parameter, will show up in logs."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "true",
+        "defaultRaw": true,
+        "name": "verbose",
+        "description": "Whether or not to skip non warn/error logs."
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "name",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#name",
+    "access": null,
+    "description": null,
+    "lineNumber": 13,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "version",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#version",
+    "access": null,
+    "description": null,
+    "lineNumber": 15,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "verbose",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#verbose",
+    "access": null,
+    "description": null,
+    "lineNumber": 17,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "logName",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#logName",
+    "access": null,
+    "description": null,
+    "lineNumber": 20,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "logPrefix",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#logPrefix",
+    "access": null,
+    "description": null,
+    "lineNumber": 22,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "warnPrefix",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#warnPrefix",
+    "access": null,
+    "description": null,
+    "lineNumber": 24,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "errPrefix",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#errPrefix",
+    "access": null,
+    "description": null,
+    "lineNumber": 26,
+    "ignore": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "log",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#log",
+    "access": null,
+    "description": "A method for logging non-critical information.",
+    "lineNumber": 33,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Function} - <code>console.log</code> binded with the\nappropriate scope & arguments"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "message",
+        "description": "Message to log."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Function"
+      ],
+      "spread": false,
+      "description": "<code>console.log</code> binded with the\nappropriate scope & arguments"
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "warn",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#warn",
+    "access": null,
+    "description": "A method for logging warnings.",
+    "lineNumber": 47,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Function} - <code>console.warn</code> binded with the\nappropriate scope & arguments"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "*"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "message",
+        "description": "Message to log."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Function"
+      ],
+      "spread": false,
+      "description": "<code>console.warn</code> binded with the\nappropriate scope & arguments"
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "throw",
+    "memberof": "src/Logger.js~Logger",
+    "longname": "src/Logger.js~Logger#throw",
+    "access": null,
+    "description": "A method for throwing errors.",
+    "lineNumber": 64,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Function} - <code>throw</code> and <code>console.error</code>\nbinded with the appropriate scope & arguments"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string",
+          "Error"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "error",
+        "description": "Name/Type/Error to throw."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'UnknownError'",
+        "defaultRaw": "'UnknownError'",
+        "name": "message",
+        "description": "Message to log. If\n<code>error instanceof Error</code> is true,\n<code>error.stack</code> will be used."
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Function"
+      ],
+      "spread": false,
+      "description": "<code>throw</code> and <code>console.error</code>\nbinded with the appropriate scope & arguments"
+    },
+    "generator": false
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "src/Main.js",
+    "memberof": null,
+    "longname": "src/Main.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 10,
+    "content": "/**eVN - Everyone's Visual Novel (Development build)\n * @see {@link https://github.com/bytesizedpacket/eVN}\n * @fileOverview eVN core script\n * @author Jacob Pedersen <jacob@bytesizedpacket.com> & Byte-Sized Packet <contact@bytesizedpacket.com>\n * @copyright Byte-Sized Packet 2015\n * @license {@link https://github.com/bytesizedpacket/eVN/blob/master/LICENSE | Attribution Assurance License (BSP edit)}\n * @version: 0.0.1a Pre-development version */\n\n/* Import some modules */\nimport { Logger } from './Logger.js';\nimport { Novel } from './Novel.js';\n\nvar logger = new Logger('eVN', '0.1a', true);\n\n/**Main class keeping the system together\n * Instantiated as <code>window.eVN</code> by default */\nexport var Main = class {\n\t/**Load up an array for storing novel instances */\n\tconstructor()  {\n\t\t/** Instances (for debugging/hacking) */\n\t\tthis.instances = [];\n\t};\n\n\t/** @returns {Logger} */\n\tget logger() { return logger; }\n}\n\nif(!!window.eVN) logger.throw('`window.eVN` is already declared')();\n/** @namespace eVN */\nelse window.eVN = new Main();\n\n/* Execute our onPageLoad() function as soon as the browser has everything loaded */\ndocument.addEventListener('DOMContentLoaded', function() {\n\t/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */\n\tvar canvases = Array.prototype.slice.call( document.getElementsByTagName('canvas') );\n\n\t/* Function to run on canvases with loaded `data-evn` attributes */\n\tvar onEvnDataReady = function() {\n\t\tif(xhr.readyState === 4 && xhr.status === 200){\n\t\t\tnew Novel(canvas, xhr.responseText, evnData);\n\t\t}\n\t};\n\n\tfor(var canvas of canvases) {\n\t\tvar evnData = canvas.getAttribute('data-evn');\n\t\tif(evnData){\n\t\t\tvar xhr = new XMLHttpRequest();\n\t\t\txhr.open('GET', evnData, true);\n\t\t\txhr.onreadystatechange = onEvnDataReady;\n\t\t\txhr.send();\n\t\t}\n\t}\n});\n\nsetTimeout(function(){\n\twindow.t=eVN.instances[0];\n//\tdocument.body.onclick=t.canvas.webkitRequestFullScreen\n}, 500);\n"
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "logger",
+    "memberof": "src/Main.js",
+    "longname": "src/Main.js~logger",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Main.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 13,
+    "undocument": true,
+    "type": {
+      "types": [
+        "src/Logger.js~Logger"
+      ]
+    }
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "Main",
+    "memberof": "src/Main.js",
+    "longname": "src/Main.js~Main",
+    "access": null,
+    "export": true,
+    "importPath": "eVN/src/Main.js",
+    "importStyle": "{Main}",
+    "description": "Main class keeping the system together\nInstantiated as <code>window.eVN</code> by default",
+    "lineNumber": 17,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "src/Main.js~Main",
+    "longname": "src/Main.js~Main#constructor",
+    "access": null,
+    "description": "Load up an array for storing novel instances",
+    "lineNumber": 19,
+    "params": [],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "instances",
+    "memberof": "src/Main.js~Main",
+    "longname": "src/Main.js~Main#instances",
+    "access": null,
+    "description": "Instances (for debugging/hacking)",
+    "lineNumber": 21,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "get",
+    "static": false,
+    "variation": null,
+    "name": "logger",
+    "memberof": "src/Main.js~Main",
+    "longname": "src/Main.js~Main#logger",
+    "access": null,
+    "description": null,
+    "lineNumber": 25,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Logger}"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "Logger"
+      ],
+      "spread": false,
+      "description": ""
+    },
+    "type": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "src/Novel.js",
+    "memberof": null,
+    "longname": "src/Novel.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "var Visuals = require('./Visuals.js');\n\n/** Core novel class */\nexport class Novel {\n\t/**@param {object} canvas - The canvas element to attach.\n\t * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>\n\t * @param {string} [file='undefined'] - The name of the .evn script passed.\n\t */\n\tconstructor(canvas, eVNML, file='undefined') {\n\t\t/** Filename of the eVNL the novel was instantiated with */\n\t\tthis.file = file;\n\t\t/** The canvas attached to the instance */\n\t\tthis.canvas = canvas;\n\t\t/** The drawing context of {@link Novel#canvas} */\n\t\tthis.context = canvas.getContext('2d');\n\t\t/** Map containing all <code>Image</code> instances for this novel */\n\t\tthis.images = {};\n\t\t/** Object containing character instances */\n\t\tthis.characters = {};\n\t\t/** Map containing dynamic data for handling the current scene */\n\t\tthis.cdata = {\n\t\t\tbackground: null,\n\t\t\tcharacters: [],\n\t\t\tcollection: 'start',\n\t\t\tcollectionIndex: 0,\n\t\t\tdialogue: '',\n\t\t\tdialogueLines: [],\n\t\t\tmouseX: -1,\n\t\t\tmouseY: -1,\n\t\t\tjobs: [],\n\t\t\tstartLine: 0,\n\t\t\tspeaker: ''\n\t\t};\n\n\t\t/* Add the CSS class `eVN-canvas` to the canvas */\n\t\tthis.canvas.className = this.canvas.className + ' eVN-canvas';\n\n\t\t/**An instance that controls all graphic/drawing related stuff for the novel.\n\t\t * @see module:eVN/Visuals */\n\t\tthis.visuals = new Visuals(this);\n\t\t\n\t\t/** JSON object containing all end-developer input (from .evn scripts) */\n\t\tthis.eVNML = this.parse_eVNML(eVNML);\n\n\t\t/* Create an Image() from the passed textbox and optional speakerbox objects */\n\t\tif(this.eVNML.options.textbox.image) {\n\t\t\tthis.images.textbox = new Image();\n\t\t\tthis.images.textbox.src = this.eVNML.options.textbox.image;\n\t\t}\n\t\tif(this.eVNML.options.textbox.speakerbox.image) {\n\t\t\tthis.images.speakerbox = new Image();\n\t\t\tthis.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;\n\t\t}\n\n\t\t/* Go to the next scene on regular click */\n\t\tthis.canvas.addEventListener('click', ()=> this.parseScene.call(this));\n\n\t\tthis.canvas.addEventListener('mousemove', e=> {\n\t\t\tvar target = e.target || e.srcElement;\n\t\t\tvar rect = target.getBoundingClientRect();\n\t\t\t/* Two variables to modify the mouse coords relative to the scaling of the canvas */\n\t\t\tvar fsModX = rect.width / target.width;\n\t\t\tvar fsModY = rect.height / target.height;\n\t\t\t/* Export to Novel.cdata */\n\t\t\tthis.cdata.mouseX = (e.clientX - rect.left) / fsModX |0;\n\t\t\tthis.cdata.mouseY = (e.clientY - rect.top) / fsModY |0;\n\t\t});\n\n\t\tvar cd = this.cdata;\n\n\t\t/* Import images */\n\t\tfor(var imgKeys in this.eVNML.images) {\n\t\t\tthis.images[imgKeys] = new Image();\n\t\t\tthis.images[imgKeys].src = this.eVNML.images[imgKeys];\n\t\t}\n\n\t\t/* Import aduio */\n\t\tthis.audio = {};\n\t\tfor(var audioKeys in this.eVNML.audio) {\n\t\t\tthis.audio[audioKeys] = new Audio();\n\t\t\tthis.audio[audioKeys].src = this.eVNML.audio[audioKeys];\n\t\t}\n\n\t\t/* Instantiate characters */\n\t\tfor(var key in this.eVNML.characters) {\n\t\t\tvar eVNML_char = this.eVNML.characters[key];\n\t\t\tthis.characters[key] = {\n\t\t\t\tname: eVNML_char['first name'] || eVNML_char['name'],\n\t\t\t\tlname: eVNML_char['last name'],\n\t\t\t\tcolor: eVNML_char['color'] || eVNML_char['colour'],\n\t\t\t\timages: {}\n\t\t\t};\n\t\t\tvar char = this.characters[key];\n\n\t\t\tfor(var imgKey in eVNML_char.images) {\n\t\t\t\tchar.images[imgKey] = /*new Image();\n\t\t\t\tchar.images[imgKey].src =*/ eVNML_char.images[imgKey];\n\t\t\t}\n\t\t\tchar.cImage = char.images.default;\n\t\t}\n\n\t\tthis.parseScene(cd.currentCollection, cd.collectionIndex);\n\n\t\t/* Push ourself to an array for easy debugging/hacking */\n\t\tvar instanceIndex = eVN.instances.push(this) - 1;\n\t\teVN.logger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']');\n\t}\n\n\t// --------------------------- //\n\t\n\t/** Validates the end-developer input and applies it on top of a set of default values */\n\tparse_eVNML(eVNML) {\n\t\tvar defaults = require('./defaults.evn');\n\t\tvar userData = eVNML;\n\t\tvar returned_eVNML = defaults;\n\n\t\ttry {\n\t\t\tuserData = JSON.parse(eVNML);\n\n\t\t\t/**Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>\n\t\t\t * param {object} alpha - The obtrusive object literal to apply on top of <code>beta</code>\n\t\t\t * param {object beta - The submissive object literal to use as base for <code>alpha</code>\n\t\t\t * returns {object} */\n\t\t\tvar merge = function(alpha, beta) {\n\t\t\t\tvar out = beta;\n\t\t\t\tfor(var prop in alpha) {\n\t\t\t\t\tif( !(prop in beta) ) out[prop] = alpha[prop];\n\n\t\t\t\t\t// If both properties are object literals, try merging those\n\t\t\t\t\telse if( alpha[prop].constructor === Object && beta[prop].constructor === Object) {\n\t\t\t\t\t\tout[prop] = merge(alpha[prop], beta[prop]);\n\n\t\t\t\t\t// Warn the end-developer if he possibly made a type mistake\n\t\t\t\t\t} else if ( alpha[prop].constructor !== beta[prop].constructor ) {\n\t\t\t\t\t\teVN.logger.warn('Possible type mismatch on property \"'+prop+'\" while parsing eVNML.');\n\t\t\t\t\t\tout[prop] = alpha[prop];\n\n\t\t\t\t\t// Fall back to just overwriting the property\n\t\t\t\t\t}  else out[prop] = alpha[prop];\n\t\t\t\t}\n\n\t\t\t\treturn out;\n\t\t\t};\n\t\t\treturned_eVNML = merge(userData, defaults);\n\t\t} catch(e) {\n\t\t\teVN.logger.throw(e);\n\t\t}\n\t\n\t\treturn returned_eVNML;\n\t}\n\n\t/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it\n\t * @param {Object} scene - The scene to import\n\t * @see <eVNML scene syntax> */\n\tparseScene(collection, index) {\n\t\tvar cd = this.cdata;\n\t\tvar eVNML = this.eVNML;\n\t\tvar textbox = eVNML.options.textbox;\n\t\tcollection = collection || cd.collection;\n\t\tindex = (typeof index !== 'undefined')? index : cd.collectionIndex;\n\n\t\tif(cd.startLine + textbox.lines < cd.dialogueLines.length) return cd.startLine += textbox.lines;\n\n\t\tvar scene = this.eVNML.scenes[collection][index];\n\t\tcd.collection = collection;\n\t\tcd.collectionIndex = index+1;\n\t\tif(!scene) eVN.logger.throw('Undefined scene \"'+ collection +'['+ index +']\"! Did we run out of scenes?');\n\n\t\t/* These are values that only live one scene - they should be reset on each scene load */\n\t\tcd.speakerColor = null;\n\n\t\t/* If the scene is a string, it's using the dialogue shorthand */\n\t\tif(typeof scene === 'string') {\n\t\t\tvar splitAt = scene.indexOf(': ');\n\t\t\tvar alpha = scene.slice(0, splitAt);\n\t\t\tvar beta = scene.slice(splitAt+2);\n\n\t\t\t/* If the alpha exists as a key in the characters object, it's dialogue, if not monologue */\n\t\t\tvar isDialogue = splitAt < scene.indexOf(' ')   &&   alpha in this.characters;\n\t\t\tscene = isDialogue? [\"say\", beta, alpha] : [\"say\", scene];\n\t\t}\n\n\t\tswitch(scene[0].toLowerCase()) {\n\t\t/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.\n\t\t   Cases ending with 'return' will not jump to the next scene when done */\n\n\t\t\tcase 'background':\n\t\t\t\tcd.background = scene[1];\n\t\t\t\tbreak;\n\t\t\tcase 'music':\n\t\t\t\tif(scene[1] in this.audio) this.audio[scene[1]].play();\n\t\t\t\tbreak;\n\t\t\tcase 'say':\n\t\t\t\t/*Process inline variables for text*/\n\t\t\t\tvar text = this.processVariables(scene[1]);\n\n\t\t\t\tif(scene[2]) {\n\t\t\t\t\tcd.speaker = scene[2];\n\t\t\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\t\t\tcd.speakerColor = scene[3] || null;\n\t\t\t\t} else {\n\t\t\t\t\tcd.speaker = null;\n\t\t\t\t\tcd.dialogue = text;\n\t\t\t\t}\n\n\t\t\t\t//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);\n\t\t\t\tvar maxWidth = textbox.maxWidth;\n\t\t\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\t\t\tcd.startLine = 0;\n\t\t\t\treturn;\n\t\t\tcase 'setmood':\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(var i=0,l=cd.characters.length; i<l; i++) {\n\t\t\t\t\tif(cd.characters[i]['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(charIndex > -1){\n\t\t\t\t\tcd.characters[charIndex].mood = scene[2] || 'default';\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'hide':\n\t\t\t\tcd.characters[scene[1]] = null;\n\t\t\t\tbreak;\n\t\t\tcase 'show':\n\t\t\t\t/* Since characters are stored in an array and not an object literal,\n\t\t\t\t   checking if it exists takes a little extra effort */\n\n\t\t\t\t/* Check if we already have an index mapped to scene[1]||charName */\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(var i=0,l=cd.characters.length; i<l; i++) {\n\t\t\t\t\tif(cd.characters[i]['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif(charIndex > -1) {\n\t\t\t\t\tvar cdChar = cd.characters[charIndex];\n\t\t\t\t\tcdChar = {\n\t\t\t\t\t\tcharacter: cdChar.character,\n\t\t\t\t\t\tposition: scene[2] || cdChar.position || 'middle',\n\t\t\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\t\t\tpriority: scene[4] || cdChar.priority || 1\n\t\t\t\t\t};\n\t\t\t\t} else {\n\t\t\t\t\tcd.characters.push({ character: scene[1], position: scene[2]||'middle', mood: 'default' });\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'goto':\n\t\t\tcase 'jump':\n\t\t\t\tcd.collection = scene[1];\n\t\t\t\tcd.collectionIndex = 0;\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\teVN.logger.warn('Unknown command \"'+ scene[0] +'\" at \"'+ collection +'['+ index +']\"');\n\t\t}\n\n\t\tthis.parseScene();\n\t}\n\n\t/**Looks for ${varName} variables and returns the processed string\n\t * @param {string} string - the string to process */\n\tprocessVariables(string) {\n\t\tvar splitAt = string.indexOf('${');\n\t\tvar endAt = string.indexOf('}', splitAt);\n\t\tvar output = '';\n\t\tif(splitAt !== -1   &&   endAt !== -1){\n\t\t\tvar alpha = string.slice(0, splitAt);\n\t\t\tvar beta = string.slice(splitAt+2, endAt);\n\t\t\tvar gamma = string.slice(endAt+1);\n\t\t\toutput = beta;\n\n\t\t\tvar varSplit = beta.split('.');\n\t\t\t// If beta (variable name) exists in cdata.characters,it's\n\t\t\t// probably referring to a property of a character\n\t\t\tvar characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);\n\t\t\tif(varSplit[0] in this.characters) {\n\t\t\t\toutput = this.characters[varSplit[0]][varSplit[1]];\n\t\t\t}\n\n\t\t\toutput = alpha + output + gamma;\n\t\t\tif(output.indexOf('${') !== -1) return this.processVariables(output);\n\t\t\treturn output;\n\t\t} else {\n\t\t\treturn string;\n\t\t}\n\t}\n\n\t/**  */\n\tconstructCharacter(data) {\n\t\tvar name = data.name;\n\t\tthis.characters[name] = {};\n\t}\n};\n"
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "Visuals",
+    "memberof": "src/Novel.js",
+    "longname": "src/Novel.js~Visuals",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Novel.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "class",
+    "static": true,
+    "variation": null,
+    "name": "Novel",
+    "memberof": "src/Novel.js",
+    "longname": "src/Novel.js~Novel",
+    "access": null,
+    "export": true,
+    "importPath": "eVN/src/Novel.js",
+    "importStyle": "{Novel}",
+    "description": "Core novel class",
+    "lineNumber": 4,
+    "interface": false
+  },
+  {
+    "kind": "constructor",
+    "static": false,
+    "variation": null,
+    "name": "constructor",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#constructor",
+    "access": null,
+    "description": null,
+    "lineNumber": 9,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "canvas",
+        "description": "The canvas element to attach."
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "eVNML",
+        "description": "The eVN script to load. <b>Must be valid JSON!</b>"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "'undefined'",
+        "defaultRaw": "'undefined'",
+        "name": "file",
+        "description": "The name of the .evn script passed."
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "file",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#file",
+    "access": null,
+    "description": "Filename of the eVNL the novel was instantiated with",
+    "lineNumber": 11,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "canvas",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#canvas",
+    "access": null,
+    "description": "The canvas attached to the instance",
+    "lineNumber": 13,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "context",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#context",
+    "access": null,
+    "description": "The drawing context of {@link Novel#canvas}",
+    "lineNumber": 15,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "images",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#images",
+    "access": null,
+    "description": "Map containing all <code>Image</code> instances for this novel",
+    "lineNumber": 17,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "characters",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#characters",
+    "access": null,
+    "description": "Object containing character instances",
+    "lineNumber": 19,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "cdata",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#cdata",
+    "access": null,
+    "description": "Map containing dynamic data for handling the current scene",
+    "lineNumber": 21,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "visuals",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#visuals",
+    "access": null,
+    "description": "An instance that controls all graphic/drawing related stuff for the novel.",
+    "see": [
+      "module:eVN/Visuals"
+    ],
+    "lineNumber": 40,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "eVNML",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#eVNML",
+    "access": null,
+    "description": "JSON object containing all end-developer input (from .evn scripts)",
+    "lineNumber": 43,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "audio",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#audio",
+    "access": null,
+    "description": null,
+    "lineNumber": 78,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "parse_eVNML",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#parse_eVNML",
+    "access": null,
+    "description": "Validates the end-developer input and applies it on top of a set of default values",
+    "lineNumber": 112,
+    "params": [
+      {
+        "name": "eVNML",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "parseScene",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#parseScene",
+    "access": null,
+    "description": "Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it",
+    "see": [
+      "<eVNML scene syntax>"
+    ],
+    "lineNumber": 155,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "Object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "scene",
+        "description": "The scene to import"
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "processVariables",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#processVariables",
+    "access": null,
+    "description": "Looks for ${varName} variables and returns the processed string",
+    "lineNumber": 265,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "string",
+        "description": "the string to process"
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "constructCharacter",
+    "memberof": "src/Novel.js~Novel",
+    "longname": "src/Novel.js~Novel#constructCharacter",
+    "access": null,
+    "description": "",
+    "lineNumber": 292,
+    "params": [
+      {
+        "name": "data",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "src/Visuals/draw.js",
+    "memberof": null,
+    "longname": "src/Visuals/draw.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 11,
+    "content": "/**\n * @fileoverview Hosts mosts drawing in {@link module:eVN/Visuals}\n * @module eVN/Visuals/draw\n */\n\n/**\n * Draws a background on <code>context</code>\n * @param {object} context - Rendering context to draw on\n * @param {(string|object)} background - Can be either a color shorthand, HEX value, rgb(), rgba() or an <code>Image</code>\n */\nexports.background = function(context, background) {\n\tvar ctx = context;\n\tvar c = ctx;\n\n\tif(background instanceof Image) {\n\t\tctx.drawImage(background, 0, 0, c.canvas.width, c.canvas.height);\n\t} else {\n\t\tctx.fillStyle = background;\n\t\tctx.fillRect(0, 0, c.canvas.width, c.canvas.height);\n\t}\n};\n\n/**\n * Draws the dialogue box\n * @param {object} context - Rendering context to draw on\n * @param {object} textboxOptions - The eVNML `textbox` option property\n * @param {object} image - The img object to draw\n */\nexports.dialogueBox = function(context, textboxOptions, image) {\n\tvar ctx = context;\n\tvar box = textboxOptions;\n\n\tif(image) {\n\t\tvar x = 0;\n\t\tvar y = ctx.canvas.height - image.height;\n\t\tvar width = image.width;\n\t\tvar height = image.height;\n\n\t\tctx.drawImage(image, x, y, width, height);\n\t} else {\n\t\tvar x = 0;\n\t\tvar y = ctx.canvas.height - box.speakerbox.bottom - 5;\n\t\tvar width = ctx.canvas.width;\n\t\tvar height = ctx.canvas.height;\n\n\t\tctx.fillStyle = 'rgba(0, 0, 0, .35)';\n\t\tctx.fillRect(x, y, width, height);\n\t}\n};\n\n/**\n * Draws the speaker box\n * @param {object} context - Rendering context to draw on\n * @param {object} textboxOptions - The eVNML `textbox` option property\n */\nexports.speakerBox = function(context, textboxOptions) {\n\t\tvar ctx = context;\n\t\tvar box = textboxOptions;\n\t\tvar sbox = box.speakerbox;\n\t\tvar x = sbox.left;\n\t\tvar y = ctx.canvas.height - sbox.bottom - sbox.height;\n\t\tvar width = sbox.width;\n\t\tvar height = sbox.height;\n\n\t\tctx.fillStyle = sbox.color || box.color;\n\t\tctx.fillRect(x, y, width, height);\n};\n\n/**\n * Function intended for drawing dialogue / monologue (though it can be used for anything)\n * @param {object} context - Rendering context to draw on\n * @param {string[]} text - The array of lines to draw <i>see: {@link eVN.NovelClass.VisualsClass.splitText})\n * @param {object} textboxOptions - Should be <code>eVNML.options.textbox</code>, object containing textbox properties\n * @param {number} maxLines - Maximum amount of lines to draw at a time\n */\nexports.dialogueText = function(context, text, textboxOptions, maxLines) {\n\tvar ctx = context;\n\tvar box = textboxOptions;\n\n\tvar lineHeight = box.lineHeight;\n\t//var maxWidth = ctx.canvas.width - box.margin*2 - box.padding*2;\n\t//var x = box.margin + box.padding;\n\t//var y = ctx.canvas.height - box.height - box.bottom + box.padding;\n\tvar maxWidth = box.maxWidth;\n\tvar x = box.left;\n\tvar y = ctx.canvas.height - box.bottom;\n\tmaxLines = maxLines || 3;\n\n\tfor(var i=0, l=text.length; i< (l>maxLines? maxLines : l); i++) {\n\t\tvar lineY = y + lineHeight*i;\n\t\tctx.fillText(text[i], x, lineY, maxWidth);\n\t}\n};\n\n/**\n * Draws the speakerbox text\n * @param {object} context - Rendering context to draw on\n * @param {string} string - String to draw\n * @param {object} optionsSpeakerbox - Should be eVNML.textbox.speakerbox, used to determine where to put the text\n * @param {string} [color] - Color to use\n */\nexports.speakerText = function(context, string, optionsSpeakerbox, color) {\n\tvar ctx = context;\n\tvar sbox = optionsSpeakerbox;\n\n\tvar x = sbox.left;\n\tvar y = ctx.canvas.height - sbox.bottom;\n\tvar maxWidth = sbox.maxWidth || ctx.canvas.width - x;\n\n\tctx.fillStyle = color || ctx.fillStyle;\n\tctx.fillText(string, x, y, maxWidth);\n};\n"
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "background",
+    "memberof": "src/Visuals/draw.js",
+    "longname": "src/Visuals/draw.js~background",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/draw.js",
+    "importStyle": null,
+    "description": "Draws a background on <code>context</code>",
+    "lineNumber": 11,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "context",
+        "description": "Rendering context to draw on"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string",
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "background",
+        "description": "Can be either a color shorthand, HEX value, rgb(), rgba() or an <code>Image</code>"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "dialogueBox",
+    "memberof": "src/Visuals/draw.js",
+    "longname": "src/Visuals/draw.js~dialogueBox",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/draw.js",
+    "importStyle": null,
+    "description": "Draws the dialogue box",
+    "lineNumber": 29,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "context",
+        "description": "Rendering context to draw on"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "textboxOptions",
+        "description": "The eVNML `textbox` option property"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "image",
+        "description": "The img object to draw"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "speakerBox",
+    "memberof": "src/Visuals/draw.js",
+    "longname": "src/Visuals/draw.js~speakerBox",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/draw.js",
+    "importStyle": null,
+    "description": "Draws the speaker box",
+    "lineNumber": 56,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "context",
+        "description": "Rendering context to draw on"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "textboxOptions",
+        "description": "The eVNML `textbox` option property"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "dialogueText",
+    "memberof": "src/Visuals/draw.js",
+    "longname": "src/Visuals/draw.js~dialogueText",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/draw.js",
+    "importStyle": null,
+    "description": "Function intended for drawing dialogue / monologue (though it can be used for anything)",
+    "lineNumber": 76,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "context",
+        "description": "Rendering context to draw on"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": ")",
+        "description": ""
+      },
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "textboxOptions",
+        "description": "Should be <code>eVNML.options.textbox</code>, object containing textbox properties"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "maxLines",
+        "description": "Maximum amount of lines to draw at a time"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "speakerText",
+    "memberof": "src/Visuals/draw.js",
+    "longname": "src/Visuals/draw.js~speakerText",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/draw.js",
+    "importStyle": null,
+    "description": "Draws the speakerbox text",
+    "lineNumber": 102,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "context",
+        "description": "Rendering context to draw on"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "string",
+        "description": "String to draw"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "optionsSpeakerbox",
+        "description": "Should be eVNML.textbox.speakerbox, used to determine where to put the text"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "color",
+        "description": "Color to use"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "src/Visuals/text.js",
+    "memberof": null,
+    "longname": "src/Visuals/text.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 16,
+    "content": "/**\n * @fileoverview Methods used in {@link module:eVN/Visuals} for rendering text\n * @module eVN/Visuals/text\n */\n\n/* \n * Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>context</code>\n * @param {object} context - Context to probe .measureText() on\n * @param {string} string - The string to split\n * @param {number} fontSize - Font size of the context\n * @param {number} maxWidth - The maximum width of a string in the returned array <i>(in pixels)</i>\n * @param {bool} [doGuess=true] - Try estimating the line width using the font size and maxWidth propert\n * @param {string[]} [output] - An argument used by the function when recursing when concatenating previous attempts\n * @returns {string[]} An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code>\n */\nexports.split = function(context, string, fontSize, maxWidth, doGuess, output) {\n\tvar ctx = context;\n\n\tdoGuess = doGuess !== false;\n\toutput = output || [];\n\n\t/* If the string contains a newline character, we'll split there and recurse */\n\tif(string.indexOf('\\n') !== -1) {\n\t\t/* jshint shadow:true */\n\t\tvar newlineIndex = string.indexOf('\\n');\n\t\tvar alpha = string.slice(0, newlineIndex);\n\t\tvar beta = string.slice(newlineIndex+1);\n\t\treturn this.split(context, alpha, fontSize, maxWidth).concat(this.split(context, beta, fontSize, maxWidth));\n\t}\n\n\t/* If the string already fits inside `maxWidth` or can't be split, we won't loop through it */\n\tif(ctx.measureText(string).width <= maxWidth) {\n\t\treturn [string];\n\t}\n\n\tvar words = string.split(' ');\n\tvar probeFromIndex = words.length;\n\n\tif(doGuess) {\n\t\t/* Try guessing how many words to start probing with */\n\t\tvar guessedLineLength = maxWidth / (fontSize /2.5);\n\t\tvar probeFromChar = string.indexOf(' ', guessedLineLength);\n\t\tprobeFromIndex = string.slice(0, probeFromChar).split(' ').length;\n\n\t\t/* If the probe index is larger than the actual length of the words array, just start at the end of the array */\n\t\tif(probeFromIndex > words.length) {\n\t\t\tprobeFromIndex = words.length;\n\t\t}\n\t}\n\n\t/* Loop backwards through the array of words, starting at the guessed length or from the end */\n\tfor(var i=probeFromIndex; i>=1; i--) {\n\t\t/* Split the array into two chunks and stringify them */\n\t\tvar alpha = words.slice(0, i).join(' ');\n\t\tvar beta = words.slice(i, words.length).join(' ');\n\n\t\tvar width = ctx.measureText(alpha).width;\n\n\t\t/* If the first chunk fits inside `maxWidth` on the first loop, we guessed too low. Restart without guessing */\n\t\tif(doGuess === true   &&   width < maxWidth   &&   i === probeFromIndex) {\n\t\t\treturn this.split(context, string, fontSize, maxWidth, false);\n\t\t}\n\n\t\t/* If the first chunk fits inside `maxWidth`, append it to the finished string.\n\t\t   If the second chunk is empty, return `output`, otherwise try again */\n\t\tif(width < maxWidth) {\n\t\t\toutput.push(alpha);\n\t\t\treturn beta? output.concat(this.split(context, beta, fontSize, maxWidth)) : output;\n\t\t}\n\t}\n\n\t/* If the script hasn't returned by now, it wasn't able to split the first index of `words`.\n\t   Append it to the output and give the end-developer a warning, recursive if there are more words left. */\n\teVN.logger.warn('Unable to split word \"'+ words[0] +'\".');\n\toutput.push(words.shift());\n\tif(words.length >= 1) {\n\t\treturn output.concat(this.split(context, words.join(' '), fontSize, maxWidth));\n\t} else {\n\t\treturn output;\n\t}\n};\n\n/**\n * Generate a valid CSS font string\n * @param {string} [size=18] - The font-size to use in pixels\n * @param {string} [family=Comic Neue] - The font-family to use\n * @param {string} [style=normal] - Text style ('normal', 'italic', 'oblique')\n * @param {string} [weight=normal] - The weight to use (i.e. 'bold')\n * @returns {string} valid CSS font property value\n */\nexports.CSS_string = function(size, family, style, weight) {\n\tsize = size || 18;\n\tfamily = family || 'Comic Neue';\n\tstyle = style || 'normal';\n\tweight = weight || 'normal';\n\n\tfamily = family[0]===\"'\"? family : family[0]==='\"'? family : \"'\"+family+\"'\";\n\n\treturn style +' '+ weight +' '+ size+'px '+ family;\n};\n"
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "split",
+    "memberof": "src/Visuals/text.js",
+    "longname": "src/Visuals/text.js~split",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/text.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 16,
+    "unknown": [
+      {
+        "tagName": "@fileoverview",
+        "tagValue": "Methods used in {@link module:eVN/Visuals} for rendering text"
+      },
+      {
+        "tagName": "@module",
+        "tagValue": "eVN/Visuals/text"
+      }
+    ],
+    "params": [
+      {
+        "name": "context",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "string",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "fontSize",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "maxWidth",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "doGuess",
+        "types": [
+          "*"
+        ]
+      },
+      {
+        "name": "output",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "*"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "CSS_string",
+    "memberof": "src/Visuals/text.js",
+    "longname": "src/Visuals/text.js~CSS_string",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals/text.js",
+    "importStyle": null,
+    "description": "Generate a valid CSS font string",
+    "lineNumber": 91,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{string} valid CSS font property value"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "18",
+        "defaultRaw": 18,
+        "name": "size",
+        "description": "The font-size to use in pixels"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "Comic",
+        "defaultRaw": "Comic",
+        "name": "family",
+        "description": "Neue] - The font-family to use"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "normal",
+        "defaultRaw": "normal",
+        "name": "style",
+        "description": "Text style ('normal', 'italic', 'oblique')"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "normal",
+        "defaultRaw": "normal",
+        "name": "weight",
+        "description": "The weight to use (i.e. 'bold')"
+      }
+    ],
+    "return": {
+      "nullable": null,
+      "types": [
+        "string"
+      ],
+      "spread": false,
+      "description": "valid CSS font property value"
+    },
+    "generator": false
+  },
+  {
+    "kind": "file",
+    "static": true,
+    "variation": null,
+    "name": "src/Visuals.js",
+    "memberof": null,
+    "longname": "src/Visuals.js",
+    "access": null,
+    "description": null,
+    "lineNumber": 1,
+    "content": "var text = require('./Visuals/text.js');\nvar draw = require('./Visuals/draw.js');\nvar rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};\n\n/** \n * @fileoverview Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}\n * @module eVN/Visuals\n * @param {object} novelInstance - Instance of {@link module:eVN/Novel} to pull data from and draw on\n */\nmodule.exports = function Visuals(novelInstance) {\n\n\t/** Reference to the novel we are drawing */\n\tthis.novel = novelInstance;\n\tthis.ctx = novelInstance.context;\n\n\tvar _this = this;\n\trAF(function(timeframe){_this.loop.call(_this, timeframe);});\n};\n\nmodule.exports.prototype = {\n\t/** @see {@link module:eVN/Visuals/draw} */\n\tdraw: draw,\n\n\t/** @see {@link module:eVN/Visuals/text} */\n\ttext: text,\n\n\t/**\n\t * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout\n\t */\n\tloop: function(frametime) {\n\t\tvar novel = this.novel;\n\t\tvar ctx = novel.context;\n\t\tvar c = ctx;\n\t\tvar cd = novel.cdata;\n\t\tvar eVNML = novel.eVNML;\n\n\t\tvar textbox = eVNML.options.textbox;\n\t\tvar background = cd.background;\n\t\tvar characters = novel.characters;\n\t\tvar shownCharacters = novel.cdata.characters;\n\n\t\t/*\n\t\t * BACKGROUND LAYERS\n\t\t */\n\t\tif(background && background[0] !== '#'   &&   background in novel.images) background = novel.images[background];\n\t\tthis.draw.background(c, background || '#FFF');\n\t\t\n\t\t/*\n\t\t * CHARACTER LAYER\n\t\t */\n\t\t/* Reverse sort the shownCharacters array by shownCharacters[i].priority */\n\t\tshownCharacters.sort(function(alpha, beta) {\n\t\t\treturn alpha.priority - alpha.priority;\n\t\t});\n\t\tfor(var i=0, l=shownCharacters.length; i<l; i++) {\n\t\t\tvar charName = shownCharacters[i].character;\n\t\t\tvar imgName = characters[charName].images[ cd.characters[i].mood ];\n\t\t\tvar img = novel.images[imgName];\n\t\t\tvar x;\n\t\t\tvar y = c.canvas.height - img.height;\n\t\t\t\n\t\t\tswitch(shownCharacters[i].position.toLowerCase()) {\n\t\t\t\tcase 'left': x = c.canvas.width/4 - img.width/2; break;\n\t\t\t\tcase 'right': x = c.canvas.width/4*3 - img.width/2; break;\n\t\t\t\tcase 'middle':\n\t\t\t\tdefault: x = c.canvas.width/2 - img.width/2;\n\t\t\t}\n\t\t\tctx.drawImage(img, x, y, img.width, img.height);\n\t\t}\n\n\t\t/*\n\t\t * FOREGROUND LAYERS\n\t\t */\n\t\tthis.draw.dialogueBox(c, textbox, novel.images.textbox);\n\t\t//this.draw.speakerBox(c, textbox);\n\n\t\tvar fontString = this.text.CSS_string(\n\t\t\ttextbox.font.size,\n\t\t\ttextbox.font.family,\n\t\t\ttextbox.font.style,\n\t\t\ttextbox.font.weight\n\t\t);\n\n\t\tctx.fillStyle = textbox.font.color;\n\t\tctx.textBaseline = 'top';\n\t\tctx.font = fontString;\n\n\t\tvar textToSay = cd.dialogue || '';\n\t\t//'A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.';\n\t\tvar textWidth = c.canvas.width - (textbox.margin*2 + textbox.padding*2);\n\t\tvar textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;\n\t\tvar textYstart = textbox.margin + textbox.padding;\n\t\tvar dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );\n\n\n\t\tthis.draw.dialogueText(c, dialogue, textbox, textbox.lines);\n\n\t\tvar name = cd.speaker || '';\n\t\tvar speakerColor = cd.speakerColor || textbox.font.color;\n\t\tif(cd.speaker in novel.characters) {\n\t\t\tname = novel.characters[cd.speaker].name;\n\t\t\tspeakerColor = novel.characters[cd.speaker].color;\n\t\t}\n\t\tthis.draw.speakerText(c, name, textbox.speakerbox, speakerColor);\n\n\t\t/* Add `this` to a lexical closure and call this loop function with the appropriate binding */\n\t\tvar _this = this;\n\t\trAF(function rAF_wrap(frametime){_this.loop.call(_this, frametime);});\n\t}\n};\n"
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "text",
+    "memberof": "src/Visuals.js",
+    "longname": "src/Visuals.js~text",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "draw",
+    "memberof": "src/Visuals.js",
+    "longname": "src/Visuals.js~draw",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 2,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "rAF",
+    "memberof": "src/Visuals.js",
+    "longname": "src/Visuals.js~rAF",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 3,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "function",
+    "static": true,
+    "variation": null,
+    "name": "exports",
+    "memberof": "src/Visuals.js",
+    "longname": "src/Visuals.js~exports",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals.js",
+    "importStyle": null,
+    "description": "",
+    "lineNumber": 10,
+    "unknown": [
+      {
+        "tagName": "@fileoverview",
+        "tagValue": "Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}"
+      },
+      {
+        "tagName": "@module",
+        "tagValue": "eVN/Visuals"
+      }
+    ],
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "object} novelInstance - Instance of {@link module:eVN/Novel"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "to",
+        "description": "pull data from and draw on"
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Infinity",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Infinity",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Infinity",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NaN",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NaN",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~NaN",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "undefined",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~undefined",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "null",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~null",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Object",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "object",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~object",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Function",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "function",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~function",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Boolean",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "boolean",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Boolean",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~boolean",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Symbol",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Symbol",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Error",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Error",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "EvalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/EvalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~EvalError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "InternalError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/InternalError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~InternalError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RangeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RangeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RangeError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ReferenceError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ReferenceError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ReferenceError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "SyntaxError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SyntaxError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~SyntaxError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "TypeError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypeError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~TypeError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "URIError",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/URIError",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~URIError",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Number",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "number",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~number",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Date",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Date",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "String",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~String",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "string",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~string",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "RegExp",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~RegExp",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int8Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint8ClampedArray",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8ClampedArray",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint8ClampedArray",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int16Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint16Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint16Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint16Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Int32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Int32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Int32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Uint32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Uint32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float32Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float32Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Float64Array",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float64Array",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Float64Array",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Map",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Map",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Set",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Set",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakMap",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakMap",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "WeakSet",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~WeakSet",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "ArrayBuffer",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~ArrayBuffer",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DataView",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DataView",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~DataView",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "JSON",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~JSON",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Promise",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Promise",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Generator",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Generator",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "GeneratorFunction",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/GeneratorFunction",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~GeneratorFunction",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Reflect",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Reflect",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Reflect",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Proxy",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy",
+    "memberof": "BuiltinExternal/ECMAScriptExternal.js",
+    "longname": "BuiltinExternal/ECMAScriptExternal.js~Proxy",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "CanvasRenderingContext2D",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~CanvasRenderingContext2D",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "DocumentFragment",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/DocumentFragment",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~DocumentFragment",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Element",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Element",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Element",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Event",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Event",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Event",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "Node",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/Node",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~Node",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "NodeList",
+    "externalLink": "https://developer.mozilla.org/en-US/docs/Web/API/NodeList",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~NodeList",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  },
+  {
+    "kind": "external",
+    "static": true,
+    "variation": null,
+    "name": "XMLHttpRequest",
+    "externalLink": "https://developer.mozilla.org/en/docs/Web/API/XMLHttpRequest",
+    "memberof": "BuiltinExternal/WebAPIExternal.js",
+    "longname": "BuiltinExternal/WebAPIExternal.js~XMLHttpRequest",
+    "access": null,
+    "description": null,
+    "builtinExternal": true
+  }
+]

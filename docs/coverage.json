@@ -1,0 +1,24 @@
+{
+  "coverage": "95.83%",
+  "expectCount": 24,
+  "actualCount": 23,
+  "files": {
+    "src/Logger.js": {
+      "expectCount": 5,
+      "actualCount": 5,
+      "undocumentLines": []
+    },
+    "src/Main.js": {
+      "expectCount": 4,
+      "actualCount": 4,
+      "undocumentLines": []
+    },
+    "src/Novel.js": {
+      "expectCount": 15,
+      "actualCount": 14,
+      "undocumentLines": [
+        78
+      ]
+    }
+  }
+}

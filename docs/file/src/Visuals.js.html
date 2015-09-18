@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Visuals.js | API Document</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  
+  
+</head>
+<body class="layout-container">
+
+<header>
+  <a href="./">Home</a>
+  <a href="identifiers.html">Identifier</a>
+  <a href="source.html">Source</a>
+  
+  <a data-ice="repoURL" href="https://github.com/bytesizedpacket/eVN" class="repo-url-github">Repository</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+</header>
+
+<nav class="navigation" data-ice="nav"><div data-ice="classWrap">
+  <h2>Class</h2>
+  <ul>
+    
+  <li data-ice="classDoc"><span><a href="class/src/Logger.js~Logger.html">Logger</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Main.js~Main.html">Main</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Novel.js~Novel.html">Novel</a></span></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/Visuals.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">var text = require(&apos;./Visuals/text.js&apos;);
+var draw = require(&apos;./Visuals/draw.js&apos;);
+var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
+
+/** 
+ * @fileoverview Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
+ * @module eVN/Visuals
+ * @param {object} novelInstance - Instance of {@link module:eVN/Novel} to pull data from and draw on
+ */
+module.exports = function Visuals(novelInstance) {
+
+	/** Reference to the novel we are drawing */
+	this.novel = novelInstance;
+	this.ctx = novelInstance.context;
+
+	var _this = this;
+	rAF(function(timeframe){_this.loop.call(_this, timeframe);});
+};
+
+module.exports.prototype = {
+	/** @see {@link module:eVN/Visuals/draw} */
+	draw: draw,
+
+	/** @see {@link module:eVN/Visuals/text} */
+	text: text,
+
+	/**
+	 * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout
+	 */
+	loop: function(frametime) {
+		var novel = this.novel;
+		var ctx = novel.context;
+		var c = ctx;
+		var cd = novel.cdata;
+		var eVNML = novel.eVNML;
+
+		var textbox = eVNML.options.textbox;
+		var background = cd.background;
+		var characters = novel.characters;
+		var shownCharacters = novel.cdata.characters;
+
+		/*
+		 * BACKGROUND LAYERS
+		 */
+		if(background &amp;&amp; background[0] !== &apos;#&apos;   &amp;&amp;   background in novel.images) background = novel.images[background];
+		this.draw.background(c, background || &apos;#FFF&apos;);
+		
+		/*
+		 * CHARACTER LAYER
+		 */
+		/* Reverse sort the shownCharacters array by shownCharacters[i].priority */
+		shownCharacters.sort(function(alpha, beta) {
+			return alpha.priority - alpha.priority;
+		});
+		for(var i=0, l=shownCharacters.length; i&lt;l; i++) {
+			var charName = shownCharacters[i].character;
+			var imgName = characters[charName].images[ cd.characters[i].mood ];
+			var img = novel.images[imgName];
+			var x;
+			var y = c.canvas.height - img.height;
+			
+			switch(shownCharacters[i].position.toLowerCase()) {
+				case &apos;left&apos;: x = c.canvas.width/4 - img.width/2; break;
+				case &apos;right&apos;: x = c.canvas.width/4*3 - img.width/2; break;
+				case &apos;middle&apos;:
+				default: x = c.canvas.width/2 - img.width/2;
+			}
+			ctx.drawImage(img, x, y, img.width, img.height);
+		}
+
+		/*
+		 * FOREGROUND LAYERS
+		 */
+		this.draw.dialogueBox(c, textbox, novel.images.textbox);
+		//this.draw.speakerBox(c, textbox);
+
+		var fontString = this.text.CSS_string(
+			textbox.font.size,
+			textbox.font.family,
+			textbox.font.style,
+			textbox.font.weight
+		);
+
+		ctx.fillStyle = textbox.font.color;
+		ctx.textBaseline = &apos;top&apos;;
+		ctx.font = fontString;
+
+		var textToSay = cd.dialogue || &apos;&apos;;
+		//&apos;A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.&apos;;
+		var textWidth = c.canvas.width - (textbox.margin*2 + textbox.padding*2);
+		var textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;
+		var textYstart = textbox.margin + textbox.padding;
+		var dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );
+
+
+		this.draw.dialogueText(c, dialogue, textbox, textbox.lines);
+
+		var name = cd.speaker || &apos;&apos;;
+		var speakerColor = cd.speakerColor || textbox.font.color;
+		if(cd.speaker in novel.characters) {
+			name = novel.characters[cd.speaker].name;
+			speakerColor = novel.characters[cd.speaker].color;
+		}
+		this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
+
+		/* Add `this` to a lexical closure and call this loop function with the appropriate binding */
+		var _this = this;
+		rAF(function rAF_wrap(frametime){_this.loop.call(_this, frametime);});
+	}
+};
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(0.2.6)</span></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
