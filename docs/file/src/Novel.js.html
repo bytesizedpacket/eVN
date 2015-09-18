@@ -34,6 +34,7 @@
   <li data-ice="classDoc"><span><a href="class/src/Logger.js~Logger.html">Logger</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Main.js~Main.html">Main</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Novel.js~Novel.html">Novel</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Visuals.js~Visuals.html">Visuals</a></span></li>
 </ul>
 </div>
 
@@ -115,8 +116,8 @@ export class Novel {
 			var fsModX = rect.width / target.width;
 			var fsModY = rect.height / target.height;
 			/* Export to Novel.cdata */
-			this.cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
-			this.cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
+			this.cdata.mouseX = Math.round( (e.clientX - rect.left) / fsModX );
+			this.cdata.mouseY = Math.round( (e.clientY - rect.top) / fsModY );
 		});
 
 		/* Import images &amp; audio */

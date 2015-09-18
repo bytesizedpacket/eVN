@@ -34,6 +34,7 @@
   <li data-ice="classDoc"><span><a href="class/src/Logger.js~Logger.html">Logger</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Main.js~Main.html">Main</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Novel.js~Novel.html">Novel</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Visuals.js~Visuals.html">Visuals</a></span></li>
 </ul>
 </div>
 
@@ -84,22 +85,16 @@ else window.eVN = new Main();
 document.addEventListener(&apos;DOMContentLoaded&apos;, function() {
 	/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 	var canvases = Array.prototype.slice.call( document.getElementsByTagName(&apos;canvas&apos;) );
-
-	/* Function to run on canvases with loaded `data-evn` attributes */
-	var onEvnDataReady = function() {
-		if(xhr.readyState === 4 &amp;&amp; xhr.status === 200){
-			new Novel(canvas, xhr.responseText, evnData);
-		}
-	};
-
 	for(let canvas of canvases) {
 		var evnData = canvas.getAttribute(&apos;data-evn&apos;);
-		if(evnData){
-			var xhr = new XMLHttpRequest();
-			xhr.open(&apos;GET&apos;, evnData, true);
-			xhr.onreadystatechange = onEvnDataReady;
-			xhr.send();
-		}
+		if(!evnData) return;
+
+		var xhr = new XMLHttpRequest();
+		xhr.open(&apos;GET&apos;, evnData, true);
+		xhr.onreadystatechange = ()=&gt; {
+			if(xhr.readyState === 4 &amp;&amp; xhr.status === 200) new Novel(canvas, xhr.responseText, evnData);
+		};
+		xhr.send();
 	}
 });
 

@@ -1,33 +1,31 @@
+var logger = null;
 var text = require('./Visuals/text.js');
 var draw = require('./Visuals/draw.js');
 var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
 
-/** 
- * @fileoverview Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
- * @module eVN/Visuals
- * @param {object} novelInstance - Instance of {@link module:eVN/Novel} to pull data from and draw on
+/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
  */
-module.exports = function Visuals(novelInstance) {
+export class Visuals {
+	/** @param {Novel} novelInstance - Novel to pull data from */
+	constructor(novelInstance) {
+		logger = eVN.logger;
+		/** Reference to the novel we are drawing */
+		this.novel = novelInstance;
+		this.ctx = novelInstance.context;
 
-	/** Reference to the novel we are drawing */
-	this.novel = novelInstance;
-	this.ctx = novelInstance.context;
+		// Temporary. remove this. These are pulled from text/draw.js -
+		// should be rewritten.
+		this.draw = draw;
+		this.text = text;
 
-	var _this = this;
-	rAF(function(timeframe){_this.loop.call(_this, timeframe);});
-};
-
-module.exports.prototype = {
-	/** @see {@link module:eVN/Visuals/draw} */
-	draw: draw,
-
-	/** @see {@link module:eVN/Visuals/text} */
-	text: text,
-
+		//var _this = this;
+		//rAF(function(timeframe){_this.loop.call(_this, timeframe);});
+		rAF(timeframe=> this.loop(timeframe));
+	}
 	/**
 	 * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout
 	 */
-	loop: function(frametime) {
+	loop(frametime) {
 		var novel = this.novel;
 		var ctx = novel.context;
 		var c = ctx;

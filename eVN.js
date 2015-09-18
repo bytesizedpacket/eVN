@@ -168,7 +168,8 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var Visuals = __webpack_require__(2);
+	var _VisualsJs = __webpack_require__(2);
+
 	var logger = null;
 
 	/** Core novel class */
@@ -202,7 +203,7 @@
 			this.eVNML = this.parse_eVNML(eVNML);
 			/**An instance that controls all graphic/drawing related stuff for the novel.
 	   * @see {@link Visuals} */
-			this.visuals = new Visuals(this);
+			this.visuals = new _VisualsJs.Visuals(this);
 			/** Map containing dynamic data for handling the current scene */
 			this.cdata = {
 				background: null,
@@ -539,119 +540,141 @@
 
 	'use strict';
 
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var logger = null;
 	var text = __webpack_require__(3);
 	var draw = __webpack_require__(4);
 	var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function (callback) {
 		setTimeout(callback, 1000 / 60);
 	};
 
-	/** 
-	 * @fileoverview Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
-	 * @module eVN/Visuals
-	 * @param {object} novelInstance - Instance of {@link module:eVN/Novel} to pull data from and draw on
+	/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
 	 */
-	module.exports = function Visuals(novelInstance) {
 
-		/** Reference to the novel we are drawing */
-		this.novel = novelInstance;
-		this.ctx = novelInstance.context;
+	var Visuals = (function () {
+		/** @param {Novel} novelInstance - Novel to pull data from */
 
-		var _this = this;
-		rAF(function (timeframe) {
-			_this.loop.call(_this, timeframe);
-		});
-	};
+		function Visuals(novelInstance) {
+			var _this2 = this;
 
-	module.exports.prototype = {
-		/** @see {@link module:eVN/Visuals/draw} */
-		draw: draw,
+			_classCallCheck(this, Visuals);
 
-		/** @see {@link module:eVN/Visuals/text} */
-		text: text,
+			logger = eVN.logger;
+			/** Reference to the novel we are drawing */
+			this.novel = novelInstance;
+			this.ctx = novelInstance.context;
+
+			// Temporary. remove this. These are pulled from text/draw.js -
+			// should be rewritten.
+			this.draw = draw;
+			this.text = text;
+
+			//var _this = this;
+			//rAF(function(timeframe){_this.loop.call(_this, timeframe);});
+			rAF(function (timeframe) {
+				return _this2.loop(timeframe);
+			});
+		}
 
 		/**
 	  * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout
 	  */
-		loop: function loop(frametime) {
-			var novel = this.novel;
-			var ctx = novel.context;
-			var c = ctx;
-			var cd = novel.cdata;
-			var eVNML = novel.eVNML;
 
-			var textbox = eVNML.options.textbox;
-			var background = cd.background;
-			var characters = novel.characters;
-			var shownCharacters = novel.cdata.characters;
+		_createClass(Visuals, [{
+			key: 'loop',
+			value: function loop(frametime) {
+				var novel = this.novel;
+				var ctx = novel.context;
+				var c = ctx;
+				var cd = novel.cdata;
+				var eVNML = novel.eVNML;
 
-			/*
-	   * BACKGROUND LAYERS
-	   */
-			if (background && background[0] !== '#' && background in novel.images) background = novel.images[background];
-			this.draw.background(c, background || '#FFF');
+				var textbox = eVNML.options.textbox;
+				var background = cd.background;
+				var characters = novel.characters;
+				var shownCharacters = novel.cdata.characters;
 
-			/*
-	   * CHARACTER LAYER
-	   */
-			/* Reverse sort the shownCharacters array by shownCharacters[i].priority */
-			shownCharacters.sort(function (alpha, beta) {
-				return alpha.priority - alpha.priority;
-			});
-			for (var i = 0, l = shownCharacters.length; i < l; i++) {
-				var charName = shownCharacters[i].character;
-				var imgName = characters[charName].images[cd.characters[i].mood];
-				var img = novel.images[imgName];
-				var x;
-				var y = c.canvas.height - img.height;
+				/*
+	    * BACKGROUND LAYERS
+	    */
+				if (background && background[0] !== '#' && background in novel.images) background = novel.images[background];
+				this.draw.background(c, background || '#FFF');
 
-				switch (shownCharacters[i].position.toLowerCase()) {
-					case 'left':
-						x = c.canvas.width / 4 - img.width / 2;break;
-					case 'right':
-						x = c.canvas.width / 4 * 3 - img.width / 2;break;
-					case 'middle':
-					default:
-						x = c.canvas.width / 2 - img.width / 2;
+				/*
+	    * CHARACTER LAYER
+	    */
+				/* Reverse sort the shownCharacters array by shownCharacters[i].priority */
+				shownCharacters.sort(function (alpha, beta) {
+					return alpha.priority - alpha.priority;
+				});
+				for (var i = 0, l = shownCharacters.length; i < l; i++) {
+					var charName = shownCharacters[i].character;
+					var imgName = characters[charName].images[cd.characters[i].mood];
+					var img = novel.images[imgName];
+					var x;
+					var y = c.canvas.height - img.height;
+
+					switch (shownCharacters[i].position.toLowerCase()) {
+						case 'left':
+							x = c.canvas.width / 4 - img.width / 2;break;
+						case 'right':
+							x = c.canvas.width / 4 * 3 - img.width / 2;break;
+						case 'middle':
+						default:
+							x = c.canvas.width / 2 - img.width / 2;
+					}
+					ctx.drawImage(img, x, y, img.width, img.height);
 				}
-				ctx.drawImage(img, x, y, img.width, img.height);
+
+				/*
+	    * FOREGROUND LAYERS
+	    */
+				this.draw.dialogueBox(c, textbox, novel.images.textbox);
+				//this.draw.speakerBox(c, textbox);
+
+				var fontString = this.text.CSS_string(textbox.font.size, textbox.font.family, textbox.font.style, textbox.font.weight);
+
+				ctx.fillStyle = textbox.font.color;
+				ctx.textBaseline = 'top';
+				ctx.font = fontString;
+
+				var textToSay = cd.dialogue || '';
+				//'A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.';
+				var textWidth = c.canvas.width - (textbox.margin * 2 + textbox.padding * 2);
+				var textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;
+				var textYstart = textbox.margin + textbox.padding;
+				var dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );
+
+				this.draw.dialogueText(c, dialogue, textbox, textbox.lines);
+
+				var name = cd.speaker || '';
+				var speakerColor = cd.speakerColor || textbox.font.color;
+				if (cd.speaker in novel.characters) {
+					name = novel.characters[cd.speaker].name;
+					speakerColor = novel.characters[cd.speaker].color;
+				}
+				this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
+
+				/* Add `this` to a lexical closure and call this loop function with the appropriate binding */
+				var _this = this;
+				rAF(function rAF_wrap(frametime) {
+					_this.loop.call(_this, frametime);
+				});
 			}
+		}]);
 
-			/*
-	   * FOREGROUND LAYERS
-	   */
-			this.draw.dialogueBox(c, textbox, novel.images.textbox);
-			//this.draw.speakerBox(c, textbox);
+		return Visuals;
+	})();
 
-			var fontString = this.text.CSS_string(textbox.font.size, textbox.font.family, textbox.font.style, textbox.font.weight);
-
-			ctx.fillStyle = textbox.font.color;
-			ctx.textBaseline = 'top';
-			ctx.font = fontString;
-
-			var textToSay = cd.dialogue || '';
-			//'A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.';
-			var textWidth = c.canvas.width - (textbox.margin * 2 + textbox.padding * 2);
-			var textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;
-			var textYstart = textbox.margin + textbox.padding;
-			var dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );
-
-			this.draw.dialogueText(c, dialogue, textbox, textbox.lines);
-
-			var name = cd.speaker || '';
-			var speakerColor = cd.speakerColor || textbox.font.color;
-			if (cd.speaker in novel.characters) {
-				name = novel.characters[cd.speaker].name;
-				speakerColor = novel.characters[cd.speaker].color;
-			}
-			this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
-
-			/* Add `this` to a lexical closure and call this loop function with the appropriate binding */
-			var _this = this;
-			rAF(function rAF_wrap(frametime) {
-				_this.loop.call(_this, frametime);
-			});
-		}
-	};
+	exports.Visuals = Visuals;
+	;
 
 /***/ },
 /* 3 */

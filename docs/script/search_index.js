@@ -18,6 +18,12 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "evn/src/visuals.js~visuals",
+    "class/src/Visuals.js~Visuals.html",
+    "<span>Visuals</span> <span class=\"search-result-import-path\">eVN/src/Visuals.js</span>",
+    "class"
+  ],
+  [
     "builtinexternal/ecmascriptexternal.js~array",
     "external/index.html",
     "BuiltinExternal/ECMAScriptExternal.js~Array",
@@ -490,6 +496,24 @@ window.esdocSearchIndex = [
     "file/src/Visuals.js.html",
     "src/Visuals.js",
     "file"
+  ],
+  [
+    "src/visuals.js~visuals#constructor",
+    "class/src/Visuals.js~Visuals.html#instance-constructor-constructor",
+    "src/Visuals.js~Visuals#constructor",
+    "method"
+  ],
+  [
+    "src/visuals.js~visuals#ctx",
+    "class/src/Visuals.js~Visuals.html#instance-member-ctx",
+    "src/Visuals.js~Visuals#ctx",
+    "member"
+  ],
+  [
+    "src/visuals.js~visuals#novel",
+    "class/src/Visuals.js~Visuals.html#instance-member-novel",
+    "src/Visuals.js~Visuals#novel",
+    "member"
   ],
   [
     "src/visuals/draw.js",

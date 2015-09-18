@@ -1,4 +1,4 @@
-var Visuals = require('./Visuals.js');
+import { Visuals } from './Visuals.js';
 var logger = null;
 
 /** Core novel class */
