@@ -5,9 +5,9 @@
  * var logger = new Logger('myLog', 'v0.5b', false);
  *logger.warn('Something may be wrong!')(); */
 export class Logger {
-/**@param {string} [_name='UnnamedLogger'] - The name of the logger. Will show up in logs.
- * @param {string} [_version=NaN] - Version parameter, will show up in logs.
- * @param {bool} [_verbose=true] - Whether or not to skip non warn/error logs. */
+/**@param {string} [name='UnnamedLogger'] - The name of the logger. Will show up in logs.
+ * @param {string} [version=NaN] - Version parameter, will show up in logs.
+ * @param {bool} [verbose=true] - Whether or not to skip non warn/error logs. */
 	constructor (name='Unnamedlogger', version='NaN', verbose=true) {
 		/** @ignore */
 		this.name = name;
