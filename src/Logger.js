@@ -1,17 +1,13 @@
-/**
- * A logging class, covering debug logs, warnings & errors
+/**A logging class, covering debug logs, warnings & errors
  * IMPORTANT: Each method returns a <code>function</code>!
  * Use like so:
  * @example
  * var logger = new Logger('myLog', 'v0.5b', false);
- *logger.warn('Something may be wrong!')();
- */
+ *logger.warn('Something may be wrong!')(); */
 export class Logger {
-/**
- * @param {string} [_name='UnnamedLogger'] - The name of the logger. Will show up in logs.
+/**@param {string} [_name='UnnamedLogger'] - The name of the logger. Will show up in logs.
  * @param {string} [_version=NaN] - Version parameter, will show up in logs.
- * @param {bool} [_verbose=true] - Whether or not to skip non warn/error logs.
- */
+ * @param {bool} [_verbose=true] - Whether or not to skip non warn/error logs. */
 	constructor (name='Unnamedlogger', version='NaN', verbose=true) {
 		/** @ignore */
 		this.name = name;
@@ -30,12 +26,10 @@ export class Logger {
 		this.errPrefix = `[${this.logName} ERR]`;
 	}
 
-	/**
-	 * A method for logging non-critical information.
+	/**A method for logging non-critical information.
 	 * @param {*} message - Message to log.
 	 * @returns {Function} - <code>console.log</code> binded with the
-	 * appropriate scope & arguments
-	 */
+	 * appropriate scope & arguments */
 	log(...msgs) {
 		var logMsg = [this.logPrefix];
 		if(msgs.length < 1 || !this.verbose) return ()=>{};
@@ -46,12 +40,10 @@ export class Logger {
 		if(console && console.log) return console.log.bind(console, ...logMsg);
 	}
 
-	/**
-	 * A method for logging warnings.
+	/**A method for logging warnings.
 	 * @param {*} message - Message to log.
 	 * @returns {Function} - <code>console.warn</code> binded with the
-	 * appropriate scope & arguments
-	 */
+	 * appropriate scope & arguments */
 	warn(...msgs) {
 		var logMsg = [this.warnPrefix];
 		if(msgs.length < 1) return ()=>{};
@@ -62,15 +54,13 @@ export class Logger {
 		if(console && console.warn) return console.warn.bind(console, ...logMsg);
 	}
 
-	/**
-	 * A method for throwing errors.
+	/**A method for throwing errors.
 	 * @param {string|Error} error - Name/Type/Error to throw.
 	 * @param {string} [message='UnknownError'] - Message to log. If
 	 * <code>error instanceof Error</code> is true,
 	 * <code>error.stack</code> will be used.
 	 * @returns {Function} - <code>throw</code> and <code>console.error</code>
-	 * binded with the appropriate scope & arguments
-	 */
+	 * binded with the appropriate scope & arguments */
 	throw(error='UnknownError', message) {
 		var eErr;
 		

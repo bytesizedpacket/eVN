@@ -36,10 +36,8 @@ export class Novel {
 		/** Object containing simple character instances */
 		this.characters = {};
 
-		/**
-		 * An instance that controls all graphic/drawing related stuff for the novel.
-		 * @see module:eVN/Visuals
-		 */
+		/**An instance that controls all graphic/drawing related stuff for the novel.
+		 * @see module:eVN/Visuals */
 		this.visuals = new Visuals(this);
 		
 		/** JSON object containing all end-developer input (from .evn scripts) */
@@ -125,12 +123,10 @@ export class Novel {
 		try {
 			userData = JSON.parse(eVNML);
 
-			/**
-			 * Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>
+			/**Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>
 			 * param {object} alpha - The obtrusive object literal to apply on top of <code>beta</code>
 			 * param {object beta - The submissive object literal to use as base for <code>alpha</code>
-			 * returns {object}
-			 */
+			 * returns {object} */
 			var merge = function(alpha, beta) {
 				var out = beta;
 				for(var prop in alpha) {
@@ -159,11 +155,9 @@ export class Novel {
 		return returned_eVNML;
 	}
 
-	/**
-	 * Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it
+	/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it
 	 * @param {Object} scene - The scene to import
-	 * @see <eVNML scene syntax>
-	 */
+	 * @see <eVNML scene syntax> */
 	parseScene(collection, index) {
 		var cd = this.cdata;
 		var eVNML = this.eVNML;
@@ -272,10 +266,8 @@ export class Novel {
 		this.parseScene();
 	}
 
-	/**
-	 * Looks for ${varName} variables and returns the processed string
-	 * @param {string} string - the string to process
-	 */
+	/**Looks for ${varName} variables and returns the processed string
+	 * @param {string} string - the string to process */
 	processVariables(string) {
 		var splitAt = string.indexOf('${');
 		var endAt = string.indexOf('}', splitAt);
@@ -302,9 +294,7 @@ export class Novel {
 		}
 	}
 
-	/**
-	 *
-	 */
+	/**  */
 	constructCharacter(data) {
 		var name = data.name;
 		this.characters[name] = {};
