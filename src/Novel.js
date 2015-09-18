@@ -7,17 +7,16 @@ export class Novel {
 	 * @param {string} [file='undefined'] - The name of the .evn script passed.
 	 */
 	constructor(canvas, eVNML, file='undefined') {
+		/** Filename of the eVNL the novel was instantiated with */
 		this.file = file;
-
 		/** The canvas attached to the instance */
 		this.canvas = canvas;
 		/** The drawing context of {@link module:eVN/Novel.canvas} */
 		this.context = canvas.getContext('2d');
-
-		/* Add the CSS class `eVN-canvas` to the canvas */
-		//this.canvas.classList.add('eVN-canvas');
-		this.canvas.className = this.canvas.className + ' eVN-canvas';
-
+		/** Map containing all <code>Image</code> instances for this novel */
+		this.images = {};
+		/** Object containing character instances */
+		this.characters = {};
 		/** Map containing dynamic data for handling the current scene */
 		this.cdata = {
 			background: null,
@@ -33,8 +32,8 @@ export class Novel {
 			speaker: ''
 		};
 
-		/** Object containing simple character instances */
-		this.characters = {};
+		/* Add the CSS class `eVN-canvas` to the canvas */
+		this.canvas.className = this.canvas.className + ' eVN-canvas';
 
 		/**An instance that controls all graphic/drawing related stuff for the novel.
 		 * @see module:eVN/Visuals */
@@ -45,36 +44,31 @@ export class Novel {
 
 		/* Create an Image() from the passed textbox and optional speakerbox objects */
 		if(this.eVNML.options.textbox.image) {
-			this.textboxImage = new Image();
-			this.textboxImage.src = this.eVNML.options.textbox.image;
+			this.images.textbox = new Image();
+			this.images.textbox.src = this.eVNML.options.textbox.image;
 		}
 		if(this.eVNML.options.textbox.speakerbox.image) {
-			this.speakerboxImage = new Image();
-			this.speakerboxImage.src = this.eVNML.options.textbox.speakerbox.image;
+			this.images.speakerbox = new Image();
+			this.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;
 		}
 
-		/* Cache this.cdata to a lexical closure so anonymous functions can access it */
-		var cdata = this.cdata;
-
 		/* Go to the next scene on regular click */
-		var _this = this;
-		this.canvas.addEventListener('click', function onCanvasClick() {_this.parseScene.call(_this);});
+		this.canvas.addEventListener('click', ()=> this.parseScene.call(this));
 
-		this.canvas.addEventListener('mousemove', function onMouseMove(e) {
+		this.canvas.addEventListener('mousemove', e=> {
 			var target = e.target || e.srcElement;
 			var rect = target.getBoundingClientRect();
 			/* Two variables to modify the mouse coords relative to the scaling of the canvas */
 			var fsModX = rect.width / target.width;
 			var fsModY = rect.height / target.height;
 			/* Export to Novel.cdata */
-			cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
-			cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
+			this.cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
+			this.cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
 		});
 
 		var cd = this.cdata;
 
 		/* Import images */
-		this.images = {};
 		for(var imgKeys in this.eVNML.images) {
 			this.images[imgKeys] = new Image();
 			this.images[imgKeys].src = this.eVNML.images[imgKeys];

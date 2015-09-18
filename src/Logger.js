@@ -3,7 +3,7 @@
  * Use like so:
  * @example
  * var logger = new Logger('myLog', 'v0.5b', false);
- *logger.warn('Something may be wrong!')(); */
+ * logger.warn('Something may be wrong!')(); */
 export class Logger {
 /**@param {string} [name='UnnamedLogger'] - The name of the logger. Will show up in logs.
  * @param {string} [version=NaN] - Version parameter, will show up in logs.

@@ -71,7 +71,7 @@ module.exports.prototype = {
 		/*
 		 * FOREGROUND LAYERS
 		 */
-		this.draw.dialogueBox(c, textbox, novel.textboxImage);
+		this.draw.dialogueBox(c, textbox, novel.images.textbox);
 		//this.draw.speakerBox(c, textbox);
 
 		var fontString = this.text.CSS_string(
