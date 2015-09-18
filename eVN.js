@@ -113,22 +113,26 @@
 				var canvas = _step.value;
 				evnData = canvas.getAttribute('data-evn');
 
-				if (evnData) {
-					xhr = new XMLHttpRequest();
-
-					xhr.open('GET', evnData, true);
-					xhr.onreadystatechange = function () {
-						if (xhr.readyState === 4 && xhr.status === 200) new _NovelJs.Novel(canvas, xhr.responseText, evnData);
+				if (!evnData) return {
+						v: undefined
 					};
-					xhr.send();
-				}
+
+				xhr = new XMLHttpRequest();
+
+				xhr.open('GET', evnData, true);
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState === 4 && xhr.status === 200) new _NovelJs.Novel(canvas, xhr.responseText, evnData);
+				};
+				xhr.send();
 			};
 
 			for (var _iterator = canvases[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 				var evnData;
 				var xhr;
 
-				_loop();
+				var _ret = _loop();
+
+				if (typeof _ret === 'object') return _ret.v;
 			}
 		} catch (err) {
 			_didIteratorError = true;

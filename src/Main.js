@@ -36,14 +36,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	for(let canvas of canvases) {
 		var evnData = canvas.getAttribute('data-evn');
-		if(evnData){
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', evnData, true);
-			xhr.onreadystatechange = ()=> {
-				if(xhr.readyState === 4 && xhr.status === 200) new Novel(canvas, xhr.responseText, evnData);
-			};
-			xhr.send();
-		}
+		if(!evnData) return;
+
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', evnData, true);
+		xhr.onreadystatechange = ()=> {
+			if(xhr.readyState === 4 && xhr.status === 200) new Novel(canvas, xhr.responseText, evnData);
+		};
+		xhr.send();
 	}
 });
 
