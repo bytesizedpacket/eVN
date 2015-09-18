@@ -1,22 +1,28 @@
 var Visuals = require('./Visuals.js');
+var logger = null;
 
 /** Core novel class */
 export class Novel {
 	/**@param {object} canvas - The canvas element to attach.
 	 * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>
-	 * @param {string} [file='undefined'] - The name of the .evn script passed.
-	 */
+	 * @param {string} [file='undefined'] - The name of the .evn script passed. */
 	constructor(canvas, eVNML, file='undefined') {
+		logger = eVN.logger;
 		/** Filename of the eVNL the novel was instantiated with */
 		this.file = file;
 		/** The canvas attached to the instance */
 		this.canvas = canvas;
-		/** The drawing context of {@link module:eVN/Novel.canvas} */
+		/** The drawing context of {@link Novel#canvas} */
 		this.context = canvas.getContext('2d');
 		/** Map containing all <code>Image</code> instances for this novel */
 		this.images = {};
 		/** Object containing character instances */
 		this.characters = {};
+		/** JSON object containing all end-developer input (from .evn scripts) */
+		this.eVNML = this.parse_eVNML(eVNML);
+		/**An instance that controls all graphic/drawing related stuff for the novel.
+		 * @see {@link Visuals} */
+		this.visuals = new Visuals(this);
 		/** Map containing dynamic data for handling the current scene */
 		this.cdata = {
 			background: null,
@@ -34,13 +40,6 @@ export class Novel {
 
 		/* Add the CSS class `eVN-canvas` to the canvas */
 		this.canvas.className = this.canvas.className + ' eVN-canvas';
-
-		/**An instance that controls all graphic/drawing related stuff for the novel.
-		 * @see module:eVN/Visuals */
-		this.visuals = new Visuals(this);
-		
-		/** JSON object containing all end-developer input (from .evn scripts) */
-		this.eVNML = this.parse_eVNML(eVNML);
 
 		/* Create an Image() from the passed textbox and optional speakerbox objects */
 		if(this.eVNML.options.textbox.image) {
@@ -66,23 +65,21 @@ export class Novel {
 			this.cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
 		});
 
-		var cd = this.cdata;
-
 		/* Import images */
-		for(var imgKeys in this.eVNML.images) {
-			this.images[imgKeys] = new Image();
-			this.images[imgKeys].src = this.eVNML.images[imgKeys];
+		for(let key in this.eVNML.images) {
+			this.images[key] = new Image();
+			this.images[key].src = this.eVNML.images[key];
 		}
 
 		/* Import aduio */
 		this.audio = {};
-		for(var audioKeys in this.eVNML.audio) {
-			this.audio[audioKeys] = new Audio();
-			this.audio[audioKeys].src = this.eVNML.audio[audioKeys];
+		for(let key in this.eVNML.audio) {
+			this.audio[key] = new Audio();
+			this.audio[key].src = this.eVNML.audio[key];
 		}
 
 		/* Instantiate characters */
-		for(var key in this.eVNML.characters) {
+		for(let key in this.eVNML.characters) {
 			var eVNML_char = this.eVNML.characters[key];
 			this.characters[key] = {
 				name: eVNML_char['first name'] || eVNML_char['name'],
@@ -92,18 +89,18 @@ export class Novel {
 			};
 			var char = this.characters[key];
 
-			for(var imgKey in eVNML_char.images) {
-				char.images[imgKey] = /*new Image();
-				char.images[imgKey].src =*/ eVNML_char.images[imgKey];
+			for(let key in eVNML_char.images) {
+				char.images[key] = /*new Image();
+				char.images[key].src =*/ eVNML_char.images[key];
 			}
 			char.cImage = char.images.default;
 		}
 
-		this.parseScene(cd.currentCollection, cd.collectionIndex);
+		this.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);
 
 		/* Push ourself to an array for easy debugging/hacking */
 		var instanceIndex = eVN.instances.push(this) - 1;
-		eVN.logger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']');
+		logger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']')();
 	}
 
 	// --------------------------- //
@@ -123,7 +120,7 @@ export class Novel {
 			 * returns {object} */
 			var merge = function(alpha, beta) {
 				var out = beta;
-				for(var prop in alpha) {
+				for(let prop in alpha) {
 					if( !(prop in beta) ) out[prop] = alpha[prop];
 
 					// If both properties are object literals, try merging those
@@ -210,8 +207,8 @@ export class Novel {
 				return;
 			case 'setmood':
 				var charIndex = -1;
-				for(var i=0,l=cd.characters.length; i<l; i++) {
-					if(cd.characters[i]['character'] === scene[1]) {
+				for(let c of cd.characters) {
+					if(c['character'] === scene[1]) {
 						charIndex = i;
 						break;
 					}
@@ -229,8 +226,8 @@ export class Novel {
 
 				/* Check if we already have an index mapped to scene[1]||charName */
 				var charIndex = -1;
-				for(var i=0,l=cd.characters.length; i<l; i++) {
-					if(cd.characters[i]['character'] === scene[1]) {
+				for(let c of cd.characters) {
+					if(c['character'] === scene[1]) {
 						charIndex = i;
 						break;
 					}
