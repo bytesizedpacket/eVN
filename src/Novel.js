@@ -1,123 +1,123 @@
 var Visuals = require('./Visuals.js');
 
-/**
- * @fileoverview Core novel class
- * @module eVN/Novel
- * @param {object} canvas - The canvas element to attach.
- * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>
- * @param {string} [file] - The name of the .evn script passed.
- */
-module.exports = function Novel(canvas, eVNML, file) {
-	this.file = file || 'undefined';
-	
-	/** The canvas attached to the instance */
-	this.canvas = canvas;
-	/** The drawing context of {@link module:eVN/Novel.canvas} */
-	this.context = canvas.getContext('2d');
-
-	/* Add the CSS class `eVN-canvas` to the canvas */
-	//this.canvas.classList.add('eVN-canvas');
-	this.canvas.className = this.canvas.className + ' eVN-canvas';
-
-	/** Map containing dynamic data for handling the current scene */
-	this.cdata = {
-		background: null,
-		characters: [],
-		collection: 'start',
-		collectionIndex: 0,
-		dialogue: '',
-		dialogueLines: [],
-		mouseX: -1,
-		mouseY: -1,
-		jobs: [],
-		startLine: 0,
-		speaker: ''
-	};
-
-	/** Object containing simple character instances */
-	this.characters = {};
-
-	/**
-	 * An instance that controls all graphic/drawing related stuff for the novel.
-	 * @see module:eVN/Visuals
+/** Core novel class */
+export class Novel {
+	/**@param {object} canvas - The canvas element to attach.
+	 * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>
+	 * @param {string} [file='undefined'] - The name of the .evn script passed.
 	 */
-	this.visuals = new Visuals(this);
-	
-	/** JSON object containing all end-developer input (from .evn scripts) */
-	this.eVNML = this.parse_eVNML(eVNML);
+	constructor(canvas, eVNML, file='undefined') {
+		this.file = file;
 
-	/* Create an Image() from the passed textbox and optional speakerbox objects */
-	if(this.eVNML.options.textbox.image) {
-		this.textboxImage = new Image();
-		this.textboxImage.src = this.eVNML.options.textbox.image;
-	}
-	if(this.eVNML.options.textbox.speakerbox.image) {
-		this.speakerboxImage = new Image();
-		this.speakerboxImage.src = this.eVNML.options.textbox.speakerbox.image;
-	}
+		/** The canvas attached to the instance */
+		this.canvas = canvas;
+		/** The drawing context of {@link module:eVN/Novel.canvas} */
+		this.context = canvas.getContext('2d');
 
-	/* Cache this.cdata to a lexical closure so anonymous functions can access it */
-	var cdata = this.cdata;
+		/* Add the CSS class `eVN-canvas` to the canvas */
+		//this.canvas.classList.add('eVN-canvas');
+		this.canvas.className = this.canvas.className + ' eVN-canvas';
 
-	/* Go to the next scene on regular click */
-	var _this = this;
-	this.canvas.addEventListener('click', function onCanvasClick() {_this.parseScene.call(_this);});
-
-	this.canvas.addEventListener('mousemove', function onMouseMove(e) {
-		var target = e.target || e.srcElement;
-		var rect = target.getBoundingClientRect();
-		/* Two variables to modify the mouse coords relative to the scaling of the canvas */
-		var fsModX = rect.width / target.width;
-		var fsModY = rect.height / target.height;
-		/* Export to Novel.cdata */
-		cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
-		cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
-	});
-
-	var cd = this.cdata;
-
-	/* Import images */
-	this.images = {};
-	for(var imgKeys in this.eVNML.images) {
-		this.images[imgKeys] = new Image();
-		this.images[imgKeys].src = this.eVNML.images[imgKeys];
-	}
-
-	/* Import aduio */
-	this.audio = {};
-	for(var audioKeys in this.eVNML.audio) {
-		this.audio[audioKeys] = new Audio();
-		this.audio[audioKeys].src = this.eVNML.audio[audioKeys];
-	}
-
-	/* Instantiate characters */
-	for(var key in this.eVNML.characters) {
-		var eVNML_char = this.eVNML.characters[key];
-		this.characters[key] = {
-			name: eVNML_char['first name'] || eVNML_char['name'],
-			lname: eVNML_char['last name'],
-			color: eVNML_char['color'] || eVNML_char['colour'],
-			images: {}
+		/** Map containing dynamic data for handling the current scene */
+		this.cdata = {
+			background: null,
+			characters: [],
+			collection: 'start',
+			collectionIndex: 0,
+			dialogue: '',
+			dialogueLines: [],
+			mouseX: -1,
+			mouseY: -1,
+			jobs: [],
+			startLine: 0,
+			speaker: ''
 		};
-		var char = this.characters[key];
 
-		for(var imgKey in eVNML_char.images) {
-			char.images[imgKey] = /*new Image();
-			char.images[imgKey].src =*/ eVNML_char.images[imgKey];
+		/** Object containing simple character instances */
+		this.characters = {};
+
+		/**
+		 * An instance that controls all graphic/drawing related stuff for the novel.
+		 * @see module:eVN/Visuals
+		 */
+		this.visuals = new Visuals(this);
+		
+		/** JSON object containing all end-developer input (from .evn scripts) */
+		this.eVNML = this.parse_eVNML(eVNML);
+
+		/* Create an Image() from the passed textbox and optional speakerbox objects */
+		if(this.eVNML.options.textbox.image) {
+			this.textboxImage = new Image();
+			this.textboxImage.src = this.eVNML.options.textbox.image;
 		}
-		char.cImage = char.images.default;
+		if(this.eVNML.options.textbox.speakerbox.image) {
+			this.speakerboxImage = new Image();
+			this.speakerboxImage.src = this.eVNML.options.textbox.speakerbox.image;
+		}
+
+		/* Cache this.cdata to a lexical closure so anonymous functions can access it */
+		var cdata = this.cdata;
+
+		/* Go to the next scene on regular click */
+		var _this = this;
+		this.canvas.addEventListener('click', function onCanvasClick() {_this.parseScene.call(_this);});
+
+		this.canvas.addEventListener('mousemove', function onMouseMove(e) {
+			var target = e.target || e.srcElement;
+			var rect = target.getBoundingClientRect();
+			/* Two variables to modify the mouse coords relative to the scaling of the canvas */
+			var fsModX = rect.width / target.width;
+			var fsModY = rect.height / target.height;
+			/* Export to Novel.cdata */
+			cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
+			cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
+		});
+
+		var cd = this.cdata;
+
+		/* Import images */
+		this.images = {};
+		for(var imgKeys in this.eVNML.images) {
+			this.images[imgKeys] = new Image();
+			this.images[imgKeys].src = this.eVNML.images[imgKeys];
+		}
+
+		/* Import aduio */
+		this.audio = {};
+		for(var audioKeys in this.eVNML.audio) {
+			this.audio[audioKeys] = new Audio();
+			this.audio[audioKeys].src = this.eVNML.audio[audioKeys];
+		}
+
+		/* Instantiate characters */
+		for(var key in this.eVNML.characters) {
+			var eVNML_char = this.eVNML.characters[key];
+			this.characters[key] = {
+				name: eVNML_char['first name'] || eVNML_char['name'],
+				lname: eVNML_char['last name'],
+				color: eVNML_char['color'] || eVNML_char['colour'],
+				images: {}
+			};
+			var char = this.characters[key];
+
+			for(var imgKey in eVNML_char.images) {
+				char.images[imgKey] = /*new Image();
+				char.images[imgKey].src =*/ eVNML_char.images[imgKey];
+			}
+			char.cImage = char.images.default;
+		}
+
+		this.parseScene(cd.currentCollection, cd.collectionIndex);
+
+		/* Push ourself to an array for easy debugging/hacking */
+		var instanceIndex = eVN.instances.push(this) - 1;
+		eVN.logger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']');
 	}
 
-	this.parseScene(cd.currentCollection, cd.collectionIndex);
-
-	/* Push ourself to an array for easy debugging/hacking */
-	var instanceIndex = eVN.instances.push(this) - 1;
-	eVN.logger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']');
-};
-
-module.exports.prototype = {
+	// --------------------------- //
+	
 	/** Validates the end-developer input and applies it on top of a set of default values */
-	parse_eVNML: function(eVNML) {
+	parse_eVNML(eVNML) {
 		var defaults = require('./defaults.evn');
 		var userData = eVNML;
 		var returned_eVNML = defaults;
@@ -157,14 +157,14 @@ module.exports.prototype = {
 		}
 	
 		return returned_eVNML;
-	},
+	}
 
 	/**
 	 * Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it
 	 * @param {Object} scene - The scene to import
 	 * @see <eVNML scene syntax>
 	 */
-	parseScene: function(collection, index) {
+	parseScene(collection, index) {
 		var cd = this.cdata;
 		var eVNML = this.eVNML;
 		var textbox = eVNML.options.textbox;
@@ -270,13 +270,13 @@ module.exports.prototype = {
 		}
 
 		this.parseScene();
-	},
+	}
 
 	/**
 	 * Looks for ${varName} variables and returns the processed string
 	 * @param {string} string - the string to process
 	 */
-	processVariables: function(string) {
+	processVariables(string) {
 		var splitAt = string.indexOf('${');
 		var endAt = string.indexOf('}', splitAt);
 		var output = '';
@@ -300,12 +300,12 @@ module.exports.prototype = {
 		} else {
 			return string;
 		}
-	},
+	}
 
 	/**
 	 *
 	 */
-	constructCharacter: function(data) {
+	constructCharacter(data) {
 		var name = data.name;
 		this.characters[name] = {};
 	}
