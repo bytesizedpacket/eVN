@@ -103,7 +103,6 @@
 	document.addEventListener('DOMContentLoaded', function () {
 		/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 		var canvases = Array.prototype.slice.call(document.getElementsByTagName('canvas'));
-
 		var _iteratorNormalCompletion = true;
 		var _didIteratorError = false;
 		var _iteratorError = undefined;
@@ -245,8 +244,8 @@
 				var fsModX = rect.width / target.width;
 				var fsModY = rect.height / target.height;
 				/* Export to Novel.cdata */
-				_this.cdata.mouseX = (e.clientX - rect.left) / fsModX | 0;
-				_this.cdata.mouseY = (e.clientY - rect.top) / fsModY | 0;
+				_this.cdata.mouseX = Math.round((e.clientX - rect.left) / fsModX);
+				_this.cdata.mouseY = Math.round((e.clientY - rect.top) / fsModY);
 			});
 
 			/* Import images & audio */

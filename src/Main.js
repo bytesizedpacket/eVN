@@ -33,7 +33,6 @@ else window.eVN = new Main();
 document.addEventListener('DOMContentLoaded', function() {
 	/* Grab all canvas elements, select ones with `data-evn` attributes and create eVN instances for each */
 	var canvases = Array.prototype.slice.call( document.getElementsByTagName('canvas') );
-
 	for(let canvas of canvases) {
 		var evnData = canvas.getAttribute('data-evn');
 		if(!evnData) return;

@@ -64,8 +64,8 @@ export class Novel {
 			var fsModX = rect.width / target.width;
 			var fsModY = rect.height / target.height;
 			/* Export to Novel.cdata */
-			this.cdata.mouseX = (e.clientX - rect.left) / fsModX |0;
-			this.cdata.mouseY = (e.clientY - rect.top) / fsModY |0;
+			this.cdata.mouseX = Math.round( (e.clientX - rect.left) / fsModX );
+			this.cdata.mouseY = Math.round( (e.clientY - rect.top) / fsModY );
 		});
 
 		/* Import images & audio */
