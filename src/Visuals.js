@@ -18,8 +18,6 @@ export class Visuals {
 		this.draw = draw;
 		this.text = text;
 
-		//var _this = this;
-		//rAF(function(timeframe){_this.loop.call(_this, timeframe);});
 		rAF(timeframe=> this.loop(timeframe));
 	}
 	/**
@@ -101,8 +99,6 @@ export class Visuals {
 		}
 		this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
 
-		/* Add `this` to a lexical closure and call this loop function with the appropriate binding */
-		var _this = this;
-		rAF(function rAF_wrap(frametime){_this.loop.call(_this, frametime);});
+		rAF(timeframe=> this.loop(timeframe));
 	}
 };

@@ -562,7 +562,7 @@
 		/** @param {Novel} novelInstance - Novel to pull data from */
 
 		function Visuals(novelInstance) {
-			var _this2 = this;
+			var _this = this;
 
 			_classCallCheck(this, Visuals);
 
@@ -576,10 +576,8 @@
 			this.draw = draw;
 			this.text = text;
 
-			//var _this = this;
-			//rAF(function(timeframe){_this.loop.call(_this, timeframe);});
 			rAF(function (timeframe) {
-				return _this2.loop(timeframe);
+				return _this.loop(timeframe);
 			});
 		}
 
@@ -590,6 +588,8 @@
 		_createClass(Visuals, [{
 			key: 'loop',
 			value: function loop(frametime) {
+				var _this2 = this;
+
 				var novel = this.novel;
 				var ctx = novel.context;
 				var c = ctx;
@@ -662,10 +662,8 @@
 				}
 				this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
 
-				/* Add `this` to a lexical closure and call this loop function with the appropriate binding */
-				var _this = this;
-				rAF(function rAF_wrap(frametime) {
-					_this.loop.call(_this, frametime);
+				rAF(function (timeframe) {
+					return _this2.loop(timeframe);
 				});
 			}
 		}]);
