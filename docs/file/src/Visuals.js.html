@@ -50,7 +50,8 @@
 </nav>
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/Visuals.js</h1>
-<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">var text = require(&apos;./Visuals/text.js&apos;);
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">var logger = null;
+var text = require(&apos;./Visuals/text.js&apos;);
 var draw = require(&apos;./Visuals/draw.js&apos;);
 var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
 
@@ -59,25 +60,22 @@ var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || 
 export class Visuals {
 	/** @param {Novel} novelInstance - Novel to pull data from */
 	constructor(novelInstance) {
+		logger = eVN.logger;
 		/** Reference to the novel we are drawing */
 		this.novel = novelInstance;
 		this.ctx = novelInstance.context;
 
-		rAF(timeframe=&gt; this.loop.call(this, timeframe));
+		// Temporary. remove this. These are pulled from text/draw.js -
+		// should be rewritten.
+		this.draw = draw;
+		this.text = text;
+
+		rAF(timeframe=&gt; this.loop(timeframe));
 	}
-};
-
-module.exports.prototype = {
-	/** @see {@link module:eVN/Visuals/draw} */
-	draw: draw,
-
-	/** @see {@link module:eVN/Visuals/text} */
-	text: text,
-
 	/**
 	 * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout
 	 */
-	loop: function(frametime) {
+	loop(frametime) {
 		var novel = this.novel;
 		var ctx = novel.context;
 		var c = ctx;
@@ -153,9 +151,7 @@ module.exports.prototype = {
 		}
 		this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
 
-		/* Add `this` to a lexical closure and call this loop function with the appropriate binding */
-		var _this = this;
-		rAF(function rAF_wrap(frametime){_this.loop.call(_this, frametime);});
+		rAF(timeframe=&gt; this.loop(timeframe));
 	}
 };
 </code></pre>

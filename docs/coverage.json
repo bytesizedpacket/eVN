@@ -1,7 +1,7 @@
 {
-  "coverage": "96.42%",
-  "expectCount": 28,
-  "actualCount": 27,
+  "coverage": "90.32%",
+  "expectCount": 31,
+  "actualCount": 28,
   "files": {
     "src/Logger.js": {
       "expectCount": 5,
@@ -19,10 +19,12 @@
       "undocumentLines": []
     },
     "src/Visuals.js": {
-      "expectCount": 4,
-      "actualCount": 3,
+      "expectCount": 7,
+      "actualCount": 4,
       "undocumentLines": [
-        12
+        14,
+        18,
+        19
       ]
     }
   }

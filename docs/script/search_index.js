@@ -510,9 +510,27 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/visuals.js~visuals#draw",
+    "class/src/Visuals.js~Visuals.html#instance-member-draw",
+    "src/Visuals.js~Visuals#draw",
+    "member"
+  ],
+  [
+    "src/visuals.js~visuals#loop",
+    "class/src/Visuals.js~Visuals.html#instance-method-loop",
+    "src/Visuals.js~Visuals#loop",
+    "method"
+  ],
+  [
     "src/visuals.js~visuals#novel",
     "class/src/Visuals.js~Visuals.html#instance-member-novel",
     "src/Visuals.js~Visuals#novel",
+    "member"
+  ],
+  [
+    "src/visuals.js~visuals#text",
+    "class/src/Visuals.js~Visuals.html#instance-member-text",
+    "src/Visuals.js~Visuals#text",
     "member"
   ],
   [

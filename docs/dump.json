@@ -442,27 +442,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "var Visuals = require('./Visuals.js');\nvar logger = null;\n\n/** Core novel class */\nexport class Novel {\n\t/**@param {object} canvas - The canvas element to attach.\n\t * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>\n\t * @param {string} [file='undefined'] - The name of the .evn script passed. */\n\tconstructor(canvas, eVNML, file='undefined') {\n\t\tlogger = eVN.logger;\n\t\t/** Filename of the eVNL the novel was instantiated with */\n\t\tthis.file = file;\n\t\t/** The canvas attached to the instance */\n\t\tthis.canvas = canvas;\n\t\t/** The drawing context of {@link Novel#canvas} */\n\t\tthis.context = canvas.getContext('2d');\n\t\t/** Map containing all <code>Image</code> instances for this novel */\n\t\tthis.images = {};\n\t\t/** Map containing all <code>Audio</code> instances for this novel */\n\t\tthis.audio = {};\n\t\t/** Object containing character instances */\n\t\tthis.characters = {};\n\t\t/** JSON object containing all end-developer input (from .evn scripts) */\n\t\tthis.eVNML = this.parse_eVNML(eVNML);\n\t\t/**An instance that controls all graphic/drawing related stuff for the novel.\n\t\t * @see {@link Visuals} */\n\t\tthis.visuals = new Visuals(this);\n\t\t/** Map containing dynamic data for handling the current scene */\n\t\tthis.cdata = {\n\t\t\tbackground: null,\n\t\t\tcharacters: [],\n\t\t\tcollection: 'start',\n\t\t\tcollectionIndex: 0,\n\t\t\tdialogue: '',\n\t\t\tdialogueLines: [],\n\t\t\tmouseX: -1,\n\t\t\tmouseY: -1,\n\t\t\tjobs: [],\n\t\t\tstartLine: 0,\n\t\t\tspeaker: ''\n\t\t};\n\n\t\t/* Add the CSS class `eVN-canvas` to the canvas */\n\t\tthis.canvas.className = this.canvas.className + ' eVN-canvas';\n\n\t\t/* Create an Image() from the passed textbox and optional speakerbox objects */\n\t\tif(this.eVNML.options.textbox.image) {\n\t\t\tthis.images.textbox = new Image();\n\t\t\tthis.images.textbox.src = this.eVNML.options.textbox.image;\n\t\t}\n\t\tif(this.eVNML.options.textbox.speakerbox.image) {\n\t\t\tthis.images.speakerbox = new Image();\n\t\t\tthis.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;\n\t\t}\n\n\t\t/* Go to the next scene on regular click */\n\t\tthis.canvas.addEventListener('click', ()=> this.parseScene.call(this));\n\n\t\t/* Update this.cdata.mouse values */\n\t\tthis.canvas.addEventListener('mousemove', e=> {\n\t\t\tvar target = e.target || e.srcElement;\n\t\t\tvar rect = target.getBoundingClientRect();\n\t\t\t/* Two variables to modify the mouse coords relative to the scaling of the canvas */\n\t\t\tvar fsModX = rect.width / target.width;\n\t\t\tvar fsModY = rect.height / target.height;\n\t\t\t/* Export to Novel.cdata */\n\t\t\tthis.cdata.mouseX = Math.round( (e.clientX - rect.left) / fsModX );\n\t\t\tthis.cdata.mouseY = Math.round( (e.clientY - rect.top) / fsModY );\n\t\t});\n\n\t\t/* Import images & audio */\n\t\tfor(let key in this.eVNML.images) {\n\t\t\tthis.images[key] = new Image();\n\t\t\tthis.images[key].src = this.eVNML.images[key];\n\t\t}\n\t\tfor(let key in this.eVNML.audio) {\n\t\t\tthis.audio[key] = new Audio();\n\t\t\tthis.audio[key].src = this.eVNML.audio[key];\n\t\t}\n\n\t\t/* Instantiate characters */\n\t\tfor(let key in this.eVNML.characters) {\n\t\t\tvar eVNML_char = this.eVNML.characters[key];\n\t\t\t// NOTE TO SELF: Create character class\n\t\t\tthis.characters[key] = {\n\t\t\t\tname: eVNML_char['first name'] || eVNML_char['name'],\n\t\t\t\tlname: eVNML_char['last name'],\n\t\t\t\tcolor: eVNML_char['color'] || eVNML_char['colour'],\n\t\t\t\timages: {}\n\t\t\t};\n\t\t\tvar char = this.characters[key];\n\n\t\t\tfor(let key in eVNML_char.images) {\n\t\t\t\tchar.images[key] = /*new Image();\n\t\t\t\tchar.images[key].src =*/ eVNML_char.images[key];\n\t\t\t}\n\t\t\tchar.cImage = char.images.default;\n\t\t}\n\n\t\tthis.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);\n\n\t\t/* Push ourself to an array for easy debugging/hacking */\n\t\tvar instanceIndex = eVN.instances.push(this) - 1;\n\t\tlogger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']')();\n\t}\n\n\t// --------------------------- //\n\t\n\t/** Validates the end-developer input and applies it on top of a set of default values */\n\tparse_eVNML(eVNML) {\n\t\tvar defaults = require('./defaults.evn');\n\t\tvar userData = eVNML;\n\t\tvar returned_eVNML = defaults;\n\n\t\ttry {\n\t\t\tuserData = JSON.parse(eVNML);\n\n\t\t\t/**Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>\n\t\t\t * param {object} alpha - The obtrusive object literal to apply on top of <code>beta</code>\n\t\t\t * param {object beta - The submissive object literal to use as base for <code>alpha</code>\n\t\t\t * returns {object} */\n\t\t\tvar merge = function(alpha, beta) {\n\t\t\t\tvar out = beta;\n\t\t\t\tfor(let prop in alpha) {\n\t\t\t\t\tif( !(prop in beta) ) out[prop] = alpha[prop];\n\n\t\t\t\t\t// If both properties are object literals, try merging those\n\t\t\t\t\telse if( alpha[prop].constructor === Object && beta[prop].constructor === Object) {\n\t\t\t\t\t\tout[prop] = merge(alpha[prop], beta[prop]);\n\n\t\t\t\t\t// Warn the end-developer if he possibly made a type mistake\n\t\t\t\t\t} else if ( alpha[prop].constructor !== beta[prop].constructor ) {\n\t\t\t\t\t\teVN.logger.warn('Possible type mismatch on property \"'+prop+'\" while parsing eVNML.');\n\t\t\t\t\t\tout[prop] = alpha[prop];\n\n\t\t\t\t\t// Fall back to just overwriting the property\n\t\t\t\t\t}  else out[prop] = alpha[prop];\n\t\t\t\t}\n\n\t\t\t\treturn out;\n\t\t\t};\n\t\t\treturned_eVNML = merge(userData, defaults);\n\t\t} catch(e) {\n\t\t\teVN.logger.throw(e);\n\t\t}\n\t\n\t\treturn returned_eVNML;\n\t}\n\n\t/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it\n\t * @param {Object} scene - The scene to import\n\t * @see <eVNML scene syntax> */\n\tparseScene(collection, index) {\n\t\tvar cd = this.cdata;\n\t\tvar eVNML = this.eVNML;\n\t\tvar textbox = eVNML.options.textbox;\n\t\tcollection = collection || cd.collection;\n\t\tindex = (typeof index !== 'undefined')? index : cd.collectionIndex;\n\n\t\tif(cd.startLine + textbox.lines < cd.dialogueLines.length) return cd.startLine += textbox.lines;\n\n\t\tvar scene = this.eVNML.scenes[collection][index];\n\t\tcd.collection = collection;\n\t\tcd.collectionIndex = index+1;\n\t\tif(!scene) eVN.logger.throw('Undefined scene \"'+ collection +'['+ index +']\"! Did we run out of scenes?');\n\n\t\t/* These are values that only live one scene - they should be reset on each scene load */\n\t\tcd.speakerColor = null;\n\n\t\t/* If the scene is a string, it's using the dialogue shorthand */\n\t\tif(typeof scene === 'string') {\n\t\t\tvar splitAt = scene.indexOf(': ');\n\t\t\tvar alpha = scene.slice(0, splitAt);\n\t\t\tvar beta = scene.slice(splitAt+2);\n\n\t\t\t/* If the alpha exists as a key in the characters object, it's dialogue, if not monologue */\n\t\t\tvar isDialogue = splitAt < scene.indexOf(' ')   &&   alpha in this.characters;\n\t\t\tscene = isDialogue? [\"say\", beta, alpha] : [\"say\", scene];\n\t\t}\n\n\t\tswitch(scene[0].toLowerCase()) {\n\t\t/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.\n\t\t   Cases ending with 'return' will not jump to the next scene when done */\n\n\t\t\tcase 'background':\n\t\t\t\tcd.background = scene[1];\n\t\t\t\tbreak;\n\t\t\tcase 'music':\n\t\t\t\tif(scene[1] in this.audio) this.audio[scene[1]].play();\n\t\t\t\tbreak;\n\t\t\tcase 'say':\n\t\t\t\t/*Process inline variables for text*/\n\t\t\t\tvar text = this.processVariables(scene[1]);\n\n\t\t\t\tif(scene[2]) {\n\t\t\t\t\tcd.speaker = scene[2];\n\t\t\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\t\t\tcd.speakerColor = scene[3] || null;\n\t\t\t\t} else {\n\t\t\t\t\tcd.speaker = null;\n\t\t\t\t\tcd.dialogue = text;\n\t\t\t\t}\n\n\t\t\t\t//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);\n\t\t\t\tvar maxWidth = textbox.maxWidth;\n\t\t\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\t\t\tcd.startLine = 0;\n\t\t\t\treturn;\n\t\t\tcase 'setmood':\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(let c of cd.characters) {\n\t\t\t\t\tif(c['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(charIndex > -1){\n\t\t\t\t\tcd.characters[charIndex].mood = scene[2] || 'default';\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'hide':\n\t\t\t\tcd.characters[scene[1]] = null;\n\t\t\t\tbreak;\n\t\t\tcase 'show':\n\t\t\t\t/* Since characters are stored in an array and not an object literal,\n\t\t\t\t   checking if it exists takes a little extra effort */\n\n\t\t\t\t/* Check if we already have an index mapped to scene[1]||charName */\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(let c of cd.characters) {\n\t\t\t\t\tif(c['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif(charIndex > -1) {\n\t\t\t\t\tvar cdChar = cd.characters[charIndex];\n\t\t\t\t\tcdChar = {\n\t\t\t\t\t\tcharacter: cdChar.character,\n\t\t\t\t\t\tposition: scene[2] || cdChar.position || 'middle',\n\t\t\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\t\t\tpriority: scene[4] || cdChar.priority || 1\n\t\t\t\t\t};\n\t\t\t\t} else {\n\t\t\t\t\tcd.characters.push({ character: scene[1], position: scene[2]||'middle', mood: 'default' });\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'goto':\n\t\t\tcase 'jump':\n\t\t\t\tcd.collection = scene[1];\n\t\t\t\tcd.collectionIndex = 0;\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\teVN.logger.warn('Unknown command \"'+ scene[0] +'\" at \"'+ collection +'['+ index +']\"');\n\t\t}\n\n\t\tthis.parseScene();\n\t}\n\n\t/**Looks for ${varName} variables and returns the processed string\n\t * @param {string} string - the string to process */\n\tprocessVariables(string) {\n\t\tvar splitAt = string.indexOf('${');\n\t\tvar endAt = string.indexOf('}', splitAt);\n\t\tvar output = '';\n\t\tif(splitAt !== -1   &&   endAt !== -1){\n\t\t\tvar alpha = string.slice(0, splitAt);\n\t\t\tvar beta = string.slice(splitAt+2, endAt);\n\t\t\tvar gamma = string.slice(endAt+1);\n\t\t\toutput = beta;\n\n\t\t\tvar varSplit = beta.split('.');\n\t\t\t// If beta (variable name) exists in cdata.characters,it's\n\t\t\t// probably referring to a property of a character\n\t\t\tvar characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);\n\t\t\tif(varSplit[0] in this.characters) {\n\t\t\t\toutput = this.characters[varSplit[0]][varSplit[1]];\n\t\t\t}\n\n\t\t\toutput = alpha + output + gamma;\n\t\t\tif(output.indexOf('${') !== -1) return this.processVariables(output);\n\t\t\treturn output;\n\t\t} else {\n\t\t\treturn string;\n\t\t}\n\t}\n\n\t/**  */\n\tconstructCharacter(data) {\n\t\tvar name = data.name;\n\t\tthis.characters[name] = {};\n\t}\n};\n"
-  },
-  {
-    "kind": "variable",
-    "static": true,
-    "variation": null,
-    "name": "Visuals",
-    "memberof": "src/Novel.js",
-    "longname": "src/Novel.js~Visuals",
-    "access": null,
-    "export": false,
-    "importPath": "eVN/src/Novel.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 1,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
+    "content": "import { Visuals } from './Visuals.js';\nvar logger = null;\n\n/** Core novel class */\nexport class Novel {\n\t/**@param {object} canvas - The canvas element to attach.\n\t * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>\n\t * @param {string} [file='undefined'] - The name of the .evn script passed. */\n\tconstructor(canvas, eVNML, file='undefined') {\n\t\tlogger = eVN.logger;\n\t\t/** Filename of the eVNL the novel was instantiated with */\n\t\tthis.file = file;\n\t\t/** The canvas attached to the instance */\n\t\tthis.canvas = canvas;\n\t\t/** The drawing context of {@link Novel#canvas} */\n\t\tthis.context = canvas.getContext('2d');\n\t\t/** Map containing all <code>Image</code> instances for this novel */\n\t\tthis.images = {};\n\t\t/** Map containing all <code>Audio</code> instances for this novel */\n\t\tthis.audio = {};\n\t\t/** Object containing character instances */\n\t\tthis.characters = {};\n\t\t/** JSON object containing all end-developer input (from .evn scripts) */\n\t\tthis.eVNML = this.parse_eVNML(eVNML);\n\t\t/**An instance that controls all graphic/drawing related stuff for the novel.\n\t\t * @see {@link Visuals} */\n\t\tthis.visuals = new Visuals(this);\n\t\t/** Map containing dynamic data for handling the current scene */\n\t\tthis.cdata = {\n\t\t\tbackground: null,\n\t\t\tcharacters: [],\n\t\t\tcollection: 'start',\n\t\t\tcollectionIndex: 0,\n\t\t\tdialogue: '',\n\t\t\tdialogueLines: [],\n\t\t\tmouseX: -1,\n\t\t\tmouseY: -1,\n\t\t\tjobs: [],\n\t\t\tstartLine: 0,\n\t\t\tspeaker: ''\n\t\t};\n\n\t\t/* Add the CSS class `eVN-canvas` to the canvas */\n\t\tthis.canvas.className = this.canvas.className + ' eVN-canvas';\n\n\t\t/* Create an Image() from the passed textbox and optional speakerbox objects */\n\t\tif(this.eVNML.options.textbox.image) {\n\t\t\tthis.images.textbox = new Image();\n\t\t\tthis.images.textbox.src = this.eVNML.options.textbox.image;\n\t\t}\n\t\tif(this.eVNML.options.textbox.speakerbox.image) {\n\t\t\tthis.images.speakerbox = new Image();\n\t\t\tthis.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;\n\t\t}\n\n\t\t/* Go to the next scene on regular click */\n\t\tthis.canvas.addEventListener('click', ()=> this.parseScene.call(this));\n\n\t\t/* Update this.cdata.mouse values */\n\t\tthis.canvas.addEventListener('mousemove', e=> {\n\t\t\tvar target = e.target || e.srcElement;\n\t\t\tvar rect = target.getBoundingClientRect();\n\t\t\t/* Two variables to modify the mouse coords relative to the scaling of the canvas */\n\t\t\tvar fsModX = rect.width / target.width;\n\t\t\tvar fsModY = rect.height / target.height;\n\t\t\t/* Export to Novel.cdata */\n\t\t\tthis.cdata.mouseX = Math.round( (e.clientX - rect.left) / fsModX );\n\t\t\tthis.cdata.mouseY = Math.round( (e.clientY - rect.top) / fsModY );\n\t\t});\n\n\t\t/* Import images & audio */\n\t\tfor(let key in this.eVNML.images) {\n\t\t\tthis.images[key] = new Image();\n\t\t\tthis.images[key].src = this.eVNML.images[key];\n\t\t}\n\t\tfor(let key in this.eVNML.audio) {\n\t\t\tthis.audio[key] = new Audio();\n\t\t\tthis.audio[key].src = this.eVNML.audio[key];\n\t\t}\n\n\t\t/* Instantiate characters */\n\t\tfor(let key in this.eVNML.characters) {\n\t\t\tvar eVNML_char = this.eVNML.characters[key];\n\t\t\t// NOTE TO SELF: Create character class\n\t\t\tthis.characters[key] = {\n\t\t\t\tname: eVNML_char['first name'] || eVNML_char['name'],\n\t\t\t\tlname: eVNML_char['last name'],\n\t\t\t\tcolor: eVNML_char['color'] || eVNML_char['colour'],\n\t\t\t\timages: {}\n\t\t\t};\n\t\t\tvar char = this.characters[key];\n\n\t\t\tfor(let key in eVNML_char.images) {\n\t\t\t\tchar.images[key] = /*new Image();\n\t\t\t\tchar.images[key].src =*/ eVNML_char.images[key];\n\t\t\t}\n\t\t\tchar.cImage = char.images.default;\n\t\t}\n\n\t\tthis.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);\n\n\t\t/* Push ourself to an array for easy debugging/hacking */\n\t\tvar instanceIndex = eVN.instances.push(this) - 1;\n\t\tlogger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']')();\n\t}\n\n\t// --------------------------- //\n\t\n\t/** Validates the end-developer input and applies it on top of a set of default values */\n\tparse_eVNML(eVNML) {\n\t\tvar defaults = require('./defaults.evn');\n\t\tvar userData = eVNML;\n\t\tvar returned_eVNML = defaults;\n\n\t\ttry {\n\t\t\tuserData = JSON.parse(eVNML);\n\n\t\t\t/**Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>\n\t\t\t * param {object} alpha - The obtrusive object literal to apply on top of <code>beta</code>\n\t\t\t * param {object beta - The submissive object literal to use as base for <code>alpha</code>\n\t\t\t * returns {object} */\n\t\t\tvar merge = function(alpha, beta) {\n\t\t\t\tvar out = beta;\n\t\t\t\tfor(let prop in alpha) {\n\t\t\t\t\tif( !(prop in beta) ) out[prop] = alpha[prop];\n\n\t\t\t\t\t// If both properties are object literals, try merging those\n\t\t\t\t\telse if( alpha[prop].constructor === Object && beta[prop].constructor === Object) {\n\t\t\t\t\t\tout[prop] = merge(alpha[prop], beta[prop]);\n\n\t\t\t\t\t// Warn the end-developer if he possibly made a type mistake\n\t\t\t\t\t} else if ( alpha[prop].constructor !== beta[prop].constructor ) {\n\t\t\t\t\t\teVN.logger.warn('Possible type mismatch on property \"'+prop+'\" while parsing eVNML.');\n\t\t\t\t\t\tout[prop] = alpha[prop];\n\n\t\t\t\t\t// Fall back to just overwriting the property\n\t\t\t\t\t}  else out[prop] = alpha[prop];\n\t\t\t\t}\n\n\t\t\t\treturn out;\n\t\t\t};\n\t\t\treturned_eVNML = merge(userData, defaults);\n\t\t} catch(e) {\n\t\t\teVN.logger.throw(e);\n\t\t}\n\t\n\t\treturn returned_eVNML;\n\t}\n\n\t/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it\n\t * @param {Object} scene - The scene to import\n\t * @see <eVNML scene syntax> */\n\tparseScene(collection, index) {\n\t\tvar cd = this.cdata;\n\t\tvar eVNML = this.eVNML;\n\t\tvar textbox = eVNML.options.textbox;\n\t\tcollection = collection || cd.collection;\n\t\tindex = (typeof index !== 'undefined')? index : cd.collectionIndex;\n\n\t\tif(cd.startLine + textbox.lines < cd.dialogueLines.length) return cd.startLine += textbox.lines;\n\n\t\tvar scene = this.eVNML.scenes[collection][index];\n\t\tcd.collection = collection;\n\t\tcd.collectionIndex = index+1;\n\t\tif(!scene) eVN.logger.throw('Undefined scene \"'+ collection +'['+ index +']\"! Did we run out of scenes?');\n\n\t\t/* These are values that only live one scene - they should be reset on each scene load */\n\t\tcd.speakerColor = null;\n\n\t\t/* If the scene is a string, it's using the dialogue shorthand */\n\t\tif(typeof scene === 'string') {\n\t\t\tvar splitAt = scene.indexOf(': ');\n\t\t\tvar alpha = scene.slice(0, splitAt);\n\t\t\tvar beta = scene.slice(splitAt+2);\n\n\t\t\t/* If the alpha exists as a key in the characters object, it's dialogue, if not monologue */\n\t\t\tvar isDialogue = splitAt < scene.indexOf(' ')   &&   alpha in this.characters;\n\t\t\tscene = isDialogue? [\"say\", beta, alpha] : [\"say\", scene];\n\t\t}\n\n\t\tswitch(scene[0].toLowerCase()) {\n\t\t/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.\n\t\t   Cases ending with 'return' will not jump to the next scene when done */\n\n\t\t\tcase 'background':\n\t\t\t\tcd.background = scene[1];\n\t\t\t\tbreak;\n\t\t\tcase 'music':\n\t\t\t\tif(scene[1] in this.audio) this.audio[scene[1]].play();\n\t\t\t\tbreak;\n\t\t\tcase 'say':\n\t\t\t\t/*Process inline variables for text*/\n\t\t\t\tvar text = this.processVariables(scene[1]);\n\n\t\t\t\tif(scene[2]) {\n\t\t\t\t\tcd.speaker = scene[2];\n\t\t\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\t\t\tcd.speakerColor = scene[3] || null;\n\t\t\t\t} else {\n\t\t\t\t\tcd.speaker = null;\n\t\t\t\t\tcd.dialogue = text;\n\t\t\t\t}\n\n\t\t\t\t//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);\n\t\t\t\tvar maxWidth = textbox.maxWidth;\n\t\t\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\t\t\tcd.startLine = 0;\n\t\t\t\treturn;\n\t\t\tcase 'setmood':\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(let c of cd.characters) {\n\t\t\t\t\tif(c['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(charIndex > -1){\n\t\t\t\t\tcd.characters[charIndex].mood = scene[2] || 'default';\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'hide':\n\t\t\t\tcd.characters[scene[1]] = null;\n\t\t\t\tbreak;\n\t\t\tcase 'show':\n\t\t\t\t/* Since characters are stored in an array and not an object literal,\n\t\t\t\t   checking if it exists takes a little extra effort */\n\n\t\t\t\t/* Check if we already have an index mapped to scene[1]||charName */\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(let c of cd.characters) {\n\t\t\t\t\tif(c['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif(charIndex > -1) {\n\t\t\t\t\tvar cdChar = cd.characters[charIndex];\n\t\t\t\t\tcdChar = {\n\t\t\t\t\t\tcharacter: cdChar.character,\n\t\t\t\t\t\tposition: scene[2] || cdChar.position || 'middle',\n\t\t\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\t\t\tpriority: scene[4] || cdChar.priority || 1\n\t\t\t\t\t};\n\t\t\t\t} else {\n\t\t\t\t\tcd.characters.push({ character: scene[1], position: scene[2]||'middle', mood: 'default' });\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'goto':\n\t\t\tcase 'jump':\n\t\t\t\tcd.collection = scene[1];\n\t\t\t\tcd.collectionIndex = 0;\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\teVN.logger.warn('Unknown command \"'+ scene[0] +'\" at \"'+ collection +'['+ index +']\"');\n\t\t}\n\n\t\tthis.parseScene();\n\t}\n\n\t/**Looks for ${varName} variables and returns the processed string\n\t * @param {string} string - the string to process */\n\tprocessVariables(string) {\n\t\tvar splitAt = string.indexOf('${');\n\t\tvar endAt = string.indexOf('}', splitAt);\n\t\tvar output = '';\n\t\tif(splitAt !== -1   &&   endAt !== -1){\n\t\t\tvar alpha = string.slice(0, splitAt);\n\t\t\tvar beta = string.slice(splitAt+2, endAt);\n\t\t\tvar gamma = string.slice(endAt+1);\n\t\t\toutput = beta;\n\n\t\t\tvar varSplit = beta.split('.');\n\t\t\t// If beta (variable name) exists in cdata.characters,it's\n\t\t\t// probably referring to a property of a character\n\t\t\tvar characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);\n\t\t\tif(varSplit[0] in this.characters) {\n\t\t\t\toutput = this.characters[varSplit[0]][varSplit[1]];\n\t\t\t}\n\n\t\t\toutput = alpha + output + gamma;\n\t\t\tif(output.indexOf('${') !== -1) return this.processVariables(output);\n\t\t\treturn output;\n\t\t} else {\n\t\t\treturn string;\n\t\t}\n\t}\n\n\t/**  */\n\tconstructCharacter(data) {\n\t\tvar name = data.name;\n\t\tthis.characters[name] = {};\n\t}\n};\n"
   },
   {
     "kind": "variable",
@@ -1215,7 +1195,27 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "var text = require('./Visuals/text.js');\nvar draw = require('./Visuals/draw.js');\nvar rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};\n\n/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}\n */\nexport class Visuals {\n\t/** @param {Novel} novelInstance - Novel to pull data from */\n\tconstructor(novelInstance) {\n\t\t/** Reference to the novel we are drawing */\n\t\tthis.novel = novelInstance;\n\t\tthis.ctx = novelInstance.context;\n\n\t\trAF(timeframe=> this.loop.call(this, timeframe));\n\t}\n};\n\nmodule.exports.prototype = {\n\t/** @see {@link module:eVN/Visuals/draw} */\n\tdraw: draw,\n\n\t/** @see {@link module:eVN/Visuals/text} */\n\ttext: text,\n\n\t/**\n\t * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout\n\t */\n\tloop: function(frametime) {\n\t\tvar novel = this.novel;\n\t\tvar ctx = novel.context;\n\t\tvar c = ctx;\n\t\tvar cd = novel.cdata;\n\t\tvar eVNML = novel.eVNML;\n\n\t\tvar textbox = eVNML.options.textbox;\n\t\tvar background = cd.background;\n\t\tvar characters = novel.characters;\n\t\tvar shownCharacters = novel.cdata.characters;\n\n\t\t/*\n\t\t * BACKGROUND LAYERS\n\t\t */\n\t\tif(background && background[0] !== '#'   &&   background in novel.images) background = novel.images[background];\n\t\tthis.draw.background(c, background || '#FFF');\n\t\t\n\t\t/*\n\t\t * CHARACTER LAYER\n\t\t */\n\t\t/* Reverse sort the shownCharacters array by shownCharacters[i].priority */\n\t\tshownCharacters.sort(function(alpha, beta) {\n\t\t\treturn alpha.priority - alpha.priority;\n\t\t});\n\t\tfor(var i=0, l=shownCharacters.length; i<l; i++) {\n\t\t\tvar charName = shownCharacters[i].character;\n\t\t\tvar imgName = characters[charName].images[ cd.characters[i].mood ];\n\t\t\tvar img = novel.images[imgName];\n\t\t\tvar x;\n\t\t\tvar y = c.canvas.height - img.height;\n\t\t\t\n\t\t\tswitch(shownCharacters[i].position.toLowerCase()) {\n\t\t\t\tcase 'left': x = c.canvas.width/4 - img.width/2; break;\n\t\t\t\tcase 'right': x = c.canvas.width/4*3 - img.width/2; break;\n\t\t\t\tcase 'middle':\n\t\t\t\tdefault: x = c.canvas.width/2 - img.width/2;\n\t\t\t}\n\t\t\tctx.drawImage(img, x, y, img.width, img.height);\n\t\t}\n\n\t\t/*\n\t\t * FOREGROUND LAYERS\n\t\t */\n\t\tthis.draw.dialogueBox(c, textbox, novel.images.textbox);\n\t\t//this.draw.speakerBox(c, textbox);\n\n\t\tvar fontString = this.text.CSS_string(\n\t\t\ttextbox.font.size,\n\t\t\ttextbox.font.family,\n\t\t\ttextbox.font.style,\n\t\t\ttextbox.font.weight\n\t\t);\n\n\t\tctx.fillStyle = textbox.font.color;\n\t\tctx.textBaseline = 'top';\n\t\tctx.font = fontString;\n\n\t\tvar textToSay = cd.dialogue || '';\n\t\t//'A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.';\n\t\tvar textWidth = c.canvas.width - (textbox.margin*2 + textbox.padding*2);\n\t\tvar textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;\n\t\tvar textYstart = textbox.margin + textbox.padding;\n\t\tvar dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );\n\n\n\t\tthis.draw.dialogueText(c, dialogue, textbox, textbox.lines);\n\n\t\tvar name = cd.speaker || '';\n\t\tvar speakerColor = cd.speakerColor || textbox.font.color;\n\t\tif(cd.speaker in novel.characters) {\n\t\t\tname = novel.characters[cd.speaker].name;\n\t\t\tspeakerColor = novel.characters[cd.speaker].color;\n\t\t}\n\t\tthis.draw.speakerText(c, name, textbox.speakerbox, speakerColor);\n\n\t\t/* Add `this` to a lexical closure and call this loop function with the appropriate binding */\n\t\tvar _this = this;\n\t\trAF(function rAF_wrap(frametime){_this.loop.call(_this, frametime);});\n\t}\n};\n"
+    "content": "var logger = null;\nvar text = require('./Visuals/text.js');\nvar draw = require('./Visuals/draw.js');\nvar rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};\n\n/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}\n */\nexport class Visuals {\n\t/** @param {Novel} novelInstance - Novel to pull data from */\n\tconstructor(novelInstance) {\n\t\tlogger = eVN.logger;\n\t\t/** Reference to the novel we are drawing */\n\t\tthis.novel = novelInstance;\n\t\tthis.ctx = novelInstance.context;\n\n\t\t// Temporary. remove this. These are pulled from text/draw.js -\n\t\t// should be rewritten.\n\t\tthis.draw = draw;\n\t\tthis.text = text;\n\n\t\trAF(timeframe=> this.loop(timeframe));\n\t}\n\t/**\n\t * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout\n\t */\n\tloop(frametime) {\n\t\tvar novel = this.novel;\n\t\tvar ctx = novel.context;\n\t\tvar c = ctx;\n\t\tvar cd = novel.cdata;\n\t\tvar eVNML = novel.eVNML;\n\n\t\tvar textbox = eVNML.options.textbox;\n\t\tvar background = cd.background;\n\t\tvar characters = novel.characters;\n\t\tvar shownCharacters = novel.cdata.characters;\n\n\t\t/*\n\t\t * BACKGROUND LAYERS\n\t\t */\n\t\tif(background && background[0] !== '#'   &&   background in novel.images) background = novel.images[background];\n\t\tthis.draw.background(c, background || '#FFF');\n\t\t\n\t\t/*\n\t\t * CHARACTER LAYER\n\t\t */\n\t\t/* Reverse sort the shownCharacters array by shownCharacters[i].priority */\n\t\tshownCharacters.sort(function(alpha, beta) {\n\t\t\treturn alpha.priority - alpha.priority;\n\t\t});\n\t\tfor(var i=0, l=shownCharacters.length; i<l; i++) {\n\t\t\tvar charName = shownCharacters[i].character;\n\t\t\tvar imgName = characters[charName].images[ cd.characters[i].mood ];\n\t\t\tvar img = novel.images[imgName];\n\t\t\tvar x;\n\t\t\tvar y = c.canvas.height - img.height;\n\t\t\t\n\t\t\tswitch(shownCharacters[i].position.toLowerCase()) {\n\t\t\t\tcase 'left': x = c.canvas.width/4 - img.width/2; break;\n\t\t\t\tcase 'right': x = c.canvas.width/4*3 - img.width/2; break;\n\t\t\t\tcase 'middle':\n\t\t\t\tdefault: x = c.canvas.width/2 - img.width/2;\n\t\t\t}\n\t\t\tctx.drawImage(img, x, y, img.width, img.height);\n\t\t}\n\n\t\t/*\n\t\t * FOREGROUND LAYERS\n\t\t */\n\t\tthis.draw.dialogueBox(c, textbox, novel.images.textbox);\n\t\t//this.draw.speakerBox(c, textbox);\n\n\t\tvar fontString = this.text.CSS_string(\n\t\t\ttextbox.font.size,\n\t\t\ttextbox.font.family,\n\t\t\ttextbox.font.style,\n\t\t\ttextbox.font.weight\n\t\t);\n\n\t\tctx.fillStyle = textbox.font.color;\n\t\tctx.textBaseline = 'top';\n\t\tctx.font = fontString;\n\n\t\tvar textToSay = cd.dialogue || '';\n\t\t//'A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.';\n\t\tvar textWidth = c.canvas.width - (textbox.margin*2 + textbox.padding*2);\n\t\tvar textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;\n\t\tvar textYstart = textbox.margin + textbox.padding;\n\t\tvar dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );\n\n\n\t\tthis.draw.dialogueText(c, dialogue, textbox, textbox.lines);\n\n\t\tvar name = cd.speaker || '';\n\t\tvar speakerColor = cd.speakerColor || textbox.font.color;\n\t\tif(cd.speaker in novel.characters) {\n\t\t\tname = novel.characters[cd.speaker].name;\n\t\t\tspeakerColor = novel.characters[cd.speaker].color;\n\t\t}\n\t\tthis.draw.speakerText(c, name, textbox.speakerbox, speakerColor);\n\n\t\trAF(timeframe=> this.loop(timeframe));\n\t}\n};\n"
+  },
+  {
+    "kind": "variable",
+    "static": true,
+    "variation": null,
+    "name": "logger",
+    "memberof": "src/Visuals.js",
+    "longname": "src/Visuals.js~logger",
+    "access": null,
+    "export": false,
+    "importPath": "eVN/src/Visuals.js",
+    "importStyle": null,
+    "description": null,
+    "lineNumber": 1,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
   },
   {
     "kind": "variable",
@@ -1229,7 +1229,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 1,
+    "lineNumber": 2,
     "undocument": true,
     "type": {
       "types": [
@@ -1249,7 +1249,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 2,
+    "lineNumber": 3,
     "undocument": true,
     "type": {
       "types": [
@@ -1269,7 +1269,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 3,
+    "lineNumber": 4,
     "undocument": true,
     "type": {
       "types": [
@@ -1289,7 +1289,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": "{Visuals}",
     "description": "Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}",
-    "lineNumber": 7,
+    "lineNumber": 8,
     "interface": false
   },
   {
@@ -1301,7 +1301,7 @@
     "longname": "src/Visuals.js~Visuals#constructor",
     "access": null,
     "description": null,
-    "lineNumber": 9,
+    "lineNumber": 10,
     "params": [
       {
         "nullable": null,
@@ -1325,7 +1325,7 @@
     "longname": "src/Visuals.js~Visuals#novel",
     "access": null,
     "description": "Reference to the novel we are drawing",
-    "lineNumber": 11,
+    "lineNumber": 13,
     "type": {
       "types": [
         "*"
@@ -1341,13 +1341,67 @@
     "longname": "src/Visuals.js~Visuals#ctx",
     "access": null,
     "description": null,
-    "lineNumber": 12,
+    "lineNumber": 14,
     "undocument": true,
     "type": {
       "types": [
         "*"
       ]
     }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "draw",
+    "memberof": "src/Visuals.js~Visuals",
+    "longname": "src/Visuals.js~Visuals#draw",
+    "access": null,
+    "description": null,
+    "lineNumber": 18,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "member",
+    "static": false,
+    "variation": null,
+    "name": "text",
+    "memberof": "src/Visuals.js~Visuals",
+    "longname": "src/Visuals.js~Visuals#text",
+    "access": null,
+    "description": null,
+    "lineNumber": 19,
+    "undocument": true,
+    "type": {
+      "types": [
+        "*"
+      ]
+    }
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "loop",
+    "memberof": "src/Visuals.js~Visuals",
+    "longname": "src/Visuals.js~Visuals#loop",
+    "access": null,
+    "description": "Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout",
+    "lineNumber": 26,
+    "params": [
+      {
+        "name": "frametime",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "generator": false
   },
   {
     "kind": "external",
