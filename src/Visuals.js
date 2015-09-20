@@ -20,84 +20,59 @@ export class Visuals {
 
 		rAF(timeframe=> this.loop(timeframe));
 	}
-	/**
-	 * Assembles graphics and exports to {@link eVN.NovelClass#outContext}, then calls itself in a timeout
-	 */
+
+	/** Assembles graphics and exports to {@link Novel#outContext}, then calls itself in a timeout */
 	loop(frametime) {
 		var novel = this.novel;
 		var ctx = novel.context;
-		var c = ctx;
 		var cd = novel.cdata;
-		var eVNML = novel.eVNML;
 
-		var textbox = eVNML.options.textbox;
-		var background = cd.background;
+		var textbox = novel.eVNML.options.textbox;
+		var bgName = cd.background;
+		var background = null;
 		var characters = novel.characters;
-		var shownCharacters = novel.cdata.characters;
 
-		/*
-		 * BACKGROUND LAYERS
-		 */
-		if(background && background[0] !== '#'   &&   background in novel.images) background = novel.images[background];
-		this.draw.background(c, background || '#FFF');
+		/* BACKGROUND LAYERS */
+		if(!bgName) background = null;
+		else if(bgName[0] === '#') background = bgName;
+		else if(bgName in novel.images) background = novel.images[bgName];
+		this.draw.background(ctx, background || '#FFF');
 		
-		/*
-		 * CHARACTER LAYER
-		 */
-		/* Reverse sort the shownCharacters array by shownCharacters[i].priority */
-		shownCharacters.sort(function(alpha, beta) {
-			return alpha.priority - alpha.priority;
-		});
-		for(var i=0, l=shownCharacters.length; i<l; i++) {
-			var charName = shownCharacters[i].character;
-			var imgName = characters[charName].images[ cd.characters[i].mood ];
+		/* CHARACTER LAYER */
+		novel.cdata.characters.sort( (a, b)=> a.priority - b.priority ); //Move this to where we mutate cd.characters?
+		for(let char of cd.characters) {
+			var charName = char.character;
+			var imgName = characters[charName].images[char.mood ];
 			var img = novel.images[imgName];
-			var x;
-			var y = c.canvas.height - img.height;
+			var x = null;
+			var y = ctx.canvas.height - img.height;
 			
-			switch(shownCharacters[i].position.toLowerCase()) {
-				case 'left': x = c.canvas.width/4 - img.width/2; break;
-				case 'right': x = c.canvas.width/4*3 - img.width/2; break;
-				case 'middle':
-				default: x = c.canvas.width/2 - img.width/2;
+			switch( char.position.toLowerCase() ) {
+				case 'left': x = ctx.canvas.width/4 - img.width/2; break;
+				case 'right': x = ctx.canvas.width/4*3 - img.width/2; break;
+				case 'middle': /* Falls through to default */
+				default: x = ctx.canvas.width/2 - img.width/2;
 			}
 			ctx.drawImage(img, x, y, img.width, img.height);
 		}
 
-		/*
-		 * FOREGROUND LAYERS
-		 */
-		this.draw.dialogueBox(c, textbox, novel.images.textbox);
-		//this.draw.speakerBox(c, textbox);
+		/* FOREGROUND LAYERS */
+		this.draw.dialogueBox(ctx, textbox, novel.images.textbox);
+		//this.draw.speakerBox(ctx, textbox);
 
-		var fontString = this.text.CSS_string(
-			textbox.font.size,
-			textbox.font.family,
-			textbox.font.style,
-			textbox.font.weight
-		);
-
+		var fontString = this.text.CSS_string(textbox.font.size, textbox.font.family, textbox.font.style, textbox.font.weight);
 		ctx.fillStyle = textbox.font.color;
 		ctx.textBaseline = 'top';
 		ctx.font = fontString;
 
 		var textToSay = cd.dialogue || '';
-		//'A Dongner is a metaphysical entity believed to exist in a symbiotic relationship with the human soul. It does not have any control over the human body, nor can it interact directly with the physical realm in any way, however it has the same sensory input from the body as the soul it is attached to.';
-		var textWidth = c.canvas.width - (textbox.margin*2 + textbox.padding*2);
-		var textXstart = c.canvas.height - textbox.height - textbox.bottom + textbox.padding;
-		var textYstart = textbox.margin + textbox.padding;
-		var dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines); //this.text.split(c, cd.dialogue, textbox.font.size, textWidth );
-
-
-		this.draw.dialogueText(c, dialogue, textbox, textbox.lines);
+		var dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines);
+		this.draw.dialogueText(ctx, dialogue, textbox, textbox.lines);
 
 		var name = cd.speaker || '';
 		var speakerColor = cd.speakerColor || textbox.font.color;
-		if(cd.speaker in novel.characters) {
-			name = novel.characters[cd.speaker].name;
-			speakerColor = novel.characters[cd.speaker].color;
-		}
-		this.draw.speakerText(c, name, textbox.speakerbox, speakerColor);
+		if(cd.speaker in novel.characters) name = novel.characters[cd.speaker].name, speakerColor = novel.characters[cd.speaker].color;
+		this.draw.speakerText(ctx, name, textbox.speakerbox, speakerColor);
 
 		rAF(timeframe=> this.loop(timeframe));
 	}
