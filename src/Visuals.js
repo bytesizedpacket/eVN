@@ -1,5 +1,6 @@
 var logger = null;
-var text = require('./Visuals/text.js');
+//var text = require('./Visuals/text.js');
+import * as text from './Visuals/text.js';
 var draw = require('./Visuals/draw.js');
 var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
 
@@ -15,7 +16,9 @@ export class Visuals {
 
 		// Temporary. remove this. These are pulled from text/draw.js -
 		// should be rewritten.
+		/* @ignore */
 		this.draw = draw;
+		/** @ignore */
 		this.text = text;
 
 		rAF(timeframe=> this.loop(timeframe));

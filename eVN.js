@@ -546,10 +546,17 @@
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj['default'] = obj; return newObj; } }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+	//var text = require('./Visuals/text.js');
+
+	var _VisualsTextJs = __webpack_require__(3);
+
+	var text = _interopRequireWildcard(_VisualsTextJs);
+
 	var logger = null;
-	var text = __webpack_require__(3);
 	var draw = __webpack_require__(4);
 	var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function (callback) {
 		setTimeout(callback, 1000 / 60);
@@ -573,7 +580,9 @@
 
 			// Temporary. remove this. These are pulled from text/draw.js -
 			// should be rewritten.
+			/* @ignore */
 			this.draw = draw;
+			/** @ignore */
 			this.text = text;
 
 			rAF(function (timeframe) {
@@ -685,37 +694,38 @@
 	 * @module eVN/Visuals/text
 	 */
 
-	/* 
-	 * Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>context</code>
-	 * @param {object} context - Context to probe .measureText() on
+	/**Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>context</code>
+	 * @param {object} ctx - Context to probe .measureText() on
 	 * @param {string} string - The string to split
 	 * @param {number} fontSize - Font size of the context
 	 * @param {number} maxWidth - The maximum width of a string in the returned array <i>(in pixels)</i>
 	 * @param {bool} [doGuess=true] - Try estimating the line width using the font size and maxWidth propert
 	 * @param {string[]} [output] - An argument used by the function when recursing when concatenating previous attempts
-	 * @returns {string[]} An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code>
-	 */
+	 * @returns {string[]} An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code> */
 	'use strict';
 
-	exports.split = function (context, string, fontSize, maxWidth, doGuess, output) {
-		var ctx = context;
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+	exports.split = split;
+	exports.CSS_string = CSS_string;
+
+	function split(ctx, string, fontSize, maxWidth) {
+		var doGuess = arguments.length <= 4 || arguments[4] === undefined ? true : arguments[4];
+		var output = arguments.length <= 5 || arguments[5] === undefined ? [] : arguments[5];
 
 		doGuess = doGuess !== false;
-		output = output || [];
 
 		/* If the string contains a newline character, we'll split there and recurse */
 		if (string.indexOf('\n') !== -1) {
-			/* jshint shadow:true */
 			var newlineIndex = string.indexOf('\n');
 			var alpha = string.slice(0, newlineIndex);
 			var beta = string.slice(newlineIndex + 1);
-			return this.split(context, alpha, fontSize, maxWidth).concat(this.split(context, beta, fontSize, maxWidth));
+			return this.split(ctx, alpha, fontSize, maxWidth).concat(this.split(ctx, beta, fontSize, maxWidth));
 		}
 
 		/* If the string already fits inside `maxWidth` or can't be split, we won't loop through it */
-		if (ctx.measureText(string).width <= maxWidth) {
-			return [string];
-		}
+		if (ctx.measureText(string).width <= maxWidth) return [string];
 
 		var words = string.split(' ');
 		var probeFromIndex = words.length;
@@ -727,9 +737,7 @@
 			probeFromIndex = string.slice(0, probeFromChar).split(' ').length;
 
 			/* If the probe index is larger than the actual length of the words array, just start at the end of the array */
-			if (probeFromIndex > words.length) {
-				probeFromIndex = words.length;
-			}
+			if (probeFromIndex > words.length) probeFromIndex = words.length;
 		}
 
 		/* Loop backwards through the array of words, starting at the guessed length or from the end */
@@ -741,15 +749,13 @@
 			var width = ctx.measureText(alpha).width;
 
 			/* If the first chunk fits inside `maxWidth` on the first loop, we guessed too low. Restart without guessing */
-			if (doGuess === true && width < maxWidth && i === probeFromIndex) {
-				return this.split(context, string, fontSize, maxWidth, false);
-			}
+			if (doGuess && width < maxWidth && i === probeFromIndex) return this.split(ctx, string, fontSize, maxWidth, false);
 
 			/* If the first chunk fits inside `maxWidth`, append it to the finished string.
 	     If the second chunk is empty, return `output`, otherwise try again */
 			if (width < maxWidth) {
 				output.push(alpha);
-				return beta ? output.concat(this.split(context, beta, fontSize, maxWidth)) : output;
+				return beta ? output.concat(this.split(ctx, beta, fontSize, maxWidth)) : output;
 			}
 		}
 
@@ -757,31 +763,29 @@
 	    Append it to the output and give the end-developer a warning, recursive if there are more words left. */
 		eVN.logger.warn('Unable to split word "' + words[0] + '".');
 		output.push(words.shift());
-		if (words.length >= 1) {
-			return output.concat(this.split(context, words.join(' '), fontSize, maxWidth));
-		} else {
-			return output;
-		}
-	};
+		if (words.length >= 1) return output.concat(this.split(ctx, words.join(' '), fontSize, maxWidth));else return output;
+	}
 
-	/**
-	 * Generate a valid CSS font string
+	;
+
+	/**Generate a valid CSS font string
 	 * @param {string} [size=18] - The font-size to use in pixels
 	 * @param {string} [family=Comic Neue] - The font-family to use
 	 * @param {string} [style=normal] - Text style ('normal', 'italic', 'oblique')
 	 * @param {string} [weight=normal] - The weight to use (i.e. 'bold')
-	 * @returns {string} valid CSS font property value
-	 */
-	exports.CSS_string = function (size, family, style, weight) {
-		size = size || 18;
-		family = family || 'Comic Neue';
-		style = style || 'normal';
-		weight = weight || 'normal';
+	 * @returns {string} valid CSS font property value */
+
+	function CSS_string() {
+		var size = arguments.length <= 0 || arguments[0] === undefined ? 18 : arguments[0];
+		var family = arguments.length <= 1 || arguments[1] === undefined ? 'Comic Neue' : arguments[1];
+		var style = arguments.length <= 2 || arguments[2] === undefined ? 'normal' : arguments[2];
+		var weight = arguments.length <= 3 || arguments[3] === undefined ? 'normal' : arguments[3];
 
 		family = family[0] === "'" ? family : family[0] === '"' ? family : "'" + family + "'";
-
 		return style + ' ' + weight + ' ' + size + 'px ' + family;
-	};
+	}
+
+	;
 
 /***/ },
 /* 4 */
