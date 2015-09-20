@@ -1,6 +1,6 @@
 /**
  * @fileoverview Methods used in {@link module:eVN/Visuals} for rendering text
- * @module eVN/Visuals/text
+* @module eVN/Visuals/text
  */
 
 /**Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>context</code>
@@ -59,7 +59,7 @@ export function split(ctx, string, fontSize, maxWidth, doGuess=true, output=[]) 
 
 	/* If the script hasn't returned by now, it wasn't able to split the first index of `words`.
 	   Append it to the output and give the end-developer a warning, recursive if there are more words left. */
-	eVN.logger.warn('Unable to split word "'+ words[0] +'".');
+	eVN.logger.warn('Unable to split word "'+ words[0] +'".')();
 	output.push(words.shift());
 	if(words.length >= 1) return output.concat(this.split(ctx, words.join(' '), fontSize, maxWidth));
 	else return output;
