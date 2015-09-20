@@ -3,7 +3,7 @@
 * @module eVN/Visuals/text
  */
 
-/**Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>context</code>
+/**Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>ctx</code>
  * @param {object} ctx - Context to probe .measureText() on
  * @param {string} string - The string to split
  * @param {number} fontSize - Font size of the context
@@ -43,7 +43,6 @@ export function split(ctx, string, fontSize, maxWidth, doGuess=true, output=[]) 
 		/* Split the array into two chunks and stringify them */
 		var alpha = words.slice(0, i).join(' ');
 		var beta = words.slice(i, words.length).join(' ');
-
 		var width = ctx.measureText(alpha).width;
 
 		/* If the first chunk fits inside `maxWidth` on the first loop, we guessed too low. Restart without guessing */

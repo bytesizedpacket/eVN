@@ -40,7 +40,14 @@
 
 
 
-
+<div data-ice="functionWrap">
+  <h2><a href="function/">Function</a></h2>
+  <ul>
+    
+  <li data-ice="functionDoc"><span><a href="function/index.html#static-function-CSS_string">CSS_string</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-split">split</a></span></li>
+</ul>
+</div>
 
 
 
@@ -51,7 +58,8 @@
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/Visuals.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">var logger = null;
-var text = require(&apos;./Visuals/text.js&apos;);
+//var text = require(&apos;./Visuals/text.js&apos;);
+import * as text from &apos;./Visuals/text.js&apos;;
 var draw = require(&apos;./Visuals/draw.js&apos;);
 var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
 
@@ -67,7 +75,9 @@ export class Visuals {
 
 		// Temporary. remove this. These are pulled from text/draw.js -
 		// should be rewritten.
+		/* @ignore */
 		this.draw = draw;
+		/** @ignore */
 		this.text = text;
 
 		rAF(timeframe=&gt; this.loop(timeframe));

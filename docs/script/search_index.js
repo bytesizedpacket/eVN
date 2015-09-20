@@ -1,5 +1,11 @@
 window.esdocSearchIndex = [
   [
+    "evn/src/visuals/text.js~css_string",
+    "function/index.html#static-function-CSS_string",
+    "<span>CSS_string</span> <span class=\"search-result-import-path\">eVN/src/Visuals/text.js</span>",
+    "function"
+  ],
+  [
     "evn/src/logger.js~logger",
     "class/src/Logger.js~Logger.html",
     "<span>Logger</span> <span class=\"search-result-import-path\">eVN/src/Logger.js</span>",
@@ -22,6 +28,12 @@ window.esdocSearchIndex = [
     "class/src/Visuals.js~Visuals.html",
     "<span>Visuals</span> <span class=\"search-result-import-path\">eVN/src/Visuals.js</span>",
     "class"
+  ],
+  [
+    "evn/src/visuals/text.js~split",
+    "function/index.html#static-function-split",
+    "<span>split</span> <span class=\"search-result-import-path\">eVN/src/Visuals/text.js</span>",
+    "function"
   ],
   [
     "builtinexternal/ecmascriptexternal.js~array",
@@ -525,12 +537,6 @@ window.esdocSearchIndex = [
     "src/visuals.js~visuals#novel",
     "class/src/Visuals.js~Visuals.html#instance-member-novel",
     "src/Visuals.js~Visuals#novel",
-    "member"
-  ],
-  [
-    "src/visuals.js~visuals#text",
-    "class/src/Visuals.js~Visuals.html#instance-member-text",
-    "src/Visuals.js~Visuals#text",
     "member"
   ],
   [

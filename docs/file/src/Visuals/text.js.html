@@ -40,7 +40,14 @@
 
 
 
-
+<div data-ice="functionWrap">
+  <h2><a href="function/">Function</a></h2>
+  <ul>
+    
+  <li data-ice="functionDoc"><span><a href="function/index.html#static-function-CSS_string">CSS_string</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-split">split</a></span></li>
+</ul>
+</div>
 
 
 
@@ -52,38 +59,30 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/Visuals/text.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
  * @fileoverview Methods used in {@link module:eVN/Visuals} for rendering text
- * @module eVN/Visuals/text
+* @module eVN/Visuals/text
  */
 
-/* 
- * Explodes &lt;code&gt;string&lt;/code&gt; into an array of strings that won&apos;t exceed &lt;code&gt;maxWidth&lt;/code&gt; when drawn on &lt;code&gt;context&lt;/code&gt;
- * @param {object} context - Context to probe .measureText() on
+/**Explodes &lt;code&gt;string&lt;/code&gt; into an array of strings that won&apos;t exceed &lt;code&gt;maxWidth&lt;/code&gt; when drawn on &lt;code&gt;ctx&lt;/code&gt;
+ * @param {object} ctx - Context to probe .measureText() on
  * @param {string} string - The string to split
  * @param {number} fontSize - Font size of the context
  * @param {number} maxWidth - The maximum width of a string in the returned array &lt;i&gt;(in pixels)&lt;/i&gt;
  * @param {bool} [doGuess=true] - Try estimating the line width using the font size and maxWidth propert
  * @param {string[]} [output] - An argument used by the function when recursing when concatenating previous attempts
- * @returns {string[]} An array containing slices of &lt;code&gt;string&lt;/code&gt; with a maximum pixel width of &lt;code&gt;maxWidth&lt;/code&gt;
- */
-exports.split = function(context, string, fontSize, maxWidth, doGuess, output) {
-	var ctx = context;
-
+ * @returns {string[]} An array containing slices of &lt;code&gt;string&lt;/code&gt; with a maximum pixel width of &lt;code&gt;maxWidth&lt;/code&gt; */
+export function split(ctx, string, fontSize, maxWidth, doGuess=true, output=[]) {
 	doGuess = doGuess !== false;
-	output = output || [];
 
 	/* If the string contains a newline character, we&apos;ll split there and recurse */
 	if(string.indexOf(&apos;\n&apos;) !== -1) {
-		/* jshint shadow:true */
 		var newlineIndex = string.indexOf(&apos;\n&apos;);
 		var alpha = string.slice(0, newlineIndex);
 		var beta = string.slice(newlineIndex+1);
-		return this.split(context, alpha, fontSize, maxWidth).concat(this.split(context, beta, fontSize, maxWidth));
+		return this.split(ctx, alpha, fontSize, maxWidth).concat(this.split(ctx, beta, fontSize, maxWidth));
 	}
 
 	/* If the string already fits inside `maxWidth` or can&apos;t be split, we won&apos;t loop through it */
-	if(ctx.measureText(string).width &lt;= maxWidth) {
-		return [string];
-	}
+	if(ctx.measureText(string).width &lt;= maxWidth) return [string];
 
 	var words = string.split(&apos; &apos;);
 	var probeFromIndex = words.length;
@@ -95,9 +94,7 @@ exports.split = function(context, string, fontSize, maxWidth, doGuess, output) {
 		probeFromIndex = string.slice(0, probeFromChar).split(&apos; &apos;).length;
 
 		/* If the probe index is larger than the actual length of the words array, just start at the end of the array */
-		if(probeFromIndex &gt; words.length) {
-			probeFromIndex = words.length;
-		}
+		if(probeFromIndex &gt; words.length) probeFromIndex = words.length;
 	}
 
 	/* Loop backwards through the array of words, starting at the guessed length or from the end */
@@ -105,49 +102,35 @@ exports.split = function(context, string, fontSize, maxWidth, doGuess, output) {
 		/* Split the array into two chunks and stringify them */
 		var alpha = words.slice(0, i).join(&apos; &apos;);
 		var beta = words.slice(i, words.length).join(&apos; &apos;);
-
 		var width = ctx.measureText(alpha).width;
 
 		/* If the first chunk fits inside `maxWidth` on the first loop, we guessed too low. Restart without guessing */
-		if(doGuess === true   &amp;&amp;   width &lt; maxWidth   &amp;&amp;   i === probeFromIndex) {
-			return this.split(context, string, fontSize, maxWidth, false);
-		}
+		if(doGuess &amp;&amp; width &lt; maxWidth &amp;&amp; i === probeFromIndex) return this.split(ctx, string, fontSize, maxWidth, false);
 
 		/* If the first chunk fits inside `maxWidth`, append it to the finished string.
 		   If the second chunk is empty, return `output`, otherwise try again */
 		if(width &lt; maxWidth) {
 			output.push(alpha);
-			return beta? output.concat(this.split(context, beta, fontSize, maxWidth)) : output;
+			return beta? output.concat( this.split(ctx, beta, fontSize, maxWidth) ) : output;
 		}
 	}
 
 	/* If the script hasn&apos;t returned by now, it wasn&apos;t able to split the first index of `words`.
 	   Append it to the output and give the end-developer a warning, recursive if there are more words left. */
-	eVN.logger.warn(&apos;Unable to split word &quot;&apos;+ words[0] +&apos;&quot;.&apos;);
+	eVN.logger.warn(&apos;Unable to split word &quot;&apos;+ words[0] +&apos;&quot;.&apos;)();
 	output.push(words.shift());
-	if(words.length &gt;= 1) {
-		return output.concat(this.split(context, words.join(&apos; &apos;), fontSize, maxWidth));
-	} else {
-		return output;
-	}
+	if(words.length &gt;= 1) return output.concat(this.split(ctx, words.join(&apos; &apos;), fontSize, maxWidth));
+	else return output;
 };
 
-/**
- * Generate a valid CSS font string
+/**Generate a valid CSS font string
  * @param {string} [size=18] - The font-size to use in pixels
  * @param {string} [family=Comic Neue] - The font-family to use
  * @param {string} [style=normal] - Text style (&apos;normal&apos;, &apos;italic&apos;, &apos;oblique&apos;)
  * @param {string} [weight=normal] - The weight to use (i.e. &apos;bold&apos;)
- * @returns {string} valid CSS font property value
- */
-exports.CSS_string = function(size, family, style, weight) {
-	size = size || 18;
-	family = family || &apos;Comic Neue&apos;;
-	style = style || &apos;normal&apos;;
-	weight = weight || &apos;normal&apos;;
-
+ * @returns {string} valid CSS font property value */
+export function CSS_string(size=18, family=&apos;Comic Neue&apos;, style=&apos;normal&apos;, weight=&apos;normal&apos;) {
 	family = family[0]===&quot;&apos;&quot;? family : family[0]===&apos;&quot;&apos;? family : &quot;&apos;&quot;+family+&quot;&apos;&quot;;
-
 	return style +&apos; &apos;+ weight +&apos; &apos;+ size+&apos;px &apos;+ family;
 };
 </code></pre>

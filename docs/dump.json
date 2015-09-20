@@ -1035,8 +1035,8 @@
     "longname": "src/Visuals/text.js",
     "access": null,
     "description": null,
-    "lineNumber": 16,
-    "content": "/**\n * @fileoverview Methods used in {@link module:eVN/Visuals} for rendering text\n * @module eVN/Visuals/text\n */\n\n/* \n * Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>context</code>\n * @param {object} context - Context to probe .measureText() on\n * @param {string} string - The string to split\n * @param {number} fontSize - Font size of the context\n * @param {number} maxWidth - The maximum width of a string in the returned array <i>(in pixels)</i>\n * @param {bool} [doGuess=true] - Try estimating the line width using the font size and maxWidth propert\n * @param {string[]} [output] - An argument used by the function when recursing when concatenating previous attempts\n * @returns {string[]} An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code>\n */\nexports.split = function(context, string, fontSize, maxWidth, doGuess, output) {\n\tvar ctx = context;\n\n\tdoGuess = doGuess !== false;\n\toutput = output || [];\n\n\t/* If the string contains a newline character, we'll split there and recurse */\n\tif(string.indexOf('\\n') !== -1) {\n\t\t/* jshint shadow:true */\n\t\tvar newlineIndex = string.indexOf('\\n');\n\t\tvar alpha = string.slice(0, newlineIndex);\n\t\tvar beta = string.slice(newlineIndex+1);\n\t\treturn this.split(context, alpha, fontSize, maxWidth).concat(this.split(context, beta, fontSize, maxWidth));\n\t}\n\n\t/* If the string already fits inside `maxWidth` or can't be split, we won't loop through it */\n\tif(ctx.measureText(string).width <= maxWidth) {\n\t\treturn [string];\n\t}\n\n\tvar words = string.split(' ');\n\tvar probeFromIndex = words.length;\n\n\tif(doGuess) {\n\t\t/* Try guessing how many words to start probing with */\n\t\tvar guessedLineLength = maxWidth / (fontSize /2.5);\n\t\tvar probeFromChar = string.indexOf(' ', guessedLineLength);\n\t\tprobeFromIndex = string.slice(0, probeFromChar).split(' ').length;\n\n\t\t/* If the probe index is larger than the actual length of the words array, just start at the end of the array */\n\t\tif(probeFromIndex > words.length) {\n\t\t\tprobeFromIndex = words.length;\n\t\t}\n\t}\n\n\t/* Loop backwards through the array of words, starting at the guessed length or from the end */\n\tfor(var i=probeFromIndex; i>=1; i--) {\n\t\t/* Split the array into two chunks and stringify them */\n\t\tvar alpha = words.slice(0, i).join(' ');\n\t\tvar beta = words.slice(i, words.length).join(' ');\n\n\t\tvar width = ctx.measureText(alpha).width;\n\n\t\t/* If the first chunk fits inside `maxWidth` on the first loop, we guessed too low. Restart without guessing */\n\t\tif(doGuess === true   &&   width < maxWidth   &&   i === probeFromIndex) {\n\t\t\treturn this.split(context, string, fontSize, maxWidth, false);\n\t\t}\n\n\t\t/* If the first chunk fits inside `maxWidth`, append it to the finished string.\n\t\t   If the second chunk is empty, return `output`, otherwise try again */\n\t\tif(width < maxWidth) {\n\t\t\toutput.push(alpha);\n\t\t\treturn beta? output.concat(this.split(context, beta, fontSize, maxWidth)) : output;\n\t\t}\n\t}\n\n\t/* If the script hasn't returned by now, it wasn't able to split the first index of `words`.\n\t   Append it to the output and give the end-developer a warning, recursive if there are more words left. */\n\teVN.logger.warn('Unable to split word \"'+ words[0] +'\".');\n\toutput.push(words.shift());\n\tif(words.length >= 1) {\n\t\treturn output.concat(this.split(context, words.join(' '), fontSize, maxWidth));\n\t} else {\n\t\treturn output;\n\t}\n};\n\n/**\n * Generate a valid CSS font string\n * @param {string} [size=18] - The font-size to use in pixels\n * @param {string} [family=Comic Neue] - The font-family to use\n * @param {string} [style=normal] - Text style ('normal', 'italic', 'oblique')\n * @param {string} [weight=normal] - The weight to use (i.e. 'bold')\n * @returns {string} valid CSS font property value\n */\nexports.CSS_string = function(size, family, style, weight) {\n\tsize = size || 18;\n\tfamily = family || 'Comic Neue';\n\tstyle = style || 'normal';\n\tweight = weight || 'normal';\n\n\tfamily = family[0]===\"'\"? family : family[0]==='\"'? family : \"'\"+family+\"'\";\n\n\treturn style +' '+ weight +' '+ size+'px '+ family;\n};\n"
+    "lineNumber": 14,
+    "content": "/**\n * @fileoverview Methods used in {@link module:eVN/Visuals} for rendering text\n* @module eVN/Visuals/text\n */\n\n/**Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>ctx</code>\n * @param {object} ctx - Context to probe .measureText() on\n * @param {string} string - The string to split\n * @param {number} fontSize - Font size of the context\n * @param {number} maxWidth - The maximum width of a string in the returned array <i>(in pixels)</i>\n * @param {bool} [doGuess=true] - Try estimating the line width using the font size and maxWidth propert\n * @param {string[]} [output] - An argument used by the function when recursing when concatenating previous attempts\n * @returns {string[]} An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code> */\nexport function split(ctx, string, fontSize, maxWidth, doGuess=true, output=[]) {\n\tdoGuess = doGuess !== false;\n\n\t/* If the string contains a newline character, we'll split there and recurse */\n\tif(string.indexOf('\\n') !== -1) {\n\t\tvar newlineIndex = string.indexOf('\\n');\n\t\tvar alpha = string.slice(0, newlineIndex);\n\t\tvar beta = string.slice(newlineIndex+1);\n\t\treturn this.split(ctx, alpha, fontSize, maxWidth).concat(this.split(ctx, beta, fontSize, maxWidth));\n\t}\n\n\t/* If the string already fits inside `maxWidth` or can't be split, we won't loop through it */\n\tif(ctx.measureText(string).width <= maxWidth) return [string];\n\n\tvar words = string.split(' ');\n\tvar probeFromIndex = words.length;\n\n\tif(doGuess) {\n\t\t/* Try guessing how many words to start probing with */\n\t\tvar guessedLineLength = maxWidth / (fontSize /2.5);\n\t\tvar probeFromChar = string.indexOf(' ', guessedLineLength);\n\t\tprobeFromIndex = string.slice(0, probeFromChar).split(' ').length;\n\n\t\t/* If the probe index is larger than the actual length of the words array, just start at the end of the array */\n\t\tif(probeFromIndex > words.length) probeFromIndex = words.length;\n\t}\n\n\t/* Loop backwards through the array of words, starting at the guessed length or from the end */\n\tfor(var i=probeFromIndex; i>=1; i--) {\n\t\t/* Split the array into two chunks and stringify them */\n\t\tvar alpha = words.slice(0, i).join(' ');\n\t\tvar beta = words.slice(i, words.length).join(' ');\n\t\tvar width = ctx.measureText(alpha).width;\n\n\t\t/* If the first chunk fits inside `maxWidth` on the first loop, we guessed too low. Restart without guessing */\n\t\tif(doGuess && width < maxWidth && i === probeFromIndex) return this.split(ctx, string, fontSize, maxWidth, false);\n\n\t\t/* If the first chunk fits inside `maxWidth`, append it to the finished string.\n\t\t   If the second chunk is empty, return `output`, otherwise try again */\n\t\tif(width < maxWidth) {\n\t\t\toutput.push(alpha);\n\t\t\treturn beta? output.concat( this.split(ctx, beta, fontSize, maxWidth) ) : output;\n\t\t}\n\t}\n\n\t/* If the script hasn't returned by now, it wasn't able to split the first index of `words`.\n\t   Append it to the output and give the end-developer a warning, recursive if there are more words left. */\n\teVN.logger.warn('Unable to split word \"'+ words[0] +'\".')();\n\toutput.push(words.shift());\n\tif(words.length >= 1) return output.concat(this.split(ctx, words.join(' '), fontSize, maxWidth));\n\telse return output;\n};\n\n/**Generate a valid CSS font string\n * @param {string} [size=18] - The font-size to use in pixels\n * @param {string} [family=Comic Neue] - The font-family to use\n * @param {string} [style=normal] - Text style ('normal', 'italic', 'oblique')\n * @param {string} [weight=normal] - The weight to use (i.e. 'bold')\n * @returns {string} valid CSS font property value */\nexport function CSS_string(size=18, family='Comic Neue', style='normal', weight='normal') {\n\tfamily = family[0]===\"'\"? family : family[0]==='\"'? family : \"'\"+family+\"'\";\n\treturn style +' '+ weight +' '+ size+'px '+ family;\n};\n"
   },
   {
     "kind": "function",
@@ -1046,63 +1046,88 @@
     "memberof": "src/Visuals/text.js",
     "longname": "src/Visuals/text.js~split",
     "access": null,
-    "export": false,
+    "export": true,
     "importPath": "eVN/src/Visuals/text.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 16,
+    "importStyle": "{split}",
+    "description": "Explodes <code>string</code> into an array of strings that won't exceed <code>maxWidth</code> when drawn on <code>ctx</code>",
+    "lineNumber": 14,
     "unknown": [
       {
-        "tagName": "@fileoverview",
-        "tagValue": "Methods used in {@link module:eVN/Visuals} for rendering text"
-      },
-      {
-        "tagName": "@module",
-        "tagValue": "eVN/Visuals/text"
+        "tagName": "@returns",
+        "tagValue": "{string[]} An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code>"
       }
     ],
     "params": [
       {
-        "name": "context",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "object"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "ctx",
+        "description": "Context to probe .measureText() on"
       },
       {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "string",
-        "types": [
-          "*"
-        ]
+        "description": "The string to split"
       },
       {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "fontSize",
-        "types": [
-          "*"
-        ]
+        "description": "Font size of the context"
       },
       {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": false,
         "name": "maxWidth",
-        "types": [
-          "*"
-        ]
+        "description": "The maximum width of a string in the returned array <i>(in pixels)</i>"
       },
       {
+        "nullable": null,
+        "types": [
+          "bool"
+        ],
+        "spread": false,
+        "optional": true,
+        "defaultValue": "true",
+        "defaultRaw": true,
         "name": "doGuess",
-        "types": [
-          "*"
-        ]
+        "description": "Try estimating the line width using the font size and maxWidth propert"
       },
       {
-        "name": "output",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "string[]"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "output",
+        "description": "An argument used by the function when recursing when concatenating previous attempts"
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "string[]"
+      ],
+      "spread": false,
+      "description": "An array containing slices of <code>string</code> with a maximum pixel width of <code>maxWidth</code>"
     },
     "generator": false
   },
@@ -1114,11 +1139,11 @@
     "memberof": "src/Visuals/text.js",
     "longname": "src/Visuals/text.js~CSS_string",
     "access": null,
-    "export": false,
+    "export": true,
     "importPath": "eVN/src/Visuals/text.js",
-    "importStyle": null,
+    "importStyle": "{CSS_string}",
     "description": "Generate a valid CSS font string",
-    "lineNumber": 91,
+    "lineNumber": 73,
     "unknown": [
       {
         "tagName": "@returns",
@@ -1195,7 +1220,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "var logger = null;\nvar text = require('./Visuals/text.js');\nvar draw = require('./Visuals/draw.js');\nvar rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};\n\n/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}\n */\nexport class Visuals {\n\t/** @param {Novel} novelInstance - Novel to pull data from */\n\tconstructor(novelInstance) {\n\t\tlogger = eVN.logger;\n\t\t/** Reference to the novel we are drawing */\n\t\tthis.novel = novelInstance;\n\t\tthis.ctx = novelInstance.context;\n\n\t\t// Temporary. remove this. These are pulled from text/draw.js -\n\t\t// should be rewritten.\n\t\tthis.draw = draw;\n\t\tthis.text = text;\n\n\t\trAF(timeframe=> this.loop(timeframe));\n\t}\n\n\t/** Assembles graphics and exports to {@link Novel#outContext}, then calls itself in a timeout */\n\tloop(frametime) {\n\t\tvar novel = this.novel;\n\t\tvar ctx = novel.context;\n\t\tvar cd = novel.cdata;\n\n\t\tvar textbox = novel.eVNML.options.textbox;\n\t\tvar bgName = cd.background;\n\t\tvar background = null;\n\t\tvar characters = novel.characters;\n\n\t\t/* BACKGROUND LAYERS */\n\t\tif(!bgName) background = null;\n\t\telse if(bgName[0] === '#') background = bgName;\n\t\telse if(bgName in novel.images) background = novel.images[bgName];\n\t\tthis.draw.background(ctx, background || '#FFF');\n\t\t\n\t\t/* CHARACTER LAYER */\n\t\tnovel.cdata.characters.sort( (a, b)=> a.priority - b.priority ); //Move this to where we mutate cd.characters?\n\t\tfor(let char of cd.characters) {\n\t\t\tvar charName = char.character;\n\t\t\tvar imgName = characters[charName].images[char.mood ];\n\t\t\tvar img = novel.images[imgName];\n\t\t\tvar x = null;\n\t\t\tvar y = ctx.canvas.height - img.height;\n\t\t\t\n\t\t\tswitch( char.position.toLowerCase() ) {\n\t\t\t\tcase 'left': x = ctx.canvas.width/4 - img.width/2; break;\n\t\t\t\tcase 'right': x = ctx.canvas.width/4*3 - img.width/2; break;\n\t\t\t\tcase 'middle': /* Falls through to default */\n\t\t\t\tdefault: x = ctx.canvas.width/2 - img.width/2;\n\t\t\t}\n\t\t\tctx.drawImage(img, x, y, img.width, img.height);\n\t\t}\n\n\t\t/* FOREGROUND LAYERS */\n\t\tthis.draw.dialogueBox(ctx, textbox, novel.images.textbox);\n\t\t//this.draw.speakerBox(ctx, textbox);\n\n\t\tvar fontString = this.text.CSS_string(textbox.font.size, textbox.font.family, textbox.font.style, textbox.font.weight);\n\t\tctx.fillStyle = textbox.font.color;\n\t\tctx.textBaseline = 'top';\n\t\tctx.font = fontString;\n\n\t\tvar textToSay = cd.dialogue || '';\n\t\tvar dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines);\n\t\tthis.draw.dialogueText(ctx, dialogue, textbox, textbox.lines);\n\n\t\tvar name = cd.speaker || '';\n\t\tvar speakerColor = cd.speakerColor || textbox.font.color;\n\t\tif(cd.speaker in novel.characters) name = novel.characters[cd.speaker].name, speakerColor = novel.characters[cd.speaker].color;\n\t\tthis.draw.speakerText(ctx, name, textbox.speakerbox, speakerColor);\n\n\t\trAF(timeframe=> this.loop(timeframe));\n\t}\n};\n"
+    "content": "var logger = null;\n//var text = require('./Visuals/text.js');\nimport * as text from './Visuals/text.js';\nvar draw = require('./Visuals/draw.js');\nvar rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};\n\n/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}\n */\nexport class Visuals {\n\t/** @param {Novel} novelInstance - Novel to pull data from */\n\tconstructor(novelInstance) {\n\t\tlogger = eVN.logger;\n\t\t/** Reference to the novel we are drawing */\n\t\tthis.novel = novelInstance;\n\t\tthis.ctx = novelInstance.context;\n\n\t\t// Temporary. remove this. These are pulled from text/draw.js -\n\t\t// should be rewritten.\n\t\t/* @ignore */\n\t\tthis.draw = draw;\n\t\t/** @ignore */\n\t\tthis.text = text;\n\n\t\trAF(timeframe=> this.loop(timeframe));\n\t}\n\n\t/** Assembles graphics and exports to {@link Novel#outContext}, then calls itself in a timeout */\n\tloop(frametime) {\n\t\tvar novel = this.novel;\n\t\tvar ctx = novel.context;\n\t\tvar cd = novel.cdata;\n\n\t\tvar textbox = novel.eVNML.options.textbox;\n\t\tvar bgName = cd.background;\n\t\tvar background = null;\n\t\tvar characters = novel.characters;\n\n\t\t/* BACKGROUND LAYERS */\n\t\tif(!bgName) background = null;\n\t\telse if(bgName[0] === '#') background = bgName;\n\t\telse if(bgName in novel.images) background = novel.images[bgName];\n\t\tthis.draw.background(ctx, background || '#FFF');\n\t\t\n\t\t/* CHARACTER LAYER */\n\t\tnovel.cdata.characters.sort( (a, b)=> a.priority - b.priority ); //Move this to where we mutate cd.characters?\n\t\tfor(let char of cd.characters) {\n\t\t\tvar charName = char.character;\n\t\t\tvar imgName = characters[charName].images[char.mood ];\n\t\t\tvar img = novel.images[imgName];\n\t\t\tvar x = null;\n\t\t\tvar y = ctx.canvas.height - img.height;\n\t\t\t\n\t\t\tswitch( char.position.toLowerCase() ) {\n\t\t\t\tcase 'left': x = ctx.canvas.width/4 - img.width/2; break;\n\t\t\t\tcase 'right': x = ctx.canvas.width/4*3 - img.width/2; break;\n\t\t\t\tcase 'middle': /* Falls through to default */\n\t\t\t\tdefault: x = ctx.canvas.width/2 - img.width/2;\n\t\t\t}\n\t\t\tctx.drawImage(img, x, y, img.width, img.height);\n\t\t}\n\n\t\t/* FOREGROUND LAYERS */\n\t\tthis.draw.dialogueBox(ctx, textbox, novel.images.textbox);\n\t\t//this.draw.speakerBox(ctx, textbox);\n\n\t\tvar fontString = this.text.CSS_string(textbox.font.size, textbox.font.family, textbox.font.style, textbox.font.weight);\n\t\tctx.fillStyle = textbox.font.color;\n\t\tctx.textBaseline = 'top';\n\t\tctx.font = fontString;\n\n\t\tvar textToSay = cd.dialogue || '';\n\t\tvar dialogue = cd.dialogueLines.slice(cd.startLine).slice(0, textbox.lines);\n\t\tthis.draw.dialogueText(ctx, dialogue, textbox, textbox.lines);\n\n\t\tvar name = cd.speaker || '';\n\t\tvar speakerColor = cd.speakerColor || textbox.font.color;\n\t\tif(cd.speaker in novel.characters) name = novel.characters[cd.speaker].name, speakerColor = novel.characters[cd.speaker].color;\n\t\tthis.draw.speakerText(ctx, name, textbox.speakerbox, speakerColor);\n\n\t\trAF(timeframe=> this.loop(timeframe));\n\t}\n};\n"
   },
   {
     "kind": "variable",
@@ -1221,26 +1246,6 @@
     "kind": "variable",
     "static": true,
     "variation": null,
-    "name": "text",
-    "memberof": "src/Visuals.js",
-    "longname": "src/Visuals.js~text",
-    "access": null,
-    "export": false,
-    "importPath": "eVN/src/Visuals.js",
-    "importStyle": null,
-    "description": null,
-    "lineNumber": 2,
-    "undocument": true,
-    "type": {
-      "types": [
-        "*"
-      ]
-    }
-  },
-  {
-    "kind": "variable",
-    "static": true,
-    "variation": null,
     "name": "draw",
     "memberof": "src/Visuals.js",
     "longname": "src/Visuals.js~draw",
@@ -1249,7 +1254,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 3,
+    "lineNumber": 4,
     "undocument": true,
     "type": {
       "types": [
@@ -1269,7 +1274,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": null,
     "description": null,
-    "lineNumber": 4,
+    "lineNumber": 5,
     "undocument": true,
     "type": {
       "types": [
@@ -1289,7 +1294,7 @@
     "importPath": "eVN/src/Visuals.js",
     "importStyle": "{Visuals}",
     "description": "Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}",
-    "lineNumber": 8,
+    "lineNumber": 9,
     "interface": false
   },
   {
@@ -1301,7 +1306,7 @@
     "longname": "src/Visuals.js~Visuals#constructor",
     "access": null,
     "description": null,
-    "lineNumber": 10,
+    "lineNumber": 11,
     "params": [
       {
         "nullable": null,
@@ -1325,7 +1330,7 @@
     "longname": "src/Visuals.js~Visuals#novel",
     "access": null,
     "description": "Reference to the novel we are drawing",
-    "lineNumber": 13,
+    "lineNumber": 14,
     "type": {
       "types": [
         "*"
@@ -1341,7 +1346,7 @@
     "longname": "src/Visuals.js~Visuals#ctx",
     "access": null,
     "description": null,
-    "lineNumber": 14,
+    "lineNumber": 15,
     "undocument": true,
     "type": {
       "types": [
@@ -1358,7 +1363,7 @@
     "longname": "src/Visuals.js~Visuals#draw",
     "access": null,
     "description": null,
-    "lineNumber": 18,
+    "lineNumber": 20,
     "undocument": true,
     "type": {
       "types": [
@@ -1375,8 +1380,8 @@
     "longname": "src/Visuals.js~Visuals#text",
     "access": null,
     "description": null,
-    "lineNumber": 19,
-    "undocument": true,
+    "lineNumber": 22,
+    "ignore": true,
     "type": {
       "types": [
         "*"
@@ -1392,7 +1397,7 @@
     "longname": "src/Visuals.js~Visuals#loop",
     "access": null,
     "description": "Assembles graphics and exports to {@link Novel#outContext}, then calls itself in a timeout",
-    "lineNumber": 25,
+    "lineNumber": 28,
     "params": [
       {
         "name": "frametime",
