@@ -1,5 +1,17 @@
 import { Visuals } from './Visuals.js';
 var logger = null;
+var defaultEvnData = {
+	options: {
+		textbox: {
+			font: { size: 17, family: 'Comic Neue', style: 'normal', weight: 'normal', color: '#EEE' },
+			lines: 3, lineHeight: 22, bottom: 95, left: 40, maxWidth: 750,
+			speakerbox: { left: 25, bottom: 130, maxWidth: 150 }
+		},
+	},
+	audio: {}, images: {}, characters: {},
+	scenes: {start: ['No scenes defined']}
+};
+/* Empty eVN project = JSON.stringify(defaultEvnData, null, '\t'); */
 
 /** Core novel class */
 export class Novel {
@@ -108,9 +120,8 @@ export class Novel {
 	
 	/** Validates the end-developer input and applies it on top of a set of default values */
 	parse_eVNML(eVNML) {
-		var defaults = require('./defaults.evn');
 		var userData = eVNML;
-		var returned_eVNML = defaults;
+		var returned_eVNML = defaultEvnData;
 
 		try {
 			userData = JSON.parse(eVNML);
@@ -139,7 +150,7 @@ export class Novel {
 
 				return out;
 			};
-			returned_eVNML = merge(userData, defaults);
+			returned_eVNML = merge(userData, defaultEvnData);
 		} catch(e) {
 			eVN.logger.throw(e);
 		}
