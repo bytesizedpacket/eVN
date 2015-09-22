@@ -30,6 +30,36 @@ window.esdocSearchIndex = [
     "class"
   ],
   [
+    "evn/src/visuals/draw.js~background",
+    "function/index.html#static-function-background",
+    "<span>background</span> <span class=\"search-result-import-path\">eVN/src/Visuals/draw.js</span>",
+    "function"
+  ],
+  [
+    "evn/src/visuals/draw.js~dialoguebox",
+    "function/index.html#static-function-dialogueBox",
+    "<span>dialogueBox</span> <span class=\"search-result-import-path\">eVN/src/Visuals/draw.js</span>",
+    "function"
+  ],
+  [
+    "evn/src/visuals/draw.js~dialoguetext",
+    "function/index.html#static-function-dialogueText",
+    "<span>dialogueText</span> <span class=\"search-result-import-path\">eVN/src/Visuals/draw.js</span>",
+    "function"
+  ],
+  [
+    "evn/src/visuals/draw.js~speakerbox",
+    "function/index.html#static-function-speakerBox",
+    "<span>speakerBox</span> <span class=\"search-result-import-path\">eVN/src/Visuals/draw.js</span>",
+    "function"
+  ],
+  [
+    "evn/src/visuals/draw.js~speakertext",
+    "function/index.html#static-function-speakerText",
+    "<span>speakerText</span> <span class=\"search-result-import-path\">eVN/src/Visuals/draw.js</span>",
+    "function"
+  ],
+  [
     "evn/src/visuals/text.js~split",
     "function/index.html#static-function-split",
     "<span>split</span> <span class=\"search-result-import-path\">eVN/src/Visuals/text.js</span>",

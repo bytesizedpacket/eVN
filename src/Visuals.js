@@ -1,7 +1,8 @@
 var logger = null;
 //var text = require('./Visuals/text.js');
+//var draw = require('./Visuals/draw.js');
 import * as text from './Visuals/text.js';
-var draw = require('./Visuals/draw.js');
+import * as draw from './Visuals/draw.js';
 var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
 
 /**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}

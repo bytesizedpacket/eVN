@@ -1,45 +1,31 @@
-/**
- * @fileoverview Hosts mosts drawing in {@link module:eVN/Visuals}
- * @module eVN/Visuals/draw
- */
+/** @fileoverview Hosts mosts drawing in {@link module:eVN/Visuals} */
 
-/**
- * Draws a background on <code>context</code>
+/**Draws a background on <code>context</code>
  * @param {object} context - Rendering context to draw on
- * @param {(string|object)} background - Can be either a color shorthand, HEX value, rgb(), rgba() or an <code>Image</code>
- */
-exports.background = function(context, background) {
-	var ctx = context;
-	var c = ctx;
-
+ * @param {(string|object)} background - Can be either a color shorthand, HEX value, rgb(), rgba() or an <code>Image</code> */
+export function background(ctx, background) {
 	if(background instanceof Image) {
-		ctx.drawImage(background, 0, 0, c.canvas.width, c.canvas.height);
+		ctx.drawImage(background, 0, 0, ctx.canvas.width, ctx.canvas.height);
 	} else {
 		ctx.fillStyle = background;
-		ctx.fillRect(0, 0, c.canvas.width, c.canvas.height);
+		ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 	}
 };
 
-/**
- * Draws the dialogue box
+/**Draws the dialogue box
  * @param {object} context - Rendering context to draw on
  * @param {object} textboxOptions - The eVNML `textbox` option property
- * @param {object} image - The img object to draw
- */
-exports.dialogueBox = function(context, textboxOptions, image) {
-	var ctx = context;
-	var box = textboxOptions;
-
+ * @param {object} image - The img object to draw */
+export function dialogueBox(ctx, textboxOptions, image) {
 	if(image) {
 		var x = 0;
 		var y = ctx.canvas.height - image.height;
 		var width = image.width;
 		var height = image.height;
-
 		ctx.drawImage(image, x, y, width, height);
 	} else {
 		var x = 0;
-		var y = ctx.canvas.height - box.speakerbox.bottom - 5;
+		var y = ctx.canvas.height - textboxOptions.speakerbox.bottom - 5;
 		var width = ctx.canvas.width;
 		var height = ctx.canvas.height;
 
@@ -48,33 +34,26 @@ exports.dialogueBox = function(context, textboxOptions, image) {
 	}
 };
 
-/**
- * Draws the speaker box
+/**Draws the speaker box
  * @param {object} context - Rendering context to draw on
- * @param {object} textboxOptions - The eVNML `textbox` option property
- */
-exports.speakerBox = function(context, textboxOptions) {
-		var ctx = context;
-		var box = textboxOptions;
-		var sbox = box.speakerbox;
-		var x = sbox.left;
-		var y = ctx.canvas.height - sbox.bottom - sbox.height;
-		var width = sbox.width;
-		var height = sbox.height;
+ * @param {object} textboxOptions - The eVNML `textbox` option property */
+export function speakerBox(ctx, textboxOptions) {
+		var speakerboxOptions = textboxOptions.speakerbox;
+		var x = textboxOptions.left;
+		var y = ctx.canvas.height - speakerboxOptions.bottom - speakerboxOptions.height;
+		var width = speakerboxOptions.width;
+		var height = speakerboxOptionsbox.height;
 
-		ctx.fillStyle = sbox.color || box.color;
+		ctx.fillStyle = speakerboxOptionsbox.color || textboxOptions.color;
 		ctx.fillRect(x, y, width, height);
 };
 
-/**
- * Function intended for drawing dialogue / monologue (though it can be used for anything)
+/**Function intended for drawing dialogue / monologue (though it can be used for anything)
  * @param {object} context - Rendering context to draw on
  * @param {string[]} text - The array of lines to draw <i>see: {@link eVN.NovelClass.VisualsClass.splitText})
  * @param {object} textboxOptions - Should be <code>eVNML.options.textbox</code>, object containing textbox properties
- * @param {number} maxLines - Maximum amount of lines to draw at a time
- */
-exports.dialogueText = function(context, text, textboxOptions, maxLines) {
-	var ctx = context;
+ * @param {number} maxLines - Maximum amount of lines to draw at a time */
+export function dialogueText(ctx, text, textboxOptions, maxLines) {
 	var box = textboxOptions;
 
 	var lineHeight = box.lineHeight;
@@ -92,15 +71,12 @@ exports.dialogueText = function(context, text, textboxOptions, maxLines) {
 	}
 };
 
-/**
- * Draws the speakerbox text
+/**Draws the speakerbox text
  * @param {object} context - Rendering context to draw on
  * @param {string} string - String to draw
  * @param {object} optionsSpeakerbox - Should be eVNML.textbox.speakerbox, used to determine where to put the text
- * @param {string} [color] - Color to use
- */
-exports.speakerText = function(context, string, optionsSpeakerbox, color) {
-	var ctx = context;
+ * @param {string} [color] - Color to use */
+export function speakerText(ctx, string, optionsSpeakerbox, color) {
 	var sbox = optionsSpeakerbox;
 
 	var x = sbox.left;

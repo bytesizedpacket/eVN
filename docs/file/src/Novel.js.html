@@ -45,6 +45,11 @@
   <ul>
     
   <li data-ice="functionDoc"><span><a href="function/index.html#static-function-CSS_string">CSS_string</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-background">background</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-dialogueBox">dialogueBox</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-dialogueText">dialogueText</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-speakerBox">speakerBox</a></span></li>
+<li data-ice="functionDoc"><span><a href="function/index.html#static-function-speakerText">speakerText</a></span></li>
 <li data-ice="functionDoc"><span><a href="function/index.html#static-function-split">split</a></span></li>
 </ul>
 </div>
@@ -59,6 +64,18 @@
 <div class="content" data-ice="content"><h1 data-ice="title">src/Novel.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { Visuals } from &apos;./Visuals.js&apos;;
 var logger = null;
+var defaultEvnData = {
+	options: {
+		textbox: {
+			font: { size: 17, family: &apos;Comic Neue&apos;, style: &apos;normal&apos;, weight: &apos;normal&apos;, color: &apos;#EEE&apos; },
+			lines: 3, lineHeight: 22, bottom: 95, left: 40, maxWidth: 750,
+			speakerbox: { left: 25, bottom: 130, maxWidth: 150 }
+		},
+	},
+	audio: {}, images: {}, characters: {},
+	scenes: {start: [&apos;No scenes defined&apos;]}
+};
+/* Empty eVN project = JSON.stringify(defaultEvnData, null, &apos;\t&apos;); */
 
 /** Core novel class */
 export class Novel {
@@ -167,9 +184,8 @@ export class Novel {
 	
 	/** Validates the end-developer input and applies it on top of a set of default values */
 	parse_eVNML(eVNML) {
-		var defaults = require(&apos;./defaults.evn&apos;);
 		var userData = eVNML;
-		var returned_eVNML = defaults;
+		var returned_eVNML = defaultEvnData;
 
 		try {
 			userData = JSON.parse(eVNML);
@@ -198,7 +214,7 @@ export class Novel {
 
 				return out;
 			};
-			returned_eVNML = merge(userData, defaults);
+			returned_eVNML = merge(userData, defaultEvnData);
 		} catch(e) {
 			eVN.logger.throw(e);
 		}

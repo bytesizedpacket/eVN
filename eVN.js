@@ -65,7 +65,7 @@
 
 	var _NovelJs = __webpack_require__(1);
 
-	var _LoggerJs = __webpack_require__(6);
+	var _LoggerJs = __webpack_require__(5);
 
 	var logger = new _LoggerJs.Logger('eVN', '0.1a', true);
 
@@ -171,6 +171,18 @@
 	var _VisualsJs = __webpack_require__(2);
 
 	var logger = null;
+	var defaultEvnData = {
+		options: {
+			textbox: {
+				font: { size: 17, family: 'Comic Neue', style: 'normal', weight: 'normal', color: '#EEE' },
+				lines: 3, lineHeight: 22, bottom: 95, left: 40, maxWidth: 750,
+				speakerbox: { left: 25, bottom: 130, maxWidth: 150 }
+			}
+		},
+		audio: {}, images: {}, characters: {},
+		scenes: { start: ['No scenes defined'] }
+	};
+	/* Empty eVN project = JSON.stringify(defaultEvnData, null, '\t'); */
 
 	/** Core novel class */
 
@@ -292,9 +304,8 @@
 		_createClass(Novel, [{
 			key: 'parse_eVNML',
 			value: function parse_eVNML(eVNML) {
-				var defaults = __webpack_require__(5);
 				var userData = eVNML;
-				var returned_eVNML = defaults;
+				var returned_eVNML = defaultEvnData;
 
 				try {
 					userData = JSON.parse(eVNML);
@@ -323,7 +334,7 @@
 
 						return out;
 					};
-					returned_eVNML = merge(userData, defaults);
+					returned_eVNML = merge(userData, defaultEvnData);
 				} catch (e) {
 					eVN.logger['throw'](e);
 				}
@@ -551,13 +562,17 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 	//var text = require('./Visuals/text.js');
+	//var draw = require('./Visuals/draw.js');
 
 	var _VisualsTextJs = __webpack_require__(3);
 
 	var text = _interopRequireWildcard(_VisualsTextJs);
 
+	var _VisualsDrawJs = __webpack_require__(4);
+
+	var draw = _interopRequireWildcard(_VisualsDrawJs);
+
 	var logger = null;
-	var draw = __webpack_require__(4);
 	var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function (callback) {
 		setTimeout(callback, 1000 / 60);
 	};
@@ -790,85 +805,82 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	/**
-	 * @fileoverview Hosts mosts drawing in {@link module:eVN/Visuals}
-	 * @module eVN/Visuals/draw
-	 */
+	/** @fileoverview Hosts mosts drawing in {@link module:eVN/Visuals} */
 
-	/**
-	 * Draws a background on <code>context</code>
+	/**Draws a background on <code>context</code>
 	 * @param {object} context - Rendering context to draw on
-	 * @param {(string|object)} background - Can be either a color shorthand, HEX value, rgb(), rgba() or an <code>Image</code>
-	 */
+	 * @param {(string|object)} background - Can be either a color shorthand, HEX value, rgb(), rgba() or an <code>Image</code> */
 	'use strict';
 
-	exports.background = function (context, background) {
-		var ctx = context;
-		var c = ctx;
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+	exports.background = background;
+	exports.dialogueBox = dialogueBox;
+	exports.speakerBox = speakerBox;
+	exports.dialogueText = dialogueText;
+	exports.speakerText = speakerText;
 
+	function background(ctx, background) {
 		if (background instanceof Image) {
-			ctx.drawImage(background, 0, 0, c.canvas.width, c.canvas.height);
+			ctx.drawImage(background, 0, 0, ctx.canvas.width, ctx.canvas.height);
 		} else {
 			ctx.fillStyle = background;
-			ctx.fillRect(0, 0, c.canvas.width, c.canvas.height);
+			ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		}
-	};
+	}
 
-	/**
-	 * Draws the dialogue box
+	;
+
+	/**Draws the dialogue box
 	 * @param {object} context - Rendering context to draw on
 	 * @param {object} textboxOptions - The eVNML `textbox` option property
-	 * @param {object} image - The img object to draw
-	 */
-	exports.dialogueBox = function (context, textboxOptions, image) {
-		var ctx = context;
-		var box = textboxOptions;
+	 * @param {object} image - The img object to draw */
 
+	function dialogueBox(ctx, textboxOptions, image) {
 		if (image) {
 			var x = 0;
 			var y = ctx.canvas.height - image.height;
 			var width = image.width;
 			var height = image.height;
-
 			ctx.drawImage(image, x, y, width, height);
 		} else {
 			var x = 0;
-			var y = ctx.canvas.height - box.speakerbox.bottom - 5;
+			var y = ctx.canvas.height - textboxOptions.speakerbox.bottom - 5;
 			var width = ctx.canvas.width;
 			var height = ctx.canvas.height;
 
 			ctx.fillStyle = 'rgba(0, 0, 0, .35)';
 			ctx.fillRect(x, y, width, height);
 		}
-	};
+	}
 
-	/**
-	 * Draws the speaker box
+	;
+
+	/**Draws the speaker box
 	 * @param {object} context - Rendering context to draw on
-	 * @param {object} textboxOptions - The eVNML `textbox` option property
-	 */
-	exports.speakerBox = function (context, textboxOptions) {
-		var ctx = context;
-		var box = textboxOptions;
-		var sbox = box.speakerbox;
-		var x = sbox.left;
-		var y = ctx.canvas.height - sbox.bottom - sbox.height;
-		var width = sbox.width;
-		var height = sbox.height;
+	 * @param {object} textboxOptions - The eVNML `textbox` option property */
 
-		ctx.fillStyle = sbox.color || box.color;
+	function speakerBox(ctx, textboxOptions) {
+		var speakerboxOptions = textboxOptions.speakerbox;
+		var x = textboxOptions.left;
+		var y = ctx.canvas.height - speakerboxOptions.bottom - speakerboxOptions.height;
+		var width = speakerboxOptions.width;
+		var height = speakerboxOptionsbox.height;
+
+		ctx.fillStyle = speakerboxOptionsbox.color || textboxOptions.color;
 		ctx.fillRect(x, y, width, height);
-	};
+	}
 
-	/**
-	 * Function intended for drawing dialogue / monologue (though it can be used for anything)
+	;
+
+	/**Function intended for drawing dialogue / monologue (though it can be used for anything)
 	 * @param {object} context - Rendering context to draw on
 	 * @param {string[]} text - The array of lines to draw <i>see: {@link eVN.NovelClass.VisualsClass.splitText})
 	 * @param {object} textboxOptions - Should be <code>eVNML.options.textbox</code>, object containing textbox properties
-	 * @param {number} maxLines - Maximum amount of lines to draw at a time
-	 */
-	exports.dialogueText = function (context, text, textboxOptions, maxLines) {
-		var ctx = context;
+	 * @param {number} maxLines - Maximum amount of lines to draw at a time */
+
+	function dialogueText(ctx, text, textboxOptions, maxLines) {
 		var box = textboxOptions;
 
 		var lineHeight = box.lineHeight;
@@ -884,17 +896,17 @@
 			var lineY = y + lineHeight * i;
 			ctx.fillText(text[i], x, lineY, maxWidth);
 		}
-	};
+	}
 
-	/**
-	 * Draws the speakerbox text
+	;
+
+	/**Draws the speakerbox text
 	 * @param {object} context - Rendering context to draw on
 	 * @param {string} string - String to draw
 	 * @param {object} optionsSpeakerbox - Should be eVNML.textbox.speakerbox, used to determine where to put the text
-	 * @param {string} [color] - Color to use
-	 */
-	exports.speakerText = function (context, string, optionsSpeakerbox, color) {
-		var ctx = context;
+	 * @param {string} [color] - Color to use */
+
+	function speakerText(ctx, string, optionsSpeakerbox, color) {
 		var sbox = optionsSpeakerbox;
 
 		var x = sbox.left;
@@ -903,54 +915,12 @@
 
 		ctx.fillStyle = color || ctx.fillStyle;
 		ctx.fillText(string, x, y, maxWidth);
-	};
+	}
+
+	;
 
 /***/ },
 /* 5 */
-/***/ function(module, exports) {
-
-	/** @fileoverview A default .evn file to  make development & starting out easier */
-
-	"use strict";
-
-	module.exports = {
-		"options": {
-			"textbox": {
-				"font": {
-					"size": "17",
-					"family": "Comic Neue",
-					"style": "normal",
-					"weight": "normal",
-					"color": "#EEE"
-				},
-
-				"lines": 3,
-				"lineHeight": "22",
-				"bottom": 95,
-				"left": 40,
-				"maxWidth": 750,
-
-				"speakerbox": {
-					"left": 25,
-					"bottom": 130,
-					"maxWidth": 150
-				}
-			}
-		},
-
-		"audio": {},
-
-		"images": {},
-
-		"characters": {},
-
-		"scenes": {
-			start: ["No scenes defined!"]
-		}
-	};
-
-/***/ },
-/* 6 */
 /***/ function(module, exports) {
 
 	/**A logging class, covering debug logs, warnings & errors
