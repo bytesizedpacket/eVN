@@ -876,7 +876,7 @@
 
 	/**Function intended for drawing dialogue / monologue (though it can be used for anything)
 	 * @param {object} context - Rendering context to draw on
-	 * @param {string[]} text - The array of lines to draw <i>see: {@link eVN.NovelClass.VisualsClass.splitText})
+	 * @param {string[]} text - The array of lines to draw. See the <code>split</code> function
 	 * @param {object} textboxOptions - Should be <code>eVNML.options.textbox</code>, object containing textbox properties
 	 * @param {number} maxLines - Maximum amount of lines to draw at a time */
 
