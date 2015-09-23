@@ -1,6 +1,5 @@
-Everyone's Visual Novel - ES 2015 branch
+Everyone's Visual Novel
 ===
-
-This branch will be merged to master once the rewrite is finished.
+A free visual novel engine anyone can use
 
 This project is still under extremely early development, come back later!
