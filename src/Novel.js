@@ -158,7 +158,7 @@ export class Novel {
 		var scene = this.eVNML.scenes[collection][index];
 		cd.collection = collection;
 		cd.collectionIndex = index+1;
-		if(!scene) eVN.logger.throw('Undefined scene "'+ collection +'['+ index +']"! Did we run out of scenes?');
+		if(!scene) eVN.logger.throw('Undefined scene "'+ collection +'['+ index +']"! Did we run out of scenes?')();
 
 		/* These are values that only live one scene - they should be reset on each scene load */
 		cd.speakerColor = null;
