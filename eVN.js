@@ -66,7 +66,7 @@
 
 	var _NovelJs = __webpack_require__(1);
 
-	var _LoggerJs = __webpack_require__(5);
+	var _LoggerJs = __webpack_require__(6);
 
 	var logger = new _LoggerJs.Logger('eVN', '0.1a', true);
 
@@ -171,6 +171,8 @@
 
 	var _VisualsJs = __webpack_require__(2);
 
+	var _CharacterJs = __webpack_require__(5);
+
 	var logger = null;
 	var defaultEvnData = {
 		options: {
@@ -274,24 +276,8 @@
 
 			/* Instantiate characters */
 			for (var key in this.eVNML.characters) {
-				var eVNML_char = this.eVNML.characters[key];
-				// NOTE TO SELF: Create character class
-				this.characters[key] = {
-					name: eVNML_char['first name'] || eVNML_char['name'],
-					lname: eVNML_char['last name'],
-					color: eVNML_char['color'] || eVNML_char['colour'],
-					images: {}
-				};
-				var char = this.characters[key];
-
-				for (var _key in eVNML_char.images) {
-					char.images[_key] = /*new Image();
-	                        char.images[key].src =*/eVNML_char.images[_key];
-				}
-				char.cImage = char.images['default'];
-			}
-
-			this.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);
+				this.characters[key] = new _CharacterJs.Character(this.eVNML.characters[key]);
+			}this.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);
 
 			/* Push ourself to an array for easy debugging/hacking */
 			var instanceIndex = eVN.instances.push(this) - 1;
@@ -922,6 +908,46 @@
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	/** A class for managing data related to novel characters */
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var Character = (function () {
+		/** @param {object} eVNM_char - The eVNML data to instantiate from */
+
+		function Character(eVNML_char) {
+			_classCallCheck(this, Character);
+
+			this.name = eVNML_char['first name'] || eVNML_char['name'];
+			this.lname = eVNML_char['last name'] || null;
+			this.color = eVNML_char['color'] || eVNML_char['colour'] || '#FFF';
+			this.images = eVNML_char['images'] || {};
+			this.mood = 'default';
+		}
+
+		_createClass(Character, [{
+			key: 'cImage',
+			get: function get() {
+				return this.images[this.mood];
+			}
+		}]);
+
+		return Character;
+	})();
+
+	exports.Character = Character;
+
+/***/ },
+/* 6 */
 /***/ function(module, exports) {
 
 	/**A logging class, covering debug logs, warnings & errors

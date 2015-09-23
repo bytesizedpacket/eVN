@@ -1,4 +1,5 @@
 import { Visuals } from './Visuals.js';
+import { Character } from './Character.js';
 var logger = null;
 var defaultEvnData = {
 	options: {
@@ -91,23 +92,7 @@ export class Novel {
 		}
 
 		/* Instantiate characters */
-		for(let key in this.eVNML.characters) {
-			var eVNML_char = this.eVNML.characters[key];
-			// NOTE TO SELF: Create character class
-			this.characters[key] = {
-				name: eVNML_char['first name'] || eVNML_char['name'],
-				lname: eVNML_char['last name'],
-				color: eVNML_char['color'] || eVNML_char['colour'],
-				images: {}
-			};
-			var char = this.characters[key];
-
-			for(let key in eVNML_char.images) {
-				char.images[key] = /*new Image();
-				char.images[key].src =*/ eVNML_char.images[key];
-			}
-			char.cImage = char.images.default;
-		}
+		for(let key in this.eVNML.characters) this.characters[key] = new Character(this.eVNML.characters[key]);
 
 		this.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);
 
