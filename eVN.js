@@ -516,14 +516,6 @@
 					return string;
 				}
 			}
-
-			/**  */
-		}, {
-			key: 'constructCharacter',
-			value: function constructCharacter(data) {
-				var name = data.name;
-				this.characters[name] = {};
-			}
 		}]);
 
 		return Novel;

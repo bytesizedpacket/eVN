@@ -281,10 +281,4 @@ export class Novel {
 			return string;
 		}
 	}
-
-	/**  */
-	constructCharacter(data) {
-		var name = data.name;
-		this.characters[name] = {};
-	}
 };
