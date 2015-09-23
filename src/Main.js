@@ -1,4 +1,5 @@
-/**eVN - Everyone's Visual Novel (Development build)
+/**
+ * eVN - Everyone's Visual Novel (Development build)
  * @see {@link https://github.com/bytesizedpacket/eVN}
  * @fileOverview eVN core script
  * @author Jacob Pedersen <jacob@bytesizedpacket.com> & Byte-Sized Packet <contact@bytesizedpacket.com>
