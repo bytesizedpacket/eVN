@@ -6,6 +6,12 @@ window.esdocSearchIndex = [
     "function"
   ],
   [
+    "evn/src/character.js~character",
+    "class/src/Character.js~Character.html",
+    "<span>Character</span> <span class=\"search-result-import-path\">eVN/src/Character.js</span>",
+    "class"
+  ],
+  [
     "evn/src/logger.js~logger",
     "class/src/Logger.js~Logger.html",
     "<span>Logger</span> <span class=\"search-result-import-path\">eVN/src/Logger.js</span>",
@@ -21,6 +27,12 @@ window.esdocSearchIndex = [
     "evn/src/novel.js~novel",
     "class/src/Novel.js~Novel.html",
     "<span>Novel</span> <span class=\"search-result-import-path\">eVN/src/Novel.js</span>",
+    "class"
+  ],
+  [
+    "evn/src/sceneinstructor.js~sceneinstructor",
+    "class/src/SceneInstructor.js~SceneInstructor.html",
+    "<span>SceneInstructor</span> <span class=\"search-result-import-path\">eVN/src/SceneInstructor.js</span>",
     "class"
   ],
   [
@@ -390,6 +402,54 @@ window.esdocSearchIndex = [
     "external"
   ],
   [
+    "src/character.js",
+    "file/src/Character.js.html",
+    "src/Character.js",
+    "file"
+  ],
+  [
+    "src/character.js~character#cimage",
+    "class/src/Character.js~Character.html#instance-get-cImage",
+    "src/Character.js~Character#cImage",
+    "member"
+  ],
+  [
+    "src/character.js~character#color",
+    "class/src/Character.js~Character.html#instance-member-color",
+    "src/Character.js~Character#color",
+    "member"
+  ],
+  [
+    "src/character.js~character#constructor",
+    "class/src/Character.js~Character.html#instance-constructor-constructor",
+    "src/Character.js~Character#constructor",
+    "method"
+  ],
+  [
+    "src/character.js~character#images",
+    "class/src/Character.js~Character.html#instance-member-images",
+    "src/Character.js~Character#images",
+    "member"
+  ],
+  [
+    "src/character.js~character#lname",
+    "class/src/Character.js~Character.html#instance-member-lname",
+    "src/Character.js~Character#lname",
+    "member"
+  ],
+  [
+    "src/character.js~character#mood",
+    "class/src/Character.js~Character.html#instance-member-mood",
+    "src/Character.js~Character#mood",
+    "member"
+  ],
+  [
+    "src/character.js~character#name",
+    "class/src/Character.js~Character.html#instance-member-name",
+    "src/Character.js~Character#name",
+    "member"
+  ],
+  [
     "src/logger.js",
     "file/src/Logger.js.html",
     "src/Logger.js",
@@ -474,12 +534,6 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/novel.js~novel#constructcharacter",
-    "class/src/Novel.js~Novel.html#instance-method-constructCharacter",
-    "src/Novel.js~Novel#constructCharacter",
-    "method"
-  ],
-  [
     "src/novel.js~novel#constructor",
     "class/src/Novel.js~Novel.html#instance-constructor-constructor",
     "src/Novel.js~Novel#constructor",
@@ -528,9 +582,69 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/novel.js~novel#scenecmd",
+    "class/src/Novel.js~Novel.html#instance-member-sceneCmd",
+    "src/Novel.js~Novel#sceneCmd",
+    "member"
+  ],
+  [
+    "src/novel.js~novel#sceneinstructor",
+    "class/src/Novel.js~Novel.html#instance-member-sceneInstructor",
+    "src/Novel.js~Novel#sceneInstructor",
+    "member"
+  ],
+  [
     "src/novel.js~novel#visuals",
     "class/src/Novel.js~Novel.html#instance-member-visuals",
     "src/Novel.js~Novel#visuals",
+    "member"
+  ],
+  [
+    "src/sceneinstructor.js",
+    "file/src/SceneInstructor.js.html",
+    "src/SceneInstructor.js",
+    "file"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#background",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-background",
+    "src/SceneInstructor.js~SceneInstructor#background",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#constructor",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-constructor-constructor",
+    "src/SceneInstructor.js~SceneInstructor#constructor",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#get",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-member-get",
+    "src/SceneInstructor.js~SceneInstructor#get",
+    "member"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#getmethod",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-getMethod",
+    "src/SceneInstructor.js~SceneInstructor#getMethod",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#music",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-music",
+    "src/SceneInstructor.js~SceneInstructor#music",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#say",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-say",
+    "src/SceneInstructor.js~SceneInstructor#say",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#scope",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-member-scope",
+    "src/SceneInstructor.js~SceneInstructor#scope",
     "member"
   ],
   [

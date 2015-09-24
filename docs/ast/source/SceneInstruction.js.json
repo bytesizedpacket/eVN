@@ -1,0 +1,839 @@
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "ExportNamedDeclaration",
+      "declaration": {
+        "type": "FunctionDeclaration",
+        "id": {
+          "type": "Identifier",
+          "name": "getSceneInstruction",
+          "range": [
+            264,
+            283
+          ],
+          "loc": {
+            "start": {
+              "line": 6,
+              "column": 16
+            },
+            "end": {
+              "line": 6,
+              "column": 35
+            }
+          }
+        },
+        "params": [
+          {
+            "type": "AssignmentPattern",
+            "left": {
+              "type": "Identifier",
+              "name": "scope",
+              "range": [
+                284,
+                289
+              ],
+              "loc": {
+                "start": {
+                  "line": 6,
+                  "column": 36
+                },
+                "end": {
+                  "line": 6,
+                  "column": 41
+                }
+              }
+            },
+            "right": {
+              "type": "ThisExpression",
+              "range": [
+                290,
+                294
+              ],
+              "loc": {
+                "start": {
+                  "line": 6,
+                  "column": 42
+                },
+                "end": {
+                  "line": 6,
+                  "column": 46
+                }
+              }
+            },
+            "range": [
+              284,
+              294
+            ],
+            "loc": {
+              "start": {
+                "line": 6,
+                "column": 36
+              },
+              "end": {
+                "line": 6,
+                "column": 46
+              }
+            }
+          },
+          {
+            "type": "Identifier",
+            "name": "instructionName",
+            "range": [
+              296,
+              311
+            ],
+            "loc": {
+              "start": {
+                "line": 6,
+                "column": 48
+              },
+              "end": {
+                "line": 6,
+                "column": 63
+              }
+            }
+          }
+        ],
+        "body": {
+          "type": "BlockStatement",
+          "body": [
+            {
+              "type": "ExpressionStatement",
+              "expression": {
+                "type": "CallExpression",
+                "callee": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "Identifier",
+                    "name": "console",
+                    "range": [
+                      316,
+                      323
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 7,
+                        "column": 1
+                      },
+                      "end": {
+                        "line": 7,
+                        "column": 8
+                      }
+                    }
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "log",
+                    "range": [
+                      324,
+                      327
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 7,
+                        "column": 9
+                      },
+                      "end": {
+                        "line": 7,
+                        "column": 12
+                      }
+                    }
+                  },
+                  "range": [
+                    316,
+                    327
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 7,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 7,
+                      "column": 12
+                    }
+                  }
+                },
+                "arguments": [
+                  {
+                    "type": "Identifier",
+                    "name": "sceneInstructions",
+                    "range": [
+                      328,
+                      345
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 7,
+                        "column": 13
+                      },
+                      "end": {
+                        "line": 7,
+                        "column": 30
+                      }
+                    }
+                  }
+                ],
+                "range": [
+                  316,
+                  346
+                ],
+                "loc": {
+                  "start": {
+                    "line": 7,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 7,
+                    "column": 31
+                  }
+                }
+              },
+              "range": [
+                316,
+                347
+              ],
+              "loc": {
+                "start": {
+                  "line": 7,
+                  "column": 1
+                },
+                "end": {
+                  "line": 7,
+                  "column": 32
+                }
+              }
+            },
+            {
+              "type": "ReturnStatement",
+              "argument": {
+                "type": "CallExpression",
+                "callee": {
+                  "type": "MemberExpression",
+                  "computed": false,
+                  "object": {
+                    "type": "FunctionExpression",
+                    "id": null,
+                    "params": [],
+                    "body": {
+                      "type": "BlockStatement",
+                      "body": [
+                        {
+                          "type": "ReturnStatement",
+                          "argument": {
+                            "type": "ThisExpression",
+                            "range": [
+                              378,
+                              382
+                            ],
+                            "loc": {
+                              "start": {
+                                "line": 9,
+                                "column": 9
+                              },
+                              "end": {
+                                "line": 9,
+                                "column": 13
+                              }
+                            }
+                          },
+                          "range": [
+                            371,
+                            383
+                          ],
+                          "loc": {
+                            "start": {
+                              "line": 9,
+                              "column": 2
+                            },
+                            "end": {
+                              "line": 9,
+                              "column": 14
+                            }
+                          }
+                        }
+                      ],
+                      "range": [
+                        367,
+                        386
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 8,
+                          "column": 19
+                        },
+                        "end": {
+                          "line": 10,
+                          "column": 2
+                        }
+                      }
+                    },
+                    "generator": false,
+                    "expression": false,
+                    "range": [
+                      356,
+                      386
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 8,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 10,
+                        "column": 2
+                      }
+                    }
+                  },
+                  "property": {
+                    "type": "Identifier",
+                    "name": "bind",
+                    "range": [
+                      387,
+                      391
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 10,
+                        "column": 3
+                      },
+                      "end": {
+                        "line": 10,
+                        "column": 7
+                      }
+                    }
+                  },
+                  "range": [
+                    356,
+                    391
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 8,
+                      "column": 8
+                    },
+                    "end": {
+                      "line": 10,
+                      "column": 7
+                    }
+                  }
+                },
+                "arguments": [
+                  {
+                    "type": "Identifier",
+                    "name": "scope",
+                    "range": [
+                      392,
+                      397
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 10,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 10,
+                        "column": 13
+                      }
+                    }
+                  }
+                ],
+                "range": [
+                  356,
+                  398
+                ],
+                "loc": {
+                  "start": {
+                    "line": 8,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 10,
+                    "column": 14
+                  }
+                }
+              },
+              "range": [
+                349,
+                399
+              ],
+              "loc": {
+                "start": {
+                  "line": 8,
+                  "column": 1
+                },
+                "end": {
+                  "line": 10,
+                  "column": 15
+                }
+              }
+            }
+          ],
+          "range": [
+            313,
+            401
+          ],
+          "loc": {
+            "start": {
+              "line": 6,
+              "column": 65
+            },
+            "end": {
+              "line": 11,
+              "column": 1
+            }
+          }
+        },
+        "generator": false,
+        "expression": false,
+        "range": [
+          255,
+          401
+        ],
+        "loc": {
+          "start": {
+            "line": 6,
+            "column": 7
+          },
+          "end": {
+            "line": 11,
+            "column": 1
+          }
+        },
+        "leadingComments": [
+          {
+            "type": "Block",
+            "value": "* @fileoverview A place to keep scene instructions organized ",
+            "range": [
+              0,
+              65
+            ],
+            "loc": {
+              "start": {
+                "line": 1,
+                "column": 0
+              },
+              "end": {
+                "line": 1,
+                "column": 65
+              }
+            }
+          },
+          {
+            "type": "Block",
+            "value": "*Grabs the function used to execute a scene instruction\n * @param {string} instructionName - The instruction method to get\n * @param {object} scope - Scope to bind function to ",
+            "range": [
+              67,
+              247
+            ],
+            "loc": {
+              "start": {
+                "line": 3,
+                "column": 0
+              },
+              "end": {
+                "line": 5,
+                "column": 55
+              }
+            }
+          }
+        ],
+        "trailingComments": []
+      },
+      "specifiers": [],
+      "source": null,
+      "range": [
+        248,
+        401
+      ],
+      "loc": {
+        "start": {
+          "line": 6,
+          "column": 0
+        },
+        "end": {
+          "line": 11,
+          "column": 1
+        }
+      },
+      "leadingComments": [
+        {
+          "type": "Block",
+          "value": "* @fileoverview A place to keep scene instructions organized ",
+          "range": [
+            0,
+            65
+          ],
+          "loc": {
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 1,
+              "column": 65
+            }
+          }
+        },
+        {
+          "type": "Block",
+          "value": "*Grabs the function used to execute a scene instruction\n * @param {string} instructionName - The instruction method to get\n * @param {object} scope - Scope to bind function to ",
+          "range": [
+            67,
+            247
+          ],
+          "loc": {
+            "start": {
+              "line": 3,
+              "column": 0
+            },
+            "end": {
+              "line": 5,
+              "column": 55
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "EmptyStatement",
+      "range": [
+        401,
+        402
+      ],
+      "loc": {
+        "start": {
+          "line": 11,
+          "column": 1
+        },
+        "end": {
+          "line": 11,
+          "column": 2
+        }
+      },
+      "trailingComments": [
+        {
+          "type": "Block",
+          "value": "* @namespace sceneInstructions ",
+          "range": [
+            404,
+            439
+          ],
+          "loc": {
+            "start": {
+              "line": 13,
+              "column": 0
+            },
+            "end": {
+              "line": 13,
+              "column": 35
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "ExportNamedDeclaration",
+      "declaration": {
+        "type": "VariableDeclaration",
+        "declarations": [
+          {
+            "type": "VariableDeclarator",
+            "id": {
+              "type": "Identifier",
+              "name": "sceneInstructions",
+              "range": [
+                451,
+                468
+              ],
+              "loc": {
+                "start": {
+                  "line": 14,
+                  "column": 11
+                },
+                "end": {
+                  "line": 14,
+                  "column": 28
+                }
+              }
+            },
+            "init": {
+              "type": "ObjectExpression",
+              "properties": [
+                {
+                  "type": "Property",
+                  "key": {
+                    "type": "Identifier",
+                    "name": "abc",
+                    "range": [
+                      488,
+                      491
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 1
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 4
+                      }
+                    }
+                  },
+                  "value": {
+                    "type": "Literal",
+                    "value": 123,
+                    "raw": "123",
+                    "range": [
+                      493,
+                      496
+                    ],
+                    "loc": {
+                      "start": {
+                        "line": 17,
+                        "column": 6
+                      },
+                      "end": {
+                        "line": 17,
+                        "column": 9
+                      }
+                    }
+                  },
+                  "kind": "init",
+                  "method": false,
+                  "shorthand": false,
+                  "computed": false,
+                  "range": [
+                    488,
+                    496
+                  ],
+                  "loc": {
+                    "start": {
+                      "line": 17,
+                      "column": 1
+                    },
+                    "end": {
+                      "line": 17,
+                      "column": 9
+                    }
+                  },
+                  "leadingComments": [
+                    {
+                      "type": "Block",
+                      "value": "* @attr ",
+                      "range": [
+                        474,
+                        486
+                      ],
+                      "loc": {
+                        "start": {
+                          "line": 16,
+                          "column": 1
+                        },
+                        "end": {
+                          "line": 16,
+                          "column": 13
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
+              "range": [
+                471,
+                498
+              ],
+              "loc": {
+                "start": {
+                  "line": 15,
+                  "column": 0
+                },
+                "end": {
+                  "line": 18,
+                  "column": 1
+                }
+              }
+            },
+            "range": [
+              451,
+              498
+            ],
+            "loc": {
+              "start": {
+                "line": 14,
+                "column": 11
+              },
+              "end": {
+                "line": 18,
+                "column": 1
+              }
+            }
+          }
+        ],
+        "kind": "var",
+        "range": [
+          447,
+          499
+        ],
+        "loc": {
+          "start": {
+            "line": 14,
+            "column": 7
+          },
+          "end": {
+            "line": 18,
+            "column": 2
+          }
+        },
+        "leadingComments": [
+          {
+            "type": "Block",
+            "value": "* @namespace sceneInstructions ",
+            "range": [
+              404,
+              439
+            ],
+            "loc": {
+              "start": {
+                "line": 13,
+                "column": 0
+              },
+              "end": {
+                "line": 13,
+                "column": 35
+              }
+            }
+          }
+        ],
+        "trailingComments": []
+      },
+      "specifiers": [],
+      "source": null,
+      "range": [
+        440,
+        499
+      ],
+      "loc": {
+        "start": {
+          "line": 14,
+          "column": 0
+        },
+        "end": {
+          "line": 18,
+          "column": 2
+        }
+      },
+      "leadingComments": [
+        {
+          "type": "Block",
+          "value": "* @namespace sceneInstructions ",
+          "range": [
+            404,
+            439
+          ],
+          "loc": {
+            "start": {
+              "line": 13,
+              "column": 0
+            },
+            "end": {
+              "line": 13,
+              "column": 35
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "sourceType": "module",
+  "range": [
+    248,
+    499
+  ],
+  "loc": {
+    "start": {
+      "line": 6,
+      "column": 0
+    },
+    "end": {
+      "line": 18,
+      "column": 2
+    }
+  },
+  "comments": [
+    {
+      "type": "Block",
+      "value": "* @fileoverview A place to keep scene instructions organized ",
+      "range": [
+        0,
+        65
+      ],
+      "loc": {
+        "start": {
+          "line": 1,
+          "column": 0
+        },
+        "end": {
+          "line": 1,
+          "column": 65
+        }
+      }
+    },
+    {
+      "type": "Block",
+      "value": "*Grabs the function used to execute a scene instruction\n * @param {string} instructionName - The instruction method to get\n * @param {object} scope - Scope to bind function to ",
+      "range": [
+        67,
+        247
+      ],
+      "loc": {
+        "start": {
+          "line": 3,
+          "column": 0
+        },
+        "end": {
+          "line": 5,
+          "column": 55
+        }
+      }
+    },
+    {
+      "type": "Block",
+      "value": "* @namespace sceneInstructions ",
+      "range": [
+        404,
+        439
+      ],
+      "loc": {
+        "start": {
+          "line": 13,
+          "column": 0
+        },
+        "end": {
+          "line": 13,
+          "column": 35
+        }
+      }
+    },
+    {
+      "type": "Block",
+      "value": "* @attr ",
+      "range": [
+        474,
+        486
+      ],
+      "loc": {
+        "start": {
+          "line": 16,
+          "column": 1
+        },
+        "end": {
+          "line": 16,
+          "column": 13
+        }
+      }
+    }
+  ]
+}

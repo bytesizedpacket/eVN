@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">API Document</title>
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/Character.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -63,15 +63,22 @@
 
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="evn-jsdocs">eVN JSDocs</h1>
-<p>If you&apos;re new to the eVN project, you should check out the
-<a href="https://github.com/bytesizedpacket/eVN">GitHub page</a> - pull requests
-are welcome!</p>
-<h2 id="core-data-processors">Core &amp; data processors</h2>
-<ul>
-<li><a href="module-eVN_Novel.html">Novel.js core novel class</a></li>
-</ul>
-</div>
+<div class="content" data-ice="content"><h1 data-ice="title">src/Character.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/** A class for managing data related to novel characters */
+export class Character {
+	/** @param {object} eVNM_char - The eVNML data to instantiate from */
+	constructor(eVNML_char) {
+		this.name = eVNML_char[&apos;first name&apos;] || eVNML_char[&apos;name&apos;];
+		this.lname = eVNML_char[&apos;last name&apos;] || null;
+		this.color = eVNML_char[&apos;color&apos;] || eVNML_char[&apos;colour&apos;] || &apos;#FFF&apos;;
+		this.images = eVNML_char[&apos;images&apos;] || {};
+		this.mood = &apos;default&apos;;
+	}
+
+	get cImage() { return this.images[this.mood] };
+}
+</code></pre>
+
 </div>
 
 <footer class="footer">

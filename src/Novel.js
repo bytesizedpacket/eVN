@@ -1,5 +1,6 @@
 import { Visuals } from './Visuals.js';
 import { Character } from './Character.js';
+import { SceneInstructor } from './SceneInstructor.js';
 var logger = null;
 var defaultEvnData = {
 	options: {
@@ -27,6 +28,10 @@ export class Novel {
 		this.canvas = canvas;
 		/** The drawing context of {@link Novel#canvas} */
 		this.context = canvas.getContext('2d');
+		/** {@link SceneInstructor} for this novel */
+		this.sceneInstructor = new SceneInstructor(this);
+		/** Shorthand for executing scene instruction methods */
+		this.sceneCmd = this.sceneInstructor.execute;
 		/** Map containing all <code>Image</code> instances for this novel */
 		this.images = {};
 		/** Map containing all <code>Audio</code> instances for this novel */
@@ -174,34 +179,14 @@ export class Novel {
 			scene = isDialogue? ["say", beta, alpha] : ["say", scene];
 		}
 
-		switch(scene[0].toLowerCase()) {
+		var sceneInstruction = this.sceneInstructor.getMethod( scene[0].toLowerCase(), scene.slice(1) );
+		if(sceneInstruction !== null) {
+			var doSkip = sceneInstruction() || false;
+			if(doSkip) return;
+		} else switch( scene[0].toLowerCase() ) {
 		/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.
 		   Cases ending with 'return' will not jump to the next scene when done */
 
-			case 'background':
-				cd.background = scene[1];
-				break;
-			case 'music':
-				if(scene[1] in this.audio) this.audio[scene[1]].play();
-				break;
-			case 'say':
-				/*Process inline variables for text*/
-				var text = this.processVariables(scene[1]);
-
-				if(scene[2]) {
-					cd.speaker = scene[2];
-					cd.dialogue = '"'+ text +'"';
-					cd.speakerColor = scene[3] || null;
-				} else {
-					cd.speaker = null;
-					cd.dialogue = text;
-				}
-
-				//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);
-				var maxWidth = textbox.maxWidth;
-				cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
-				cd.startLine = 0;
-				return;
 			case 'setmood':
 				var charIndex = -1;
 				for(let c of cd.characters) {

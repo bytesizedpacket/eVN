@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <base data-ice="baseUrl" href="../../">
-  <title data-ice="title">Visuals | API Document</title>
+  <title data-ice="title">Character | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -64,17 +64,17 @@
 </nav>
 
 <div class="content" data-ice="content"><div class="header-notice">
-  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {Visuals} from &apos;<span><a href="file/src/Visuals.js.html#lineNumber10">eVN/src/Visuals.js</a></span>&apos;</code></pre></div>
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {Character} from &apos;<span><a href="file/src/Character.js.html#lineNumber2">eVN/src/Character.js</a></span>&apos;</code></pre></div>
   <span data-ice="access">public</span>
   <span data-ice="kind">class</span>
   
   
   
-  <span data-ice="source">| <span><a href="file/src/Visuals.js.html#lineNumber10">source</a></span></span>
+  <span data-ice="source">| <span><a href="file/src/Character.js.html#lineNumber2">source</a></span></span>
 </div>
 
 <div class="self-detail detail">
-  <h1 data-ice="name">Visuals</h1>
+  <h1 data-ice="name">Character</h1>
 
   
 
@@ -90,7 +90,7 @@
 
   
   
-  <div class="description" data-ice="description"><p>Class to manage and carry out drawing on a canvas, meant for <span>module:eVN/Novel</span></p>
+  <div class="description" data-ice="description"><p>A class for managing data related to novel characters</p>
 </div>
 
   
@@ -119,7 +119,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/Visuals.js~Visuals.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(novelInstance: <span><a href="class/src/Novel.js~Novel.html">Novel</a></span>)</span>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-constructor-constructor">constructor</a></span></span><span data-ice="signature">(eVNM_char: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span>)</span>
         </p>
       </div>
       <div>
@@ -144,14 +144,14 @@
     <td>
       <span class="access" data-ice="access">public</span>
       
-      
+      <span class="kind" data-ice="kind">get</span>
       
       <span class="override" data-ice="override"></span>
     </td>
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/Visuals.js~Visuals.html#instance-member-ctx">ctx</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-get-cImage">cImage</a></span></span><span data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
@@ -176,7 +176,7 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/Visuals.js~Visuals.html#instance-member-draw">draw</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-member-color">color</a></span></span><span data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
@@ -201,14 +201,13 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/Visuals.js~Visuals.html#instance-member-novel">novel</a></span></span><span data-ice="signature">: <span>*</span></span>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-member-images">images</a></span></span><span data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Reference to the novel we are drawing</p>
-</div>
+        
       </div>
     </td>
     <td>
@@ -216,14 +215,7 @@
       
     </td>
   </tr>
-</tbody>
-</table>
-</div>
-<div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
-  <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
-  <tbody>
-  
-  <tr data-ice="target">
+<tr data-ice="target">
     <td>
       <span class="access" data-ice="access">public</span>
       
@@ -234,14 +226,63 @@
     <td>
       <div>
         <p>
-           <span data-ice="name"><span><a href="class/src/Visuals.js~Visuals.html#instance-method-loop">loop</a></span></span><span data-ice="signature">(frametime: <span>*</span>)</span>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-member-lname">lname</a></span></span><span data-ice="signature">: <span>*</span></span>
         </p>
       </div>
       <div>
         
         
-        <div data-ice="description"><p>Assembles graphics and exports to <span>Novel#outContext</span>, then calls itself in a timeout</p>
-</div>
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-member-mood">mood</a></span></span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+           <span data-ice="name"><span><a href="class/src/Character.js~Character.html#instance-member-name">name</a></span></span><span data-ice="signature">: <span>*</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
       </div>
     </td>
     <td>
@@ -252,6 +293,7 @@
 </tbody>
 </table>
 </div>
+
 
 
 
@@ -266,11 +308,11 @@
     
     
     
-    <span data-ice="name">constructor</span><span data-ice="signature">(novelInstance: <span><a href="class/src/Novel.js~Novel.html">Novel</a></span>)</span>
+    <span data-ice="name">constructor</span><span data-ice="signature">(eVNM_char: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span>)</span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Visuals.js.html#lineNumber12">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber4">source</a></span></span>
     </span>
   </h3>
 
@@ -290,10 +332,10 @@
     <tbody>
     
     <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">novelInstance</td>
-      <td data-ice="type"><span><a href="class/src/Novel.js~Novel.html">Novel</a></span></td>
+      <td data-ice="name" data-depth="0">eVNM_char</td>
+      <td data-ice="type"><span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></span></td>
       <td data-ice="appendix"></td>
-      <td data-ice="description"><p>Novel to pull data from</p>
+      <td data-ice="description"><p>The eVNML data to instantiate from</p>
 </td>
     </tr>
 </tbody>
@@ -320,17 +362,17 @@
 <div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
 
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-ctx">
+  <h3 data-ice="anchor" id="instance-get-cImage">
     <span class="access" data-ice="access">public</span>
     
+    <span class="kind" data-ice="kind">get</span>
     
     
-    
-    <span data-ice="name">ctx</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">cImage</span><span data-ice="signature">: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Visuals.js.html#lineNumber16">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber12">source</a></span></span>
     </span>
   </h3>
 
@@ -360,17 +402,17 @@
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-draw">
+  <h3 data-ice="anchor" id="instance-member-color">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">draw</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">color</span><span data-ice="signature">: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Visuals.js.html#lineNumber21">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber7">source</a></span></span>
     </span>
   </h3>
 
@@ -400,25 +442,144 @@
   
 </div>
 <div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-member-novel">
+  <h3 data-ice="anchor" id="instance-member-images">
     <span class="access" data-ice="access">public</span>
     
     
     
     
-    <span data-ice="name">novel</span><span data-ice="signature">: <span>*</span></span>
+    <span data-ice="name">images</span><span data-ice="signature">: <span>*</span></span>
     <span class="right-info">
       
       
-      <span data-ice="source"><span><a href="file/src/Visuals.js.html#lineNumber15">source</a></span></span>
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber8">source</a></span></span>
     </span>
   </h3>
 
   
   
   
-  <div data-ice="description"><p>Reference to the novel we are drawing</p>
+  
+
+  
+
+  <div data-ice="properties">
 </div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-lname">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="name">lname</span><span data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber6">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-mood">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="name">mood</span><span data-ice="signature">: <span><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String">string</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber9">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-name">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    <span data-ice="name">name</span><span data-ice="signature">: <span>*</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/Character.js.html#lineNumber5">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
 
   
 
@@ -441,66 +602,7 @@
   
 </div>
 </div>
-<div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
 
-<div class="detail" data-ice="detail">
-  <h3 data-ice="anchor" id="instance-method-loop">
-    <span class="access" data-ice="access">public</span>
-    
-    
-    
-    
-    <span data-ice="name">loop</span><span data-ice="signature">(frametime: <span>*</span>)</span>
-    <span class="right-info">
-      
-      
-      <span data-ice="source"><span><a href="file/src/Visuals.js.html#lineNumber29">source</a></span></span>
-    </span>
-  </h3>
-
-  
-  
-  
-  <div data-ice="description"><p>Assembles graphics and exports to <span>Novel#outContext</span>, then calls itself in a timeout</p>
-</div>
-
-  
-
-  <div data-ice="properties"><div data-ice="properties">
-  <h4 data-ice="title">Params:</h4>
-  <table class="params">
-    <thead>
-    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
-    </thead>
-    <tbody>
-    
-    <tr data-ice="property" data-depth="0">
-      <td data-ice="name" data-depth="0">frametime</td>
-      <td data-ice="type"><span>*</span></td>
-      <td data-ice="appendix"></td>
-      <td data-ice="description"></td>
-    </tr>
-</tbody>
-  </table>
-</div>
-</div>
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-  
-</div>
-</div>
 </div>
 
 <footer class="footer">

@@ -31,9 +31,11 @@
   <h2>Class</h2>
   <ul>
     
-  <li data-ice="classDoc"><span><a href="class/src/Logger.js~Logger.html">Logger</a></span></li>
+  <li data-ice="classDoc"><span><a href="class/src/Character.js~Character.html">Character</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/Logger.js~Logger.html">Logger</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Main.js~Main.html">Main</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Novel.js~Novel.html">Novel</a></span></li>
+<li data-ice="classDoc"><span><a href="class/src/SceneInstructor.js~SceneInstructor.html">SceneInstructor</a></span></li>
 <li data-ice="classDoc"><span><a href="class/src/Visuals.js~Visuals.html">Visuals</a></span></li>
 </ul>
 </div>
@@ -63,6 +65,8 @@
 
 <div class="content" data-ice="content"><h1 data-ice="title">src/Novel.js</h1>
 <pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">import { Visuals } from &apos;./Visuals.js&apos;;
+import { Character } from &apos;./Character.js&apos;;
+import { SceneInstructor } from &apos;./SceneInstructor.js&apos;;
 var logger = null;
 var defaultEvnData = {
 	options: {
@@ -90,6 +94,10 @@ export class Novel {
 		this.canvas = canvas;
 		/** The drawing context of {@link Novel#canvas} */
 		this.context = canvas.getContext(&apos;2d&apos;);
+		/** {@link SceneInstructor} for this novel */
+		this.sceneInstructor = new SceneInstructor(this);
+		/** Shorthand for executing scene instruction methods */
+		this.sceneCmd = this.sceneInstructor.execute;
 		/** Map containing all &lt;code&gt;Image&lt;/code&gt; instances for this novel */
 		this.images = {};
 		/** Map containing all &lt;code&gt;Audio&lt;/code&gt; instances for this novel */
@@ -155,23 +163,7 @@ export class Novel {
 		}
 
 		/* Instantiate characters */
-		for(let key in this.eVNML.characters) {
-			var eVNML_char = this.eVNML.characters[key];
-			// NOTE TO SELF: Create character class
-			this.characters[key] = {
-				name: eVNML_char[&apos;first name&apos;] || eVNML_char[&apos;name&apos;],
-				lname: eVNML_char[&apos;last name&apos;],
-				color: eVNML_char[&apos;color&apos;] || eVNML_char[&apos;colour&apos;],
-				images: {}
-			};
-			var char = this.characters[key];
-
-			for(let key in eVNML_char.images) {
-				char.images[key] = /*new Image();
-				char.images[key].src =*/ eVNML_char.images[key];
-			}
-			char.cImage = char.images.default;
-		}
+		for(let key in this.eVNML.characters) this.characters[key] = new Character(this.eVNML.characters[key]);
 
 		this.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);
 
@@ -237,7 +229,7 @@ export class Novel {
 		var scene = this.eVNML.scenes[collection][index];
 		cd.collection = collection;
 		cd.collectionIndex = index+1;
-		if(!scene) eVN.logger.throw(&apos;Undefined scene &quot;&apos;+ collection +&apos;[&apos;+ index +&apos;]&quot;! Did we run out of scenes?&apos;);
+		if(!scene) eVN.logger.throw(&apos;Undefined scene &quot;&apos;+ collection +&apos;[&apos;+ index +&apos;]&quot;! Did we run out of scenes?&apos;)();
 
 		/* These are values that only live one scene - they should be reset on each scene load */
 		cd.speakerColor = null;
@@ -253,34 +245,14 @@ export class Novel {
 			scene = isDialogue? [&quot;say&quot;, beta, alpha] : [&quot;say&quot;, scene];
 		}
 
-		switch(scene[0].toLowerCase()) {
+		var sceneInstruction = this.sceneInstructor.getMethod( scene[0].toLowerCase(), scene.slice(1) );
+		if(sceneInstruction !== null) {
+			var doSkip = sceneInstruction() || false;
+			if(doSkip) return;
+		} else switch( scene[0].toLowerCase() ) {
 		/* Cases ending with &apos;break&apos; will not take up a scene shift and jump to the next scene automatically.
 		   Cases ending with &apos;return&apos; will not jump to the next scene when done */
 
-			case &apos;background&apos;:
-				cd.background = scene[1];
-				break;
-			case &apos;music&apos;:
-				if(scene[1] in this.audio) this.audio[scene[1]].play();
-				break;
-			case &apos;say&apos;:
-				/*Process inline variables for text*/
-				var text = this.processVariables(scene[1]);
-
-				if(scene[2]) {
-					cd.speaker = scene[2];
-					cd.dialogue = &apos;&quot;&apos;+ text +&apos;&quot;&apos;;
-					cd.speakerColor = scene[3] || null;
-				} else {
-					cd.speaker = null;
-					cd.dialogue = text;
-				}
-
-				//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);
-				var maxWidth = textbox.maxWidth;
-				cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
-				cd.startLine = 0;
-				return;
 			case &apos;setmood&apos;:
 				var charIndex = -1;
 				for(let c of cd.characters) {
@@ -359,12 +331,6 @@ export class Novel {
 		} else {
 			return string;
 		}
-	}
-
-	/**  */
-	constructCharacter(data) {
-		var name = data.name;
-		this.characters[name] = {};
 	}
 };
 </code></pre>

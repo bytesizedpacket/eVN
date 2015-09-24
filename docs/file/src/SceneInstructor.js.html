@@ -2,8 +2,8 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <base data-ice="baseUrl">
-  <title data-ice="title">API Document</title>
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">src/SceneInstructor.js | API Document</title>
   <link type="text/css" rel="stylesheet" href="css/style.css">
   <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
   <script src="script/prettify/prettify.js"></script>
@@ -63,15 +63,55 @@
 
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="evn-jsdocs">eVN JSDocs</h1>
-<p>If you&apos;re new to the eVN project, you should check out the
-<a href="https://github.com/bytesizedpacket/eVN">GitHub page</a> - pull requests
-are welcome!</p>
-<h2 id="core-data-processors">Core &amp; data processors</h2>
-<ul>
-<li><a href="module-eVN_Novel.html">Novel.js core novel class</a></li>
-</ul>
-</div>
+<div class="content" data-ice="content"><h1 data-ice="title">src/SceneInstructor.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/** A class for managing scene instruction methods */
+export class SceneInstructor {
+	/** @param {object} scope - Scope to bind instruction methods to */
+	constructor(scope) {
+		/** Scope methods will be bound to */
+		this.scope = scope;
+
+		/* Aliases */
+		this.get = this.getMethod;
+	}
+
+	getMethod(method, args) {
+		var meth = this[method];
+		if(meth instanceof Function) {
+			return meth.bind(this.scope, ...args);
+		} else return null;
+	}
+
+	/** Sets the background of a scene. Skips to the next scene. */
+	background(background) { this.cdata.background = background; return false; }
+			
+	/** Changes the background music. Skips to the next scene. */
+	music(track) { if(track in this.audio) this.audio[track].play(); return false; }
+	
+	/**Changes the contents of the dialogue &amp; speaker box. Does NOT skip to the next scene.
+	 * @param {string} text - Dialogue to say
+	 * @param {string} [speaker=null] - The person talking -Improve this-
+	 * @param {string} [speakerColor=&apos;#FFF&apos;] - #HEX or rgb() color of the speaker&apos;s name */
+	say(text, speaker=null, speakerColor=&apos;#FFF&apos;) {
+		var cd = this.cdata;
+		var textbox = this.eVNML.options.textbox;
+		/*Process inline variables for text*/
+		text = this.processVariables(text);
+
+		if(speaker !== null) {
+			cd.speaker = speaker;
+			cd.dialogue = &apos;&quot;&apos;+ text +&apos;&quot;&apos;;
+			cd.speakerColor = speakerColor;
+		} else cd.dialogue = text;
+
+		var maxWidth = textbox.maxWidth;
+		cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
+		cd.startLine = 0;
+		return true;
+	}
+}
+</code></pre>
+
 </div>
 
 <footer class="footer">

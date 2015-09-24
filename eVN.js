@@ -66,7 +66,7 @@
 
 	var _NovelJs = __webpack_require__(1);
 
-	var _LoggerJs = __webpack_require__(6);
+	var _LoggerJs = __webpack_require__(7);
 
 	var logger = new _LoggerJs.Logger('eVN', '0.1a', true);
 
@@ -173,6 +173,8 @@
 
 	var _CharacterJs = __webpack_require__(5);
 
+	var _SceneInstructorJs = __webpack_require__(6);
+
 	var logger = null;
 	var defaultEvnData = {
 		options: {
@@ -208,6 +210,10 @@
 			this.canvas = canvas;
 			/** The drawing context of {@link Novel#canvas} */
 			this.context = canvas.getContext('2d');
+			/** {@link SceneInstructor} for this novel */
+			this.sceneInstructor = new _SceneInstructorJs.SceneInstructor(this);
+			/** Shorthand for executing scene instruction methods */
+			this.sceneCmd = this.sceneInstructor.execute;
 			/** Map containing all <code>Image</code> instances for this novel */
 			this.images = {};
 			/** Map containing all <code>Audio</code> instances for this novel */
@@ -362,34 +368,14 @@
 					scene = isDialogue ? ["say", beta, alpha] : ["say", scene];
 				}
 
-				switch (scene[0].toLowerCase()) {
+				var sceneInstruction = this.sceneInstructor.getMethod(scene[0].toLowerCase(), scene.slice(1));
+				if (sceneInstruction !== null) {
+					var doSkip = sceneInstruction() || false;
+					if (doSkip) return;
+				} else switch (scene[0].toLowerCase()) {
 					/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.
 	       Cases ending with 'return' will not jump to the next scene when done */
 
-					case 'background':
-						cd.background = scene[1];
-						break;
-					case 'music':
-						if (scene[1] in this.audio) this.audio[scene[1]].play();
-						break;
-					case 'say':
-						/*Process inline variables for text*/
-						var text = this.processVariables(scene[1]);
-
-						if (scene[2]) {
-							cd.speaker = scene[2];
-							cd.dialogue = '"' + text + '"';
-							cd.speakerColor = scene[3] || null;
-						} else {
-							cd.speaker = null;
-							cd.dialogue = text;
-						}
-
-						//var maxWidth = this.context.canvas.width - (textbox.margin*2 + textbox.padding*2);
-						var maxWidth = textbox.maxWidth;
-						cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
-						cd.startLine = 0;
-						return;
 					case 'setmood':
 						var charIndex = -1;
 						var _iteratorNormalCompletion = true;
@@ -940,6 +926,92 @@
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	/** A class for managing scene instruction methods */
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var SceneInstructor = (function () {
+		/** @param {object} scope - Scope to bind instruction methods to */
+
+		function SceneInstructor(scope) {
+			_classCallCheck(this, SceneInstructor);
+
+			/** Scope methods will be bound to */
+			this.scope = scope;
+
+			/* Aliases */
+			this.get = this.getMethod;
+		}
+
+		_createClass(SceneInstructor, [{
+			key: 'getMethod',
+			value: function getMethod(method, args) {
+				var meth = this[method];
+				if (meth instanceof Function) {
+					return meth.bind.apply(meth, [this.scope].concat(_toConsumableArray(args)));
+				} else return null;
+			}
+
+			/** Sets the background of a scene. Skips to the next scene. */
+		}, {
+			key: 'background',
+			value: function background(_background) {
+				this.cdata.background = _background;return false;
+			}
+
+			/** Changes the background music. Skips to the next scene. */
+		}, {
+			key: 'music',
+			value: function music(track) {
+				if (track in this.audio) this.audio[track].play();return false;
+			}
+
+			/**Changes the contents of the dialogue & speaker box. Does NOT skip to the next scene.
+	   * @param {string} text - Dialogue to say
+	   * @param {string} [speaker=null] - The person talking -Improve this-
+	   * @param {string} [speakerColor='#FFF'] - #HEX or rgb() color of the speaker's name */
+		}, {
+			key: 'say',
+			value: function say(text) {
+				var speaker = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+				var speakerColor = arguments.length <= 2 || arguments[2] === undefined ? '#FFF' : arguments[2];
+
+				var cd = this.cdata;
+				var textbox = this.eVNML.options.textbox;
+				/*Process inline variables for text*/
+				text = this.processVariables(text);
+
+				if (speaker !== null) {
+					cd.speaker = speaker;
+					cd.dialogue = '"' + text + '"';
+					cd.speakerColor = speakerColor;
+				} else cd.dialogue = text;
+
+				var maxWidth = textbox.maxWidth;
+				cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
+				cd.startLine = 0;
+				return true;
+			}
+		}]);
+
+		return SceneInstructor;
+	})();
+
+	exports.SceneInstructor = SceneInstructor;
+
+/***/ },
+/* 7 */
 /***/ function(module, exports) {
 
 	/**A logging class, covering debug logs, warnings & errors

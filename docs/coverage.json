@@ -1,12 +1,24 @@
 {
-  "coverage": "94.59%",
-  "expectCount": 37,
-  "actualCount": 35,
+  "coverage": "81.48%",
+  "expectCount": 54,
+  "actualCount": 44,
   "files": {
     "src/Visuals/text.js": {
       "expectCount": 2,
       "actualCount": 2,
       "undocumentLines": []
+    },
+    "src/Character.js": {
+      "expectCount": 8,
+      "actualCount": 2,
+      "undocumentLines": [
+        12,
+        7,
+        8,
+        6,
+        9,
+        5
+      ]
     },
     "src/Logger.js": {
       "expectCount": 5,
@@ -19,9 +31,17 @@
       "undocumentLines": []
     },
     "src/Novel.js": {
-      "expectCount": 15,
-      "actualCount": 15,
+      "expectCount": 16,
+      "actualCount": 16,
       "undocumentLines": []
+    },
+    "src/SceneInstructor.js": {
+      "expectCount": 8,
+      "actualCount": 6,
+      "undocumentLines": [
+        9,
+        12
+      ]
     },
     "src/Visuals.js": {
       "expectCount": 6,
