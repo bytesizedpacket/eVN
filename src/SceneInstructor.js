@@ -56,7 +56,7 @@ export class SceneInstructor {
 		/* Since cd.characters is an array of objects, we need to spend
 		 * some extra effort finding characters */
 		var charIndex = -1;
-		for(let c of cd.characters) {
+		for(let c of this.cdata.characters) {
 			if(c.character === charname) {
 				charIndex = i;
 				break;
@@ -69,7 +69,7 @@ export class SceneInstructor {
 	}
 	
 	/**Hides a character from the screen. Does not skip to the next scene. */
-	hide(character) { cd.characters[character] = null; return false; }
+	hide(character) { this.cdata.characters[character] = null; return false; }
 
 	/**Shows a character on the screen. Skips to the next scene
 	 * @param {string} charname - Name of the character to show

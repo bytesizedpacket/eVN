@@ -930,7 +930,7 @@
 				var _iteratorError = undefined;
 
 				try {
-					for (var _iterator = cd.characters[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					for (var _iterator = this.cdata.characters[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var c = _step.value;
 
 						if (c.character === charname) {
@@ -962,7 +962,7 @@
 		}, {
 			key: 'hide',
 			value: function hide(character) {
-				cd.characters[character] = null;return false;
+				this.cdata.characters[character] = null;return false;
 			}
 
 			/**Shows a character on the screen. Skips to the next scene
