@@ -98,5 +98,5 @@ export class SceneInstructor {
 	}
 
 	/** Jump to a specific scene collection */
-	jump(collection) { cd.collection = collection; cd.collectionIndex = 0; return false; }
+	jump(collection) { this.cdata.collection = collection; this.cdata.collectionIndex = 0; return false; }
 }

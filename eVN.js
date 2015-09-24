@@ -1018,7 +1018,7 @@
 		}, {
 			key: 'jump',
 			value: function jump(collection) {
-				cd.collection = collection;cd.collectionIndex = 0;return false;
+				this.cdata.collection = collection;this.cdata.collectionIndex = 0;return false;
 			}
 		}]);
 
