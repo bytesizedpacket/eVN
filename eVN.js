@@ -372,101 +372,7 @@
 				if (sceneInstruction !== null) {
 					var doSkip = sceneInstruction() || false;
 					if (doSkip) return;
-				} else switch (scene[0].toLowerCase()) {
-					/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.
-	       Cases ending with 'return' will not jump to the next scene when done */
-
-					case 'setmood':
-						var charIndex = -1;
-						var _iteratorNormalCompletion = true;
-						var _didIteratorError = false;
-						var _iteratorError = undefined;
-
-						try {
-							for (var _iterator = cd.characters[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-								var c = _step.value;
-
-								if (c['character'] === scene[1]) {
-									charIndex = i;
-									break;
-								}
-							}
-						} catch (err) {
-							_didIteratorError = true;
-							_iteratorError = err;
-						} finally {
-							try {
-								if (!_iteratorNormalCompletion && _iterator['return']) {
-									_iterator['return']();
-								}
-							} finally {
-								if (_didIteratorError) {
-									throw _iteratorError;
-								}
-							}
-						}
-
-						if (charIndex > -1) {
-							cd.characters[charIndex].mood = scene[2] || 'default';
-						}
-						break;
-					case 'hide':
-						cd.characters[scene[1]] = null;
-						break;
-					case 'show':
-						/* Since characters are stored in an array and not an object literal,
-	        checking if it exists takes a little extra effort */
-
-						/* Check if we already have an index mapped to scene[1]||charName */
-						var charIndex = -1;
-						var _iteratorNormalCompletion2 = true;
-						var _didIteratorError2 = false;
-						var _iteratorError2 = undefined;
-
-						try {
-							for (var _iterator2 = cd.characters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-								var c = _step2.value;
-
-								if (c['character'] === scene[1]) {
-									charIndex = i;
-									break;
-								}
-							}
-						} catch (err) {
-							_didIteratorError2 = true;
-							_iteratorError2 = err;
-						} finally {
-							try {
-								if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-									_iterator2['return']();
-								}
-							} finally {
-								if (_didIteratorError2) {
-									throw _iteratorError2;
-								}
-							}
-						}
-
-						if (charIndex > -1) {
-							var cdChar = cd.characters[charIndex];
-							cdChar = {
-								character: cdChar.character,
-								position: scene[2] || cdChar.position || 'middle',
-								mood: cdChar.mood || 'default',
-								priority: scene[4] || cdChar.priority || 1
-							};
-						} else {
-							cd.characters.push({ character: scene[1], position: scene[2] || 'middle', mood: 'default' });
-						}
-						break;
-					case 'goto':
-					case 'jump':
-						cd.collection = scene[1];
-						cd.collectionIndex = 0;
-						break;
-					default:
-						eVN.logger.warn('Unknown command "' + scene[0] + '" at "' + collection + '[' + index + ']"');
-				}
+				} else logger.warn('Unknown command "' + scene[0] + '" at "' + collection + '[' + index + ']"')();
 
 				this.parseScene();
 			}
@@ -951,7 +857,7 @@
 			this.scope = scope;
 
 			/* Aliases */
-			this.get = this.getMethod;
+			this.goto = this.jump;
 		}
 
 		_createClass(SceneInstructor, [{
@@ -1002,6 +908,99 @@
 				cd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);
 				cd.startLine = 0;
 				return true;
+			}
+
+			/**Change the sprite of a character. Skips to the next scene.
+	   * @param {string} charname - The character (in {@link Novel#cdata})'s name
+	   * @param {string} mood - The name of the sprite to change to */
+		}, {
+			key: 'setmood',
+			value: function setmood(charname, mood) {
+				/* Since cd.characters is an array of objects, we need to spend
+	    * some extra effort finding characters */
+				var charIndex = -1;
+				var _iteratorNormalCompletion = true;
+				var _didIteratorError = false;
+				var _iteratorError = undefined;
+
+				try {
+					for (var _iterator = cd.characters[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+						var c = _step.value;
+
+						if (c.character === charname) {
+							charIndex = i;
+							break;
+						}
+					}
+				} catch (err) {
+					_didIteratorError = true;
+					_iteratorError = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion && _iterator['return']) {
+							_iterator['return']();
+						}
+					} finally {
+						if (_didIteratorError) {
+							throw _iteratorError;
+						}
+					}
+				}
+
+				if (charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';
+			}
+		}, {
+			key: 'hide',
+			value: function hide(character) {
+				cd.characters[character] = null;
+			}
+		}, {
+			key: 'show',
+			value: function show(charname, pos, wat, priority) {
+				/* Check if we already have a cdata character mapped to charname */
+				var charIndex = -1;
+				var _iteratorNormalCompletion2 = true;
+				var _didIteratorError2 = false;
+				var _iteratorError2 = undefined;
+
+				try {
+					for (var _iterator2 = this.cdata.characters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+						var c = _step2.value;
+
+						if (c.character === charname) {
+							charIndex = i;
+							break;
+						}
+					}
+				} catch (err) {
+					_didIteratorError2 = true;
+					_iteratorError2 = err;
+				} finally {
+					try {
+						if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+							_iterator2['return']();
+						}
+					} finally {
+						if (_didIteratorError2) {
+							throw _iteratorError2;
+						}
+					}
+				}
+
+				if (charIndex > -1) {
+					var cdChar = this.cdata.characters[charIndex];
+					cdChar = {
+						character: cdChar.character,
+						position: pos || cdChar.position || 'middle',
+						mood: cdChar.mood || 'default',
+						priority: priority || cdChar.priority || 1
+					};
+				} else this.cdata.characters.push({ character: charname, position: pos || 'middle', mood: 'default' });
+			}
+		}, {
+			key: 'jump',
+			value: function jump(collection) {
+				cd.collection = collection;cd.collectionIndex = 0;return false;
 			}
 		}]);
 

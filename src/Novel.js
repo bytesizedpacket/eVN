@@ -183,58 +183,7 @@ export class Novel {
 		if(sceneInstruction !== null) {
 			var doSkip = sceneInstruction() || false;
 			if(doSkip) return;
-		} else switch( scene[0].toLowerCase() ) {
-		/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.
-		   Cases ending with 'return' will not jump to the next scene when done */
-
-			case 'setmood':
-				var charIndex = -1;
-				for(let c of cd.characters) {
-					if(c['character'] === scene[1]) {
-						charIndex = i;
-						break;
-					}
-				}
-				if(charIndex > -1){
-					cd.characters[charIndex].mood = scene[2] || 'default';
-				}
-				break;
-			case 'hide':
-				cd.characters[scene[1]] = null;
-				break;
-			case 'show':
-				/* Since characters are stored in an array and not an object literal,
-				   checking if it exists takes a little extra effort */
-
-				/* Check if we already have an index mapped to scene[1]||charName */
-				var charIndex = -1;
-				for(let c of cd.characters) {
-					if(c['character'] === scene[1]) {
-						charIndex = i;
-						break;
-					}
-				}
-
-				if(charIndex > -1) {
-					var cdChar = cd.characters[charIndex];
-					cdChar = {
-						character: cdChar.character,
-						position: scene[2] || cdChar.position || 'middle',
-						mood: cdChar.mood || 'default',
-						priority: scene[4] || cdChar.priority || 1
-					};
-				} else {
-					cd.characters.push({ character: scene[1], position: scene[2]||'middle', mood: 'default' });
-				}
-				break;
-			case 'goto':
-			case 'jump':
-				cd.collection = scene[1];
-				cd.collectionIndex = 0;
-				break;
-			default:
-				eVN.logger.warn('Unknown command "'+ scene[0] +'" at "'+ collection +'['+ index +']"');
-		}
+		} else logger.warn('Unknown command "'+ scene[0] +'" at "'+ collection +'['+ index +']"')();
 
 		this.parseScene();
 	}

@@ -6,7 +6,7 @@ export class SceneInstructor {
 		this.scope = scope;
 
 		/* Aliases */
-		this.get = this.getMethod;
+		this.goto = this.jump;
 	}
 
 	getMethod(method, args) {
@@ -43,4 +43,46 @@ export class SceneInstructor {
 		cd.startLine = 0;
 		return true;
 	}
+	
+	/**Change the sprite of a character. Skips to the next scene.
+	 * @param {string} charname - The character (in {@link Novel#cdata})'s name
+	 * @param {string} mood - The name of the sprite to change to */
+	setmood(charname, mood) {
+		/* Since cd.characters is an array of objects, we need to spend
+		 * some extra effort finding characters */
+		var charIndex = -1;
+		for(let c of cd.characters) {
+			if(c.character === charname) {
+				charIndex = i;
+				break;
+			}
+		}
+
+		if(charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';
+	}
+	
+	hide(character) { cd.characters[character] = null; }
+
+	show(charname, pos, wat, priority) {
+		/* Check if we already have a cdata character mapped to charname */
+		var charIndex = -1;
+		for(let c of this.cdata.characters) {
+			if(c.character === charname) {
+				charIndex = i;
+				break;
+			}
+		}
+
+		if(charIndex > -1) {
+			var cdChar = this.cdata.characters[charIndex];
+			cdChar = {
+				character: cdChar.character,
+				position: pos || cdChar.position || 'middle',
+				mood: cdChar.mood || 'default',
+				priority: priority || cdChar.priority || 1
+			};
+		} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });
+	}
+
+	jump(collection) { cd.collection = collection; cd.collectionIndex = 0; return false; }
 }
