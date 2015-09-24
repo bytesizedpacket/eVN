@@ -690,12 +690,6 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
-    "src/visuals.js~visuals#draw",
-    "class/src/Visuals.js~Visuals.html#instance-member-draw",
-    "src/Visuals.js~Visuals#draw",
-    "member"
-  ],
-  [
     "src/visuals.js~visuals#loop",
     "class/src/Visuals.js~Visuals.html#instance-method-loop",
     "src/Visuals.js~Visuals#loop",

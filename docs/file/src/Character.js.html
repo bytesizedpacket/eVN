@@ -68,13 +68,19 @@
 export class Character {
 	/** @param {object} eVNM_char - The eVNML data to instantiate from */
 	constructor(eVNML_char) {
+		/** Name/First name of the character */
 		this.name = eVNML_char[&apos;first name&apos;] || eVNML_char[&apos;name&apos;];
+		/** Last name of the character - optional */
 		this.lname = eVNML_char[&apos;last name&apos;] || null;
+		/** Color of the character&apos;s name in the speakerbox */
 		this.color = eVNML_char[&apos;color&apos;] || eVNML_char[&apos;colour&apos;] || &apos;#FFF&apos;;
+		/** Images/Sprites associated with this character */
 		this.images = eVNML_char[&apos;images&apos;] || {};
+		/** Mood (current sprite) of the character */
 		this.mood = &apos;default&apos;;
 	}
 
+	/** Gets the sprite of the current mood */
 	get cImage() { return this.images[this.mood] };
 }
 </code></pre>

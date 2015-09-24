@@ -432,9 +432,6 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	//var text = require('./Visuals/text.js');
-	//var draw = require('./Visuals/draw.js');
-
 	var _VisualsTextJs = __webpack_require__(3);
 
 	var text = _interopRequireWildcard(_VisualsTextJs);
@@ -444,12 +441,12 @@
 	var draw = _interopRequireWildcard(_VisualsDrawJs);
 
 	var logger = null;
+
 	var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function (callback) {
 		setTimeout(callback, 1000 / 60);
 	};
 
-	/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
-	 */
+	/** Class to manage and carry out drawing on a canvas */
 
 	var Visuals = (function () {
 		/** @param {Novel} novelInstance - Novel to pull data from */
@@ -462,11 +459,12 @@
 			logger = eVN.logger;
 			/** Reference to the novel we are drawing */
 			this.novel = novelInstance;
+			/** The rendering context for this novel */
 			this.ctx = novelInstance.context;
 
 			// Temporary. remove this. These are pulled from text/draw.js -
 			// should be rewritten.
-			/* @ignore */
+			/** @ignore */
 			this.draw = draw;
 			/** @ignore */
 			this.text = text;
@@ -811,12 +809,19 @@
 		function Character(eVNML_char) {
 			_classCallCheck(this, Character);
 
+			/** Name/First name of the character */
 			this.name = eVNML_char['first name'] || eVNML_char['name'];
+			/** Last name of the character - optional */
 			this.lname = eVNML_char['last name'] || null;
+			/** Color of the character's name in the speakerbox */
 			this.color = eVNML_char['color'] || eVNML_char['colour'] || '#FFF';
+			/** Images/Sprites associated with this character */
 			this.images = eVNML_char['images'] || {};
+			/** Mood (current sprite) of the character */
 			this.mood = 'default';
 		}
+
+		/** Gets the sprite of the current mood */
 
 		_createClass(Character, [{
 			key: 'cImage',

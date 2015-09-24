@@ -1,23 +1,21 @@
 var logger = null;
-//var text = require('./Visuals/text.js');
-//var draw = require('./Visuals/draw.js');
 import * as text from './Visuals/text.js';
 import * as draw from './Visuals/draw.js';
 var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || function(callback) {setTimeout(callback, 1000/60);};
 
-/**Class to manage and carry out drawing on a canvas, meant for {@link module:eVN/Novel}
- */
+/** Class to manage and carry out drawing on a canvas */
 export class Visuals {
 	/** @param {Novel} novelInstance - Novel to pull data from */
 	constructor(novelInstance) {
 		logger = eVN.logger;
 		/** Reference to the novel we are drawing */
 		this.novel = novelInstance;
+		/** The rendering context for this novel */
 		this.ctx = novelInstance.context;
 
 		// Temporary. remove this. These are pulled from text/draw.js -
 		// should be rewritten.
-		/* @ignore */
+		/** @ignore */
 		this.draw = draw;
 		/** @ignore */
 		this.text = text;
