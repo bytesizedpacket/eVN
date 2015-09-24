@@ -121,21 +121,18 @@ export class SceneInstructor {
 	setmood(charname, mood) {
 		/* Since cd.characters is an array of objects, we need to spend
 		 * some extra effort finding characters */
-		var charIndex = -1;
-		for(let c of cd.characters) {
-			if(c.character === charname) {
-				charIndex = i;
-				break;
-			}
+		var cdChar = null;
+		for(let c of this.cdata.characters) {
+			if(c.character === charname) { cdChar = c; break; }
 		}
 
-		if(charIndex &gt; -1) this.cdata.characters[charIndex].mood = mood || &apos;default&apos;;
+		if(cdChar !== null) cdChar.mood = mood || &apos;default&apos;;
 
 		return true;
 	}
 	
 	/**Hides a character from the screen. Does not skip to the next scene. */
-	hide(character) { cd.characters[character] = null; return false; }
+	hide(character) { this.cdata.characters[character] = null; return false; }
 
 	/**Shows a character on the screen. Skips to the next scene
 	 * @param {string} charname - Name of the character to show
@@ -144,16 +141,12 @@ export class SceneInstructor {
 	 * @param {number} [priority] - Priority on screen. Lower numbers are on top. */
 	show(charname, pos, wat, priority) {
 		/* Check if we already have a cdata character mapped to charname */
-		var charIndex = -1;
+		var cdChar = null;
 		for(let c of this.cdata.characters) {
-			if(c.character === charname) {
-				charIndex = i;
-				break;
-			}
+			if(c.character === charname) { cdChar = c; break; }
 		}
 
-		if(charIndex &gt; -1) {
-			var cdChar = this.cdata.characters[charIndex];
+		if(cdChar !== null) {
 			cdChar = {
 				character: cdChar.character,
 				position: pos || cdChar.position || &apos;middle&apos;,
@@ -161,10 +154,12 @@ export class SceneInstructor {
 				priority: priority || cdChar.priority || 1
 			};
 		} else this.cdata.characters.push({ character: charname, position: pos||&apos;middle&apos;, mood: &apos;default&apos; });
+
+		return true;
 	}
 
 	/** Jump to a specific scene collection */
-	jump(collection) { cd.collection = collection; cd.collectionIndex = 0; return false; }
+	jump(collection) { this.cdata.collection = collection; this.cdata.collectionIndex = 0; return false; }
 }
 </code></pre>
 

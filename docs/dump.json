@@ -974,7 +974,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "/** A class for managing scene instruction methods */\nexport class SceneInstructor {\n\t/** @param {object} scope - Scope to bind instruction methods to */\n\tconstructor(scope) {\n\t\t/** Scope methods will be bound to */\n\t\tthis.scope = scope;\n\n\t\t/* Aliases */\n\t\t/** Alias of {@link SceneInstructor#jump} */\n\t\tthis.goto = this.jump;\n\t}\n\n\t/**Gets a scene instruction method\n\t * @param {string} method - The scene instruction name\n\t * @param {*[]} args - An array of arguments to pass to the method\n\t * @returns {Function} */\n\tgetMethod(method, args) {\n\t\tvar meth = this[method];\n\t\tif(meth instanceof Function) {\n\t\t\treturn meth.bind(this.scope, ...args);\n\t\t} else return null;\n\t}\n\n\t/** Sets the background of a scene. Skips to the next scene. */\n\tbackground(background) { this.cdata.background = background; return false; }\n\t\t\t\n\t/** Changes the background music. Skips to the next scene. */\n\tmusic(track) { if(track in this.audio) this.audio[track].play(); return false; }\n\t\n\t/**Changes the contents of the dialogue & speaker box. Does NOT skip to the next scene.\n\t * @param {string} text - Dialogue to say\n\t * @param {string} [speaker=null] - The person talking -Improve this-\n\t * @param {string} [speakerColor='#FFF'] - #HEX or rgb() color of the speaker's name */\n\tsay(text, speaker=null, speakerColor='#FFF') {\n\t\tvar cd = this.cdata;\n\t\tvar textbox = this.eVNML.options.textbox;\n\t\t/*Process inline variables for text*/\n\t\ttext = this.processVariables(text);\n\n\t\tif(speaker !== null) {\n\t\t\tcd.speaker = speaker;\n\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\tcd.speakerColor = speakerColor;\n\t\t} else cd.dialogue = text;\n\n\t\tvar maxWidth = textbox.maxWidth;\n\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\tcd.startLine = 0;\n\t\treturn true;\n\t}\n\t\n\t/**Change the sprite of a character. Skips to the next scene.\n\t * @param {string} charname - The character (in {@link Novel#cdata})'s name\n\t * @param {string} mood - The name of the sprite to change to */\n\tsetmood(charname, mood) {\n\t\t/* Since cd.characters is an array of objects, we need to spend\n\t\t * some extra effort finding characters */\n\t\tvar charIndex = -1;\n\t\tfor(let c of cd.characters) {\n\t\t\tif(c.character === charname) {\n\t\t\t\tcharIndex = i;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\n\t\tif(charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';\n\n\t\treturn true;\n\t}\n\t\n\t/**Hides a character from the screen. Does not skip to the next scene. */\n\thide(character) { cd.characters[character] = null; return false; }\n\n\t/**Shows a character on the screen. Skips to the next scene\n\t * @param {string} charname - Name of the character to show\n\t * @param {string} [pos] - Positio of the character on-screen\n\t * @param {???} [wat] - Old code had four argumetns. No idea why\n\t * @param {number} [priority] - Priority on screen. Lower numbers are on top. */\n\tshow(charname, pos, wat, priority) {\n\t\t/* Check if we already have a cdata character mapped to charname */\n\t\tvar charIndex = -1;\n\t\tfor(let c of this.cdata.characters) {\n\t\t\tif(c.character === charname) {\n\t\t\t\tcharIndex = i;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\n\t\tif(charIndex > -1) {\n\t\t\tvar cdChar = this.cdata.characters[charIndex];\n\t\t\tcdChar = {\n\t\t\t\tcharacter: cdChar.character,\n\t\t\t\tposition: pos || cdChar.position || 'middle',\n\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\tpriority: priority || cdChar.priority || 1\n\t\t\t};\n\t\t} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });\n\t}\n\n\t/** Jump to a specific scene collection */\n\tjump(collection) { cd.collection = collection; cd.collectionIndex = 0; return false; }\n}\n"
+    "content": "/** A class for managing scene instruction methods */\nexport class SceneInstructor {\n\t/** @param {object} scope - Scope to bind instruction methods to */\n\tconstructor(scope) {\n\t\t/** Scope methods will be bound to */\n\t\tthis.scope = scope;\n\n\t\t/* Aliases */\n\t\t/** Alias of {@link SceneInstructor#jump} */\n\t\tthis.goto = this.jump;\n\t}\n\n\t/**Gets a scene instruction method\n\t * @param {string} method - The scene instruction name\n\t * @param {*[]} args - An array of arguments to pass to the method\n\t * @returns {Function} */\n\tgetMethod(method, args) {\n\t\tvar meth = this[method];\n\t\tif(meth instanceof Function) {\n\t\t\treturn meth.bind(this.scope, ...args);\n\t\t} else return null;\n\t}\n\n\t/** Sets the background of a scene. Skips to the next scene. */\n\tbackground(background) { this.cdata.background = background; return false; }\n\t\t\t\n\t/** Changes the background music. Skips to the next scene. */\n\tmusic(track) { if(track in this.audio) this.audio[track].play(); return false; }\n\t\n\t/**Changes the contents of the dialogue & speaker box. Does NOT skip to the next scene.\n\t * @param {string} text - Dialogue to say\n\t * @param {string} [speaker=null] - The person talking -Improve this-\n\t * @param {string} [speakerColor='#FFF'] - #HEX or rgb() color of the speaker's name */\n\tsay(text, speaker=null, speakerColor='#FFF') {\n\t\tvar cd = this.cdata;\n\t\tvar textbox = this.eVNML.options.textbox;\n\t\t/*Process inline variables for text*/\n\t\ttext = this.processVariables(text);\n\n\t\tif(speaker !== null) {\n\t\t\tcd.speaker = speaker;\n\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\tcd.speakerColor = speakerColor;\n\t\t} else cd.dialogue = text;\n\n\t\tvar maxWidth = textbox.maxWidth;\n\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\tcd.startLine = 0;\n\t\treturn true;\n\t}\n\t\n\t/**Change the sprite of a character. Skips to the next scene.\n\t * @param {string} charname - The character (in {@link Novel#cdata})'s name\n\t * @param {string} mood - The name of the sprite to change to */\n\tsetmood(charname, mood) {\n\t\t/* Since cd.characters is an array of objects, we need to spend\n\t\t * some extra effort finding characters */\n\t\tvar cdChar = null;\n\t\tfor(let c of this.cdata.characters) {\n\t\t\tif(c.character === charname) { cdChar = c; break; }\n\t\t}\n\n\t\tif(cdChar !== null) cdChar.mood = mood || 'default';\n\n\t\treturn true;\n\t}\n\t\n\t/**Hides a character from the screen. Does not skip to the next scene. */\n\thide(character) { this.cdata.characters[character] = null; return false; }\n\n\t/**Shows a character on the screen. Skips to the next scene\n\t * @param {string} charname - Name of the character to show\n\t * @param {string} [pos] - Positio of the character on-screen\n\t * @param {???} [wat] - Old code had four argumetns. No idea why\n\t * @param {number} [priority] - Priority on screen. Lower numbers are on top. */\n\tshow(charname, pos, wat, priority) {\n\t\t/* Check if we already have a cdata character mapped to charname */\n\t\tvar cdChar = null;\n\t\tfor(let c of this.cdata.characters) {\n\t\t\tif(c.character === charname) { cdChar = c; break; }\n\t\t}\n\n\t\tif(cdChar !== null) {\n\t\t\tcdChar = {\n\t\t\t\tcharacter: cdChar.character,\n\t\t\t\tposition: pos || cdChar.position || 'middle',\n\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\tpriority: priority || cdChar.priority || 1\n\t\t\t};\n\t\t} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });\n\n\t\treturn true;\n\t}\n\n\t/** Jump to a specific scene collection */\n\tjump(collection) { this.cdata.collection = collection; this.cdata.collectionIndex = 0; return false; }\n}\n"
   },
   {
     "kind": "class",
@@ -1246,7 +1246,7 @@
     "longname": "src/SceneInstructor.js~SceneInstructor#hide",
     "access": null,
     "description": "Hides a character from the screen. Does not skip to the next scene.",
-    "lineNumber": 72,
+    "lineNumber": 69,
     "params": [
       {
         "name": "character",
@@ -1271,7 +1271,7 @@
     "longname": "src/SceneInstructor.js~SceneInstructor#show",
     "access": null,
     "description": "Shows a character on the screen. Skips to the next scene",
-    "lineNumber": 79,
+    "lineNumber": 76,
     "params": [
       {
         "nullable": null,
@@ -1314,6 +1314,11 @@
         "description": "Priority on screen. Lower numbers are on top."
       }
     ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    },
     "generator": false
   },
   {
@@ -1325,7 +1330,7 @@
     "longname": "src/SceneInstructor.js~SceneInstructor#jump",
     "access": null,
     "description": "Jump to a specific scene collection",
-    "lineNumber": 101,
+    "lineNumber": 96,
     "params": [
       {
         "name": "collection",
