@@ -249,58 +249,7 @@ export class Novel {
 		if(sceneInstruction !== null) {
 			var doSkip = sceneInstruction() || false;
 			if(doSkip) return;
-		} else switch( scene[0].toLowerCase() ) {
-		/* Cases ending with &apos;break&apos; will not take up a scene shift and jump to the next scene automatically.
-		   Cases ending with &apos;return&apos; will not jump to the next scene when done */
-
-			case &apos;setmood&apos;:
-				var charIndex = -1;
-				for(let c of cd.characters) {
-					if(c[&apos;character&apos;] === scene[1]) {
-						charIndex = i;
-						break;
-					}
-				}
-				if(charIndex &gt; -1){
-					cd.characters[charIndex].mood = scene[2] || &apos;default&apos;;
-				}
-				break;
-			case &apos;hide&apos;:
-				cd.characters[scene[1]] = null;
-				break;
-			case &apos;show&apos;:
-				/* Since characters are stored in an array and not an object literal,
-				   checking if it exists takes a little extra effort */
-
-				/* Check if we already have an index mapped to scene[1]||charName */
-				var charIndex = -1;
-				for(let c of cd.characters) {
-					if(c[&apos;character&apos;] === scene[1]) {
-						charIndex = i;
-						break;
-					}
-				}
-
-				if(charIndex &gt; -1) {
-					var cdChar = cd.characters[charIndex];
-					cdChar = {
-						character: cdChar.character,
-						position: scene[2] || cdChar.position || &apos;middle&apos;,
-						mood: cdChar.mood || &apos;default&apos;,
-						priority: scene[4] || cdChar.priority || 1
-					};
-				} else {
-					cd.characters.push({ character: scene[1], position: scene[2]||&apos;middle&apos;, mood: &apos;default&apos; });
-				}
-				break;
-			case &apos;goto&apos;:
-			case &apos;jump&apos;:
-				cd.collection = scene[1];
-				cd.collectionIndex = 0;
-				break;
-			default:
-				eVN.logger.warn(&apos;Unknown command &quot;&apos;+ scene[0] +&apos;&quot; at &quot;&apos;+ collection +&apos;[&apos;+ index +&apos;]&quot;&apos;);
-		}
+		} else logger.warn(&apos;Unknown command &quot;&apos;+ scene[0] +&apos;&quot; at &quot;&apos;+ collection +&apos;[&apos;+ index +&apos;]&quot;&apos;)();
 
 		this.parseScene();
 	}

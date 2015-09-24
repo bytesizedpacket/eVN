@@ -6,9 +6,14 @@ export class SceneInstructor {
 		this.scope = scope;
 
 		/* Aliases */
+		/** Alias of {@link SceneInstructor#jump} */
 		this.goto = this.jump;
 	}
 
+	/**Gets a scene instruction method
+	 * @param {string} method - The scene instruction name
+	 * @param {*[]} args - An array of arguments to pass to the method
+	 * @returns {Function} */
 	getMethod(method, args) {
 		var meth = this[method];
 		if(meth instanceof Function) {
@@ -59,10 +64,18 @@ export class SceneInstructor {
 		}
 
 		if(charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';
+
+		return true;
 	}
 	
-	hide(character) { cd.characters[character] = null; }
+	/**Hides a character from the screen. Does not skip to the next scene. */
+	hide(character) { cd.characters[character] = null; return false; }
 
+	/**Shows a character on the screen. Skips to the next scene
+	 * @param {string} charname - Name of the character to show
+	 * @param {string} [pos] - Positio of the character on-screen
+	 * @param {???} [wat] - Old code had four argumetns. No idea why
+	 * @param {number} [priority] - Priority on screen. Lower numbers are on top. */
 	show(charname, pos, wat, priority) {
 		/* Check if we already have a cdata character mapped to charname */
 		var charIndex = -1;
@@ -84,5 +97,6 @@ export class SceneInstructor {
 		} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });
 	}
 
+	/** Jump to a specific scene collection */
 	jump(collection) { cd.collection = collection; cd.collectionIndex = 0; return false; }
 }

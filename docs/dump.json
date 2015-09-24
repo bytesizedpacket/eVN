@@ -596,7 +596,7 @@
     "access": null,
     "description": null,
     "lineNumber": 1,
-    "content": "import { Visuals } from './Visuals.js';\nimport { Character } from './Character.js';\nimport { SceneInstructor } from './SceneInstructor.js';\nvar logger = null;\nvar defaultEvnData = {\n\toptions: {\n\t\ttextbox: {\n\t\t\tfont: { size: 17, family: 'Comic Neue', style: 'normal', weight: 'normal', color: '#EEE' },\n\t\t\tlines: 3, lineHeight: 22, bottom: 95, left: 40, maxWidth: 750,\n\t\t\tspeakerbox: { left: 25, bottom: 130, maxWidth: 150 }\n\t\t},\n\t},\n\taudio: {}, images: {}, characters: {},\n\tscenes: {start: ['No scenes defined']}\n};\n/* Empty eVN project = JSON.stringify(defaultEvnData, null, '\\t'); */\n\n/** Core novel class */\nexport class Novel {\n\t/**@param {object} canvas - The canvas element to attach.\n\t * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>\n\t * @param {string} [file='undefined'] - The name of the .evn script passed. */\n\tconstructor(canvas, eVNML, file='undefined') {\n\t\tlogger = eVN.logger;\n\t\t/** Filename of the eVNL the novel was instantiated with */\n\t\tthis.file = file;\n\t\t/** The canvas attached to the instance */\n\t\tthis.canvas = canvas;\n\t\t/** The drawing context of {@link Novel#canvas} */\n\t\tthis.context = canvas.getContext('2d');\n\t\t/** {@link SceneInstructor} for this novel */\n\t\tthis.sceneInstructor = new SceneInstructor(this);\n\t\t/** Shorthand for executing scene instruction methods */\n\t\tthis.sceneCmd = this.sceneInstructor.execute;\n\t\t/** Map containing all <code>Image</code> instances for this novel */\n\t\tthis.images = {};\n\t\t/** Map containing all <code>Audio</code> instances for this novel */\n\t\tthis.audio = {};\n\t\t/** Object containing character instances */\n\t\tthis.characters = {};\n\t\t/** JSON object containing all end-developer input (from .evn scripts) */\n\t\tthis.eVNML = this.parse_eVNML(eVNML);\n\t\t/**An instance that controls all graphic/drawing related stuff for the novel.\n\t\t * @see {@link Visuals} */\n\t\tthis.visuals = new Visuals(this);\n\t\t/** Map containing dynamic data for handling the current scene */\n\t\tthis.cdata = {\n\t\t\tbackground: null,\n\t\t\tcharacters: [],\n\t\t\tcollection: 'start',\n\t\t\tcollectionIndex: 0,\n\t\t\tdialogue: '',\n\t\t\tdialogueLines: [],\n\t\t\tmouseX: -1,\n\t\t\tmouseY: -1,\n\t\t\tjobs: [],\n\t\t\tstartLine: 0,\n\t\t\tspeaker: ''\n\t\t};\n\n\t\t/* Add the CSS class `eVN-canvas` to the canvas */\n\t\tthis.canvas.className = this.canvas.className + ' eVN-canvas';\n\n\t\t/* Create an Image() from the passed textbox and optional speakerbox objects */\n\t\tif(this.eVNML.options.textbox.image) {\n\t\t\tthis.images.textbox = new Image();\n\t\t\tthis.images.textbox.src = this.eVNML.options.textbox.image;\n\t\t}\n\t\tif(this.eVNML.options.textbox.speakerbox.image) {\n\t\t\tthis.images.speakerbox = new Image();\n\t\t\tthis.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;\n\t\t}\n\n\t\t/* Go to the next scene on regular click */\n\t\tthis.canvas.addEventListener('click', ()=> this.parseScene.call(this));\n\n\t\t/* Update this.cdata.mouse values */\n\t\tthis.canvas.addEventListener('mousemove', e=> {\n\t\t\tvar target = e.target || e.srcElement;\n\t\t\tvar rect = target.getBoundingClientRect();\n\t\t\t/* Two variables to modify the mouse coords relative to the scaling of the canvas */\n\t\t\tvar fsModX = rect.width / target.width;\n\t\t\tvar fsModY = rect.height / target.height;\n\t\t\t/* Export to Novel.cdata */\n\t\t\tthis.cdata.mouseX = Math.round( (e.clientX - rect.left) / fsModX );\n\t\t\tthis.cdata.mouseY = Math.round( (e.clientY - rect.top) / fsModY );\n\t\t});\n\n\t\t/* Import images & audio */\n\t\tfor(let key in this.eVNML.images) {\n\t\t\tthis.images[key] = new Image();\n\t\t\tthis.images[key].src = this.eVNML.images[key];\n\t\t}\n\t\tfor(let key in this.eVNML.audio) {\n\t\t\tthis.audio[key] = new Audio();\n\t\t\tthis.audio[key].src = this.eVNML.audio[key];\n\t\t}\n\n\t\t/* Instantiate characters */\n\t\tfor(let key in this.eVNML.characters) this.characters[key] = new Character(this.eVNML.characters[key]);\n\n\t\tthis.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);\n\n\t\t/* Push ourself to an array for easy debugging/hacking */\n\t\tvar instanceIndex = eVN.instances.push(this) - 1;\n\t\tlogger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']')();\n\t}\n\n\t// --------------------------- //\n\t\n\t/** Validates the end-developer input and applies it on top of a set of default values */\n\tparse_eVNML(eVNML) {\n\t\tvar userData = eVNML;\n\t\tvar returned_eVNML = defaultEvnData;\n\n\t\ttry {\n\t\t\tuserData = JSON.parse(eVNML);\n\n\t\t\t/**Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>\n\t\t\t * param {object} alpha - The obtrusive object literal to apply on top of <code>beta</code>\n\t\t\t * param {object beta - The submissive object literal to use as base for <code>alpha</code>\n\t\t\t * returns {object} */\n\t\t\tvar merge = function(alpha, beta) {\n\t\t\t\tvar out = beta;\n\t\t\t\tfor(let prop in alpha) {\n\t\t\t\t\tif( !(prop in beta) ) out[prop] = alpha[prop];\n\n\t\t\t\t\t// If both properties are object literals, try merging those\n\t\t\t\t\telse if( alpha[prop].constructor === Object && beta[prop].constructor === Object) {\n\t\t\t\t\t\tout[prop] = merge(alpha[prop], beta[prop]);\n\n\t\t\t\t\t// Warn the end-developer if he possibly made a type mistake\n\t\t\t\t\t} else if ( alpha[prop].constructor !== beta[prop].constructor ) {\n\t\t\t\t\t\teVN.logger.warn('Possible type mismatch on property \"'+prop+'\" while parsing eVNML.');\n\t\t\t\t\t\tout[prop] = alpha[prop];\n\n\t\t\t\t\t// Fall back to just overwriting the property\n\t\t\t\t\t}  else out[prop] = alpha[prop];\n\t\t\t\t}\n\n\t\t\t\treturn out;\n\t\t\t};\n\t\t\treturned_eVNML = merge(userData, defaultEvnData);\n\t\t} catch(e) {\n\t\t\teVN.logger.throw(e);\n\t\t}\n\t\n\t\treturn returned_eVNML;\n\t}\n\n\t/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it\n\t * @param {Object} scene - The scene to import\n\t * @see <eVNML scene syntax> */\n\tparseScene(collection, index) {\n\t\tvar cd = this.cdata;\n\t\tvar eVNML = this.eVNML;\n\t\tvar textbox = eVNML.options.textbox;\n\t\tcollection = collection || cd.collection;\n\t\tindex = (typeof index !== 'undefined')? index : cd.collectionIndex;\n\n\t\tif(cd.startLine + textbox.lines < cd.dialogueLines.length) return cd.startLine += textbox.lines;\n\n\t\tvar scene = this.eVNML.scenes[collection][index];\n\t\tcd.collection = collection;\n\t\tcd.collectionIndex = index+1;\n\t\tif(!scene) eVN.logger.throw('Undefined scene \"'+ collection +'['+ index +']\"! Did we run out of scenes?')();\n\n\t\t/* These are values that only live one scene - they should be reset on each scene load */\n\t\tcd.speakerColor = null;\n\n\t\t/* If the scene is a string, it's using the dialogue shorthand */\n\t\tif(typeof scene === 'string') {\n\t\t\tvar splitAt = scene.indexOf(': ');\n\t\t\tvar alpha = scene.slice(0, splitAt);\n\t\t\tvar beta = scene.slice(splitAt+2);\n\n\t\t\t/* If the alpha exists as a key in the characters object, it's dialogue, if not monologue */\n\t\t\tvar isDialogue = splitAt < scene.indexOf(' ')   &&   alpha in this.characters;\n\t\t\tscene = isDialogue? [\"say\", beta, alpha] : [\"say\", scene];\n\t\t}\n\n\t\tvar sceneInstruction = this.sceneInstructor.getMethod( scene[0].toLowerCase(), scene.slice(1) );\n\t\tif(sceneInstruction !== null) {\n\t\t\tvar doSkip = sceneInstruction() || false;\n\t\t\tif(doSkip) return;\n\t\t} else switch( scene[0].toLowerCase() ) {\n\t\t/* Cases ending with 'break' will not take up a scene shift and jump to the next scene automatically.\n\t\t   Cases ending with 'return' will not jump to the next scene when done */\n\n\t\t\tcase 'setmood':\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(let c of cd.characters) {\n\t\t\t\t\tif(c['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t\tif(charIndex > -1){\n\t\t\t\t\tcd.characters[charIndex].mood = scene[2] || 'default';\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'hide':\n\t\t\t\tcd.characters[scene[1]] = null;\n\t\t\t\tbreak;\n\t\t\tcase 'show':\n\t\t\t\t/* Since characters are stored in an array and not an object literal,\n\t\t\t\t   checking if it exists takes a little extra effort */\n\n\t\t\t\t/* Check if we already have an index mapped to scene[1]||charName */\n\t\t\t\tvar charIndex = -1;\n\t\t\t\tfor(let c of cd.characters) {\n\t\t\t\t\tif(c['character'] === scene[1]) {\n\t\t\t\t\t\tcharIndex = i;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\n\t\t\t\tif(charIndex > -1) {\n\t\t\t\t\tvar cdChar = cd.characters[charIndex];\n\t\t\t\t\tcdChar = {\n\t\t\t\t\t\tcharacter: cdChar.character,\n\t\t\t\t\t\tposition: scene[2] || cdChar.position || 'middle',\n\t\t\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\t\t\tpriority: scene[4] || cdChar.priority || 1\n\t\t\t\t\t};\n\t\t\t\t} else {\n\t\t\t\t\tcd.characters.push({ character: scene[1], position: scene[2]||'middle', mood: 'default' });\n\t\t\t\t}\n\t\t\t\tbreak;\n\t\t\tcase 'goto':\n\t\t\tcase 'jump':\n\t\t\t\tcd.collection = scene[1];\n\t\t\t\tcd.collectionIndex = 0;\n\t\t\t\tbreak;\n\t\t\tdefault:\n\t\t\t\teVN.logger.warn('Unknown command \"'+ scene[0] +'\" at \"'+ collection +'['+ index +']\"');\n\t\t}\n\n\t\tthis.parseScene();\n\t}\n\n\t/**Looks for ${varName} variables and returns the processed string\n\t * @param {string} string - the string to process */\n\tprocessVariables(string) {\n\t\tvar splitAt = string.indexOf('${');\n\t\tvar endAt = string.indexOf('}', splitAt);\n\t\tvar output = '';\n\t\tif(splitAt !== -1   &&   endAt !== -1){\n\t\t\tvar alpha = string.slice(0, splitAt);\n\t\t\tvar beta = string.slice(splitAt+2, endAt);\n\t\t\tvar gamma = string.slice(endAt+1);\n\t\t\toutput = beta;\n\n\t\t\tvar varSplit = beta.split('.');\n\t\t\t// If beta (variable name) exists in cdata.characters,it's\n\t\t\t// probably referring to a property of a character\n\t\t\tvar characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);\n\t\t\tif(varSplit[0] in this.characters) {\n\t\t\t\toutput = this.characters[varSplit[0]][varSplit[1]];\n\t\t\t}\n\n\t\t\toutput = alpha + output + gamma;\n\t\t\tif(output.indexOf('${') !== -1) return this.processVariables(output);\n\t\t\treturn output;\n\t\t} else {\n\t\t\treturn string;\n\t\t}\n\t}\n};\n"
+    "content": "import { Visuals } from './Visuals.js';\nimport { Character } from './Character.js';\nimport { SceneInstructor } from './SceneInstructor.js';\nvar logger = null;\nvar defaultEvnData = {\n\toptions: {\n\t\ttextbox: {\n\t\t\tfont: { size: 17, family: 'Comic Neue', style: 'normal', weight: 'normal', color: '#EEE' },\n\t\t\tlines: 3, lineHeight: 22, bottom: 95, left: 40, maxWidth: 750,\n\t\t\tspeakerbox: { left: 25, bottom: 130, maxWidth: 150 }\n\t\t},\n\t},\n\taudio: {}, images: {}, characters: {},\n\tscenes: {start: ['No scenes defined']}\n};\n/* Empty eVN project = JSON.stringify(defaultEvnData, null, '\\t'); */\n\n/** Core novel class */\nexport class Novel {\n\t/**@param {object} canvas - The canvas element to attach.\n\t * @param {string} eVNML - The eVN script to load. <b>Must be valid JSON!</b>\n\t * @param {string} [file='undefined'] - The name of the .evn script passed. */\n\tconstructor(canvas, eVNML, file='undefined') {\n\t\tlogger = eVN.logger;\n\t\t/** Filename of the eVNL the novel was instantiated with */\n\t\tthis.file = file;\n\t\t/** The canvas attached to the instance */\n\t\tthis.canvas = canvas;\n\t\t/** The drawing context of {@link Novel#canvas} */\n\t\tthis.context = canvas.getContext('2d');\n\t\t/** {@link SceneInstructor} for this novel */\n\t\tthis.sceneInstructor = new SceneInstructor(this);\n\t\t/** Shorthand for executing scene instruction methods */\n\t\tthis.sceneCmd = this.sceneInstructor.execute;\n\t\t/** Map containing all <code>Image</code> instances for this novel */\n\t\tthis.images = {};\n\t\t/** Map containing all <code>Audio</code> instances for this novel */\n\t\tthis.audio = {};\n\t\t/** Object containing character instances */\n\t\tthis.characters = {};\n\t\t/** JSON object containing all end-developer input (from .evn scripts) */\n\t\tthis.eVNML = this.parse_eVNML(eVNML);\n\t\t/**An instance that controls all graphic/drawing related stuff for the novel.\n\t\t * @see {@link Visuals} */\n\t\tthis.visuals = new Visuals(this);\n\t\t/** Map containing dynamic data for handling the current scene */\n\t\tthis.cdata = {\n\t\t\tbackground: null,\n\t\t\tcharacters: [],\n\t\t\tcollection: 'start',\n\t\t\tcollectionIndex: 0,\n\t\t\tdialogue: '',\n\t\t\tdialogueLines: [],\n\t\t\tmouseX: -1,\n\t\t\tmouseY: -1,\n\t\t\tjobs: [],\n\t\t\tstartLine: 0,\n\t\t\tspeaker: ''\n\t\t};\n\n\t\t/* Add the CSS class `eVN-canvas` to the canvas */\n\t\tthis.canvas.className = this.canvas.className + ' eVN-canvas';\n\n\t\t/* Create an Image() from the passed textbox and optional speakerbox objects */\n\t\tif(this.eVNML.options.textbox.image) {\n\t\t\tthis.images.textbox = new Image();\n\t\t\tthis.images.textbox.src = this.eVNML.options.textbox.image;\n\t\t}\n\t\tif(this.eVNML.options.textbox.speakerbox.image) {\n\t\t\tthis.images.speakerbox = new Image();\n\t\t\tthis.images.speakerbox.src = this.eVNML.options.textbox.speakerbox.image;\n\t\t}\n\n\t\t/* Go to the next scene on regular click */\n\t\tthis.canvas.addEventListener('click', ()=> this.parseScene.call(this));\n\n\t\t/* Update this.cdata.mouse values */\n\t\tthis.canvas.addEventListener('mousemove', e=> {\n\t\t\tvar target = e.target || e.srcElement;\n\t\t\tvar rect = target.getBoundingClientRect();\n\t\t\t/* Two variables to modify the mouse coords relative to the scaling of the canvas */\n\t\t\tvar fsModX = rect.width / target.width;\n\t\t\tvar fsModY = rect.height / target.height;\n\t\t\t/* Export to Novel.cdata */\n\t\t\tthis.cdata.mouseX = Math.round( (e.clientX - rect.left) / fsModX );\n\t\t\tthis.cdata.mouseY = Math.round( (e.clientY - rect.top) / fsModY );\n\t\t});\n\n\t\t/* Import images & audio */\n\t\tfor(let key in this.eVNML.images) {\n\t\t\tthis.images[key] = new Image();\n\t\t\tthis.images[key].src = this.eVNML.images[key];\n\t\t}\n\t\tfor(let key in this.eVNML.audio) {\n\t\t\tthis.audio[key] = new Audio();\n\t\t\tthis.audio[key].src = this.eVNML.audio[key];\n\t\t}\n\n\t\t/* Instantiate characters */\n\t\tfor(let key in this.eVNML.characters) this.characters[key] = new Character(this.eVNML.characters[key]);\n\n\t\tthis.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);\n\n\t\t/* Push ourself to an array for easy debugging/hacking */\n\t\tvar instanceIndex = eVN.instances.push(this) - 1;\n\t\tlogger.log('Created new eVN instance from file `' + this.file + '` under eVN.instances['+ instanceIndex +']')();\n\t}\n\n\t// --------------------------- //\n\t\n\t/** Validates the end-developer input and applies it on top of a set of default values */\n\tparse_eVNML(eVNML) {\n\t\tvar userData = eVNML;\n\t\tvar returned_eVNML = defaultEvnData;\n\n\t\ttry {\n\t\t\tuserData = JSON.parse(eVNML);\n\n\t\t\t/**Returns an object of <code>alpha</code> obtrusively laid on top of <code>beta</code>\n\t\t\t * param {object} alpha - The obtrusive object literal to apply on top of <code>beta</code>\n\t\t\t * param {object beta - The submissive object literal to use as base for <code>alpha</code>\n\t\t\t * returns {object} */\n\t\t\tvar merge = function(alpha, beta) {\n\t\t\t\tvar out = beta;\n\t\t\t\tfor(let prop in alpha) {\n\t\t\t\t\tif( !(prop in beta) ) out[prop] = alpha[prop];\n\n\t\t\t\t\t// If both properties are object literals, try merging those\n\t\t\t\t\telse if( alpha[prop].constructor === Object && beta[prop].constructor === Object) {\n\t\t\t\t\t\tout[prop] = merge(alpha[prop], beta[prop]);\n\n\t\t\t\t\t// Warn the end-developer if he possibly made a type mistake\n\t\t\t\t\t} else if ( alpha[prop].constructor !== beta[prop].constructor ) {\n\t\t\t\t\t\teVN.logger.warn('Possible type mismatch on property \"'+prop+'\" while parsing eVNML.');\n\t\t\t\t\t\tout[prop] = alpha[prop];\n\n\t\t\t\t\t// Fall back to just overwriting the property\n\t\t\t\t\t}  else out[prop] = alpha[prop];\n\t\t\t\t}\n\n\t\t\t\treturn out;\n\t\t\t};\n\t\t\treturned_eVNML = merge(userData, defaultEvnData);\n\t\t} catch(e) {\n\t\t\teVN.logger.throw(e);\n\t\t}\n\t\n\t\treturn returned_eVNML;\n\t}\n\n\t/**Imports `scene` to {@link module:eVN/Novel.cdata} and determines what to do with it\n\t * @param {Object} scene - The scene to import\n\t * @see <eVNML scene syntax> */\n\tparseScene(collection, index) {\n\t\tvar cd = this.cdata;\n\t\tvar eVNML = this.eVNML;\n\t\tvar textbox = eVNML.options.textbox;\n\t\tcollection = collection || cd.collection;\n\t\tindex = (typeof index !== 'undefined')? index : cd.collectionIndex;\n\n\t\tif(cd.startLine + textbox.lines < cd.dialogueLines.length) return cd.startLine += textbox.lines;\n\n\t\tvar scene = this.eVNML.scenes[collection][index];\n\t\tcd.collection = collection;\n\t\tcd.collectionIndex = index+1;\n\t\tif(!scene) eVN.logger.throw('Undefined scene \"'+ collection +'['+ index +']\"! Did we run out of scenes?')();\n\n\t\t/* These are values that only live one scene - they should be reset on each scene load */\n\t\tcd.speakerColor = null;\n\n\t\t/* If the scene is a string, it's using the dialogue shorthand */\n\t\tif(typeof scene === 'string') {\n\t\t\tvar splitAt = scene.indexOf(': ');\n\t\t\tvar alpha = scene.slice(0, splitAt);\n\t\t\tvar beta = scene.slice(splitAt+2);\n\n\t\t\t/* If the alpha exists as a key in the characters object, it's dialogue, if not monologue */\n\t\t\tvar isDialogue = splitAt < scene.indexOf(' ')   &&   alpha in this.characters;\n\t\t\tscene = isDialogue? [\"say\", beta, alpha] : [\"say\", scene];\n\t\t}\n\n\t\tvar sceneInstruction = this.sceneInstructor.getMethod( scene[0].toLowerCase(), scene.slice(1) );\n\t\tif(sceneInstruction !== null) {\n\t\t\tvar doSkip = sceneInstruction() || false;\n\t\t\tif(doSkip) return;\n\t\t} else logger.warn('Unknown command \"'+ scene[0] +'\" at \"'+ collection +'['+ index +']\"')();\n\n\t\tthis.parseScene();\n\t}\n\n\t/**Looks for ${varName} variables and returns the processed string\n\t * @param {string} string - the string to process */\n\tprocessVariables(string) {\n\t\tvar splitAt = string.indexOf('${');\n\t\tvar endAt = string.indexOf('}', splitAt);\n\t\tvar output = '';\n\t\tif(splitAt !== -1   &&   endAt !== -1){\n\t\t\tvar alpha = string.slice(0, splitAt);\n\t\t\tvar beta = string.slice(splitAt+2, endAt);\n\t\t\tvar gamma = string.slice(endAt+1);\n\t\t\toutput = beta;\n\n\t\t\tvar varSplit = beta.split('.');\n\t\t\t// If beta (variable name) exists in cdata.characters,it's\n\t\t\t// probably referring to a property of a character\n\t\t\tvar characterIndex = this.cdata.characters.map(function(e){ return e.character; }).indexOf(varSplit[0]);\n\t\t\tif(varSplit[0] in this.characters) {\n\t\t\t\toutput = this.characters[varSplit[0]][varSplit[1]];\n\t\t\t}\n\n\t\t\toutput = alpha + output + gamma;\n\t\t\tif(output.indexOf('${') !== -1) return this.processVariables(output);\n\t\t\treturn output;\n\t\t} else {\n\t\t\treturn string;\n\t\t}\n\t}\n};\n"
   },
   {
     "kind": "variable",
@@ -944,7 +944,7 @@
     "longname": "src/Novel.js~Novel#processVariables",
     "access": null,
     "description": "Looks for ${varName} variables and returns the processed string",
-    "lineNumber": 244,
+    "lineNumber": 193,
     "params": [
       {
         "nullable": null,
@@ -974,7 +974,7 @@
     "access": null,
     "description": null,
     "lineNumber": 2,
-    "content": "/** A class for managing scene instruction methods */\nexport class SceneInstructor {\n\t/** @param {object} scope - Scope to bind instruction methods to */\n\tconstructor(scope) {\n\t\t/** Scope methods will be bound to */\n\t\tthis.scope = scope;\n\n\t\t/* Aliases */\n\t\tthis.get = this.getMethod;\n\t}\n\n\tgetMethod(method, args) {\n\t\tvar meth = this[method];\n\t\tif(meth instanceof Function) {\n\t\t\treturn meth.bind(this.scope, ...args);\n\t\t} else return null;\n\t}\n\n\t/** Sets the background of a scene. Skips to the next scene. */\n\tbackground(background) { this.cdata.background = background; return false; }\n\t\t\t\n\t/** Changes the background music. Skips to the next scene. */\n\tmusic(track) { if(track in this.audio) this.audio[track].play(); return false; }\n\t\n\t/**Changes the contents of the dialogue & speaker box. Does NOT skip to the next scene.\n\t * @param {string} text - Dialogue to say\n\t * @param {string} [speaker=null] - The person talking -Improve this-\n\t * @param {string} [speakerColor='#FFF'] - #HEX or rgb() color of the speaker's name */\n\tsay(text, speaker=null, speakerColor='#FFF') {\n\t\tvar cd = this.cdata;\n\t\tvar textbox = this.eVNML.options.textbox;\n\t\t/*Process inline variables for text*/\n\t\ttext = this.processVariables(text);\n\n\t\tif(speaker !== null) {\n\t\t\tcd.speaker = speaker;\n\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\tcd.speakerColor = speakerColor;\n\t\t} else cd.dialogue = text;\n\n\t\tvar maxWidth = textbox.maxWidth;\n\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\tcd.startLine = 0;\n\t\treturn true;\n\t}\n}\n"
+    "content": "/** A class for managing scene instruction methods */\nexport class SceneInstructor {\n\t/** @param {object} scope - Scope to bind instruction methods to */\n\tconstructor(scope) {\n\t\t/** Scope methods will be bound to */\n\t\tthis.scope = scope;\n\n\t\t/* Aliases */\n\t\t/** Alias of {@link SceneInstructor#jump} */\n\t\tthis.goto = this.jump;\n\t}\n\n\t/**Gets a scene instruction method\n\t * @param {string} method - The scene instruction name\n\t * @param {*[]} args - An array of arguments to pass to the method\n\t * @returns {Function} */\n\tgetMethod(method, args) {\n\t\tvar meth = this[method];\n\t\tif(meth instanceof Function) {\n\t\t\treturn meth.bind(this.scope, ...args);\n\t\t} else return null;\n\t}\n\n\t/** Sets the background of a scene. Skips to the next scene. */\n\tbackground(background) { this.cdata.background = background; return false; }\n\t\t\t\n\t/** Changes the background music. Skips to the next scene. */\n\tmusic(track) { if(track in this.audio) this.audio[track].play(); return false; }\n\t\n\t/**Changes the contents of the dialogue & speaker box. Does NOT skip to the next scene.\n\t * @param {string} text - Dialogue to say\n\t * @param {string} [speaker=null] - The person talking -Improve this-\n\t * @param {string} [speakerColor='#FFF'] - #HEX or rgb() color of the speaker's name */\n\tsay(text, speaker=null, speakerColor='#FFF') {\n\t\tvar cd = this.cdata;\n\t\tvar textbox = this.eVNML.options.textbox;\n\t\t/*Process inline variables for text*/\n\t\ttext = this.processVariables(text);\n\n\t\tif(speaker !== null) {\n\t\t\tcd.speaker = speaker;\n\t\t\tcd.dialogue = '\"'+ text +'\"';\n\t\t\tcd.speakerColor = speakerColor;\n\t\t} else cd.dialogue = text;\n\n\t\tvar maxWidth = textbox.maxWidth;\n\t\tcd.dialogueLines = this.visuals.text.split(this.context, cd.dialogue, textbox.font.size, maxWidth);\n\t\tcd.startLine = 0;\n\t\treturn true;\n\t}\n\t\n\t/**Change the sprite of a character. Skips to the next scene.\n\t * @param {string} charname - The character (in {@link Novel#cdata})'s name\n\t * @param {string} mood - The name of the sprite to change to */\n\tsetmood(charname, mood) {\n\t\t/* Since cd.characters is an array of objects, we need to spend\n\t\t * some extra effort finding characters */\n\t\tvar charIndex = -1;\n\t\tfor(let c of cd.characters) {\n\t\t\tif(c.character === charname) {\n\t\t\t\tcharIndex = i;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\n\t\tif(charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';\n\n\t\treturn true;\n\t}\n\t\n\t/**Hides a character from the screen. Does not skip to the next scene. */\n\thide(character) { cd.characters[character] = null; return false; }\n\n\t/**Shows a character on the screen. Skips to the next scene\n\t * @param {string} charname - Name of the character to show\n\t * @param {string} [pos] - Positio of the character on-screen\n\t * @param {???} [wat] - Old code had four argumetns. No idea why\n\t * @param {number} [priority] - Priority on screen. Lower numbers are on top. */\n\tshow(charname, pos, wat, priority) {\n\t\t/* Check if we already have a cdata character mapped to charname */\n\t\tvar charIndex = -1;\n\t\tfor(let c of this.cdata.characters) {\n\t\t\tif(c.character === charname) {\n\t\t\t\tcharIndex = i;\n\t\t\t\tbreak;\n\t\t\t}\n\t\t}\n\n\t\tif(charIndex > -1) {\n\t\t\tvar cdChar = this.cdata.characters[charIndex];\n\t\t\tcdChar = {\n\t\t\t\tcharacter: cdChar.character,\n\t\t\t\tposition: pos || cdChar.position || 'middle',\n\t\t\t\tmood: cdChar.mood || 'default',\n\t\t\t\tpriority: priority || cdChar.priority || 1\n\t\t\t};\n\t\t} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });\n\t}\n\n\t/** Jump to a specific scene collection */\n\tjump(collection) { cd.collection = collection; cd.collectionIndex = 0; return false; }\n}\n"
   },
   {
     "kind": "class",
@@ -1035,13 +1035,12 @@
     "kind": "member",
     "static": false,
     "variation": null,
-    "name": "get",
+    "name": "goto",
     "memberof": "src/SceneInstructor.js~SceneInstructor",
-    "longname": "src/SceneInstructor.js~SceneInstructor#get",
+    "longname": "src/SceneInstructor.js~SceneInstructor#goto",
     "access": null,
-    "description": null,
-    "lineNumber": 9,
-    "undocument": true,
+    "description": "Alias of {@link SceneInstructor#jump}",
+    "lineNumber": 10,
     "type": {
       "types": [
         "*"
@@ -1056,27 +1055,43 @@
     "memberof": "src/SceneInstructor.js~SceneInstructor",
     "longname": "src/SceneInstructor.js~SceneInstructor#getMethod",
     "access": null,
-    "description": null,
-    "lineNumber": 12,
-    "undocument": true,
+    "description": "Gets a scene instruction method",
+    "lineNumber": 17,
+    "unknown": [
+      {
+        "tagName": "@returns",
+        "tagValue": "{Function}"
+      }
+    ],
     "params": [
       {
-        "name": "method",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "method",
+        "description": "The scene instruction name"
       },
       {
-        "name": "args",
+        "nullable": null,
         "types": [
-          "*"
-        ]
+          "*[]"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "args",
+        "description": "An array of arguments to pass to the method"
       }
     ],
     "return": {
+      "nullable": null,
       "types": [
-        "*"
-      ]
+        "Function"
+      ],
+      "spread": false,
+      "description": ""
     },
     "generator": false
   },
@@ -1089,7 +1104,7 @@
     "longname": "src/SceneInstructor.js~SceneInstructor#background",
     "access": null,
     "description": "Sets the background of a scene. Skips to the next scene.",
-    "lineNumber": 20,
+    "lineNumber": 25,
     "params": [
       {
         "name": "background",
@@ -1114,7 +1129,7 @@
     "longname": "src/SceneInstructor.js~SceneInstructor#music",
     "access": null,
     "description": "Changes the background music. Skips to the next scene.",
-    "lineNumber": 23,
+    "lineNumber": 28,
     "params": [
       {
         "name": "track",
@@ -1139,7 +1154,7 @@
     "longname": "src/SceneInstructor.js~SceneInstructor#say",
     "access": null,
     "description": "Changes the contents of the dialogue & speaker box. Does NOT skip to the next scene.",
-    "lineNumber": 29,
+    "lineNumber": 34,
     "params": [
       {
         "nullable": null,
@@ -1174,6 +1189,149 @@
         "defaultRaw": "'#FFF'",
         "name": "speakerColor",
         "description": "#HEX or rgb() color of the speaker's name"
+      }
+    ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "setmood",
+    "memberof": "src/SceneInstructor.js~SceneInstructor",
+    "longname": "src/SceneInstructor.js~SceneInstructor#setmood",
+    "access": null,
+    "description": "Change the sprite of a character. Skips to the next scene.",
+    "lineNumber": 55,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": ")'s",
+        "description": "name"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "mood",
+        "description": "The name of the sprite to change to"
+      }
+    ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "hide",
+    "memberof": "src/SceneInstructor.js~SceneInstructor",
+    "longname": "src/SceneInstructor.js~SceneInstructor#hide",
+    "access": null,
+    "description": "Hides a character from the screen. Does not skip to the next scene.",
+    "lineNumber": 72,
+    "params": [
+      {
+        "name": "character",
+        "types": [
+          "*"
+        ]
+      }
+    ],
+    "return": {
+      "types": [
+        "boolean"
+      ]
+    },
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "show",
+    "memberof": "src/SceneInstructor.js~SceneInstructor",
+    "longname": "src/SceneInstructor.js~SceneInstructor#show",
+    "access": null,
+    "description": "Shows a character on the screen. Skips to the next scene",
+    "lineNumber": 79,
+    "params": [
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": false,
+        "name": "charname",
+        "description": "Name of the character to show"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "string"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "pos",
+        "description": "Positio of the character on-screen"
+      },
+      {
+        "nullable": true,
+        "types": [
+          "??"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "wat",
+        "description": "Old code had four argumetns. No idea why"
+      },
+      {
+        "nullable": null,
+        "types": [
+          "number"
+        ],
+        "spread": false,
+        "optional": true,
+        "name": "priority",
+        "description": "Priority on screen. Lower numbers are on top."
+      }
+    ],
+    "generator": false
+  },
+  {
+    "kind": "method",
+    "static": false,
+    "variation": null,
+    "name": "jump",
+    "memberof": "src/SceneInstructor.js~SceneInstructor",
+    "longname": "src/SceneInstructor.js~SceneInstructor#jump",
+    "access": null,
+    "description": "Jump to a specific scene collection",
+    "lineNumber": 101,
+    "params": [
+      {
+        "name": "collection",
+        "types": [
+          "*"
+        ]
       }
     ],
     "return": {

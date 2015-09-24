@@ -1,7 +1,7 @@
 {
-  "coverage": "81.48%",
-  "expectCount": 54,
-  "actualCount": 44,
+  "coverage": "86.2%",
+  "expectCount": 58,
+  "actualCount": 50,
   "files": {
     "src/Visuals/text.js": {
       "expectCount": 2,
@@ -36,12 +36,9 @@
       "undocumentLines": []
     },
     "src/SceneInstructor.js": {
-      "expectCount": 8,
-      "actualCount": 6,
-      "undocumentLines": [
-        9,
-        12
-      ]
+      "expectCount": 12,
+      "actualCount": 12,
+      "undocumentLines": []
     },
     "src/Visuals.js": {
       "expectCount": 6,

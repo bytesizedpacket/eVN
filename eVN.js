@@ -857,8 +857,14 @@
 			this.scope = scope;
 
 			/* Aliases */
+			/** Alias of {@link SceneInstructor#jump} */
 			this.goto = this.jump;
 		}
+
+		/**Gets a scene instruction method
+	  * @param {string} method - The scene instruction name
+	  * @param {*[]} args - An array of arguments to pass to the method
+	  * @returns {Function} */
 
 		_createClass(SceneInstructor, [{
 			key: 'getMethod',
@@ -948,12 +954,22 @@
 				}
 
 				if (charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';
+
+				return true;
 			}
+
+			/**Hides a character from the screen. Does not skip to the next scene. */
 		}, {
 			key: 'hide',
 			value: function hide(character) {
-				cd.characters[character] = null;
+				cd.characters[character] = null;return false;
 			}
+
+			/**Shows a character on the screen. Skips to the next scene
+	   * @param {string} charname - Name of the character to show
+	   * @param {string} [pos] - Positio of the character on-screen
+	   * @param {???} [wat] - Old code had four argumetns. No idea why
+	   * @param {number} [priority] - Priority on screen. Lower numbers are on top. */
 		}, {
 			key: 'show',
 			value: function show(charname, pos, wat, priority) {
@@ -997,6 +1013,8 @@
 					};
 				} else this.cdata.characters.push({ character: charname, position: pos || 'middle', mood: 'default' });
 			}
+
+			/** Jump to a specific scene collection */
 		}, {
 			key: 'jump',
 			value: function jump(collection) {

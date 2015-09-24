@@ -618,15 +618,27 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/sceneinstructor.js~sceneinstructor#get",
-    "class/src/SceneInstructor.js~SceneInstructor.html#instance-member-get",
-    "src/SceneInstructor.js~SceneInstructor#get",
-    "member"
-  ],
-  [
     "src/sceneinstructor.js~sceneinstructor#getmethod",
     "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-getMethod",
     "src/SceneInstructor.js~SceneInstructor#getMethod",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#goto",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-member-goto",
+    "src/SceneInstructor.js~SceneInstructor#goto",
+    "member"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#hide",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-hide",
+    "src/SceneInstructor.js~SceneInstructor#hide",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#jump",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-jump",
+    "src/SceneInstructor.js~SceneInstructor#jump",
     "method"
   ],
   [
@@ -646,6 +658,18 @@ window.esdocSearchIndex = [
     "class/src/SceneInstructor.js~SceneInstructor.html#instance-member-scope",
     "src/SceneInstructor.js~SceneInstructor#scope",
     "member"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#setmood",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-setmood",
+    "src/SceneInstructor.js~SceneInstructor#setmood",
+    "method"
+  ],
+  [
+    "src/sceneinstructor.js~sceneinstructor#show",
+    "class/src/SceneInstructor.js~SceneInstructor.html#instance-method-show",
+    "src/SceneInstructor.js~SceneInstructor#show",
+    "method"
   ],
   [
     "src/visuals.js",
