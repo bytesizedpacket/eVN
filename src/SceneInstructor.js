@@ -55,15 +55,12 @@ export class SceneInstructor {
 	setmood(charname, mood) {
 		/* Since cd.characters is an array of objects, we need to spend
 		 * some extra effort finding characters */
-		var charIndex = -1;
+		var cdChar = null;
 		for(let c of this.cdata.characters) {
-			if(c.character === charname) {
-				charIndex = i;
-				break;
-			}
+			if(c.character === charname) { cdChar = c; break; }
 		}
 
-		if(charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';
+		if(cdChar !== null) cdChar.mood = mood || 'default';
 
 		return true;
 	}
@@ -78,16 +75,12 @@ export class SceneInstructor {
 	 * @param {number} [priority] - Priority on screen. Lower numbers are on top. */
 	show(charname, pos, wat, priority) {
 		/* Check if we already have a cdata character mapped to charname */
-		var charIndex = -1;
+		var cdChar = null;
 		for(let c of this.cdata.characters) {
-			if(c.character === charname) {
-				charIndex = i;
-				break;
-			}
+			if(c.character === charname) { cdChar = c; break; }
 		}
 
-		if(charIndex > -1) {
-			var cdChar = this.cdata.characters[charIndex];
+		if(cdChar !== null) {
 			cdChar = {
 				character: cdChar.character,
 				position: pos || cdChar.position || 'middle',
@@ -95,6 +88,8 @@ export class SceneInstructor {
 				priority: priority || cdChar.priority || 1
 			};
 		} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });
+
+		return true;
 	}
 
 	/** Jump to a specific scene collection */

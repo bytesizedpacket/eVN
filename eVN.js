@@ -924,7 +924,7 @@
 			value: function setmood(charname, mood) {
 				/* Since cd.characters is an array of objects, we need to spend
 	    * some extra effort finding characters */
-				var charIndex = -1;
+				var cdChar = null;
 				var _iteratorNormalCompletion = true;
 				var _didIteratorError = false;
 				var _iteratorError = undefined;
@@ -934,8 +934,7 @@
 						var c = _step.value;
 
 						if (c.character === charname) {
-							charIndex = i;
-							break;
+							cdChar = c;break;
 						}
 					}
 				} catch (err) {
@@ -953,7 +952,7 @@
 					}
 				}
 
-				if (charIndex > -1) this.cdata.characters[charIndex].mood = mood || 'default';
+				if (cdChar !== null) cdChar.mood = mood || 'default';
 
 				return true;
 			}
@@ -974,7 +973,7 @@
 			key: 'show',
 			value: function show(charname, pos, wat, priority) {
 				/* Check if we already have a cdata character mapped to charname */
-				var charIndex = -1;
+				var cdChar = null;
 				var _iteratorNormalCompletion2 = true;
 				var _didIteratorError2 = false;
 				var _iteratorError2 = undefined;
@@ -984,8 +983,7 @@
 						var c = _step2.value;
 
 						if (c.character === charname) {
-							charIndex = i;
-							break;
+							cdChar = c;break;
 						}
 					}
 				} catch (err) {
@@ -1003,8 +1001,7 @@
 					}
 				}
 
-				if (charIndex > -1) {
-					var cdChar = this.cdata.characters[charIndex];
+				if (cdChar !== null) {
 					cdChar = {
 						character: cdChar.character,
 						position: pos || cdChar.position || 'middle',
@@ -1012,6 +1009,8 @@
 						priority: priority || cdChar.priority || 1
 					};
 				} else this.cdata.characters.push({ character: charname, position: pos || 'middle', mood: 'default' });
+
+				return true;
 			}
 
 			/** Jump to a specific scene collection */
