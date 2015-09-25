@@ -51,3 +51,5 @@ setTimeout(function(){
 	window.t=eVN.instances[0];
 //	document.body.onclick=t.canvas.webkitRequestFullScreen
 }, 500);
+import { BackgroundAudio } from './BackgroundAudio.js';
+window.bga = BackgroundAudio;

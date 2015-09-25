@@ -1,5 +1,6 @@
 import { Visuals } from './Visuals.js';
 import { Character } from './Character.js';
+import { BackgroundAudio } from './BackgroundAudio.js';
 import { SceneInstructor } from './SceneInstructor.js';
 var logger = null;
 var defaultEvnData = {
@@ -91,10 +92,7 @@ export class Novel {
 			this.images[key] = new Image();
 			this.images[key].src = this.eVNML.images[key];
 		}
-		for(let key in this.eVNML.audio) {
-			this.audio[key] = new Audio();
-			this.audio[key].src = this.eVNML.audio[key];
-		}
+		for(let key in this.eVNML.audio) this.audio[key] = new BackgroundAudio(this.eVNML.audio[key]);
 
 		/* Instantiate characters */
 		for(let key in this.eVNML.characters) this.characters[key] = new Character(this.eVNML.characters[key]);

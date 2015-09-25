@@ -66,7 +66,9 @@
 
 	var _NovelJs = __webpack_require__(1);
 
-	var _LoggerJs = __webpack_require__(7);
+	var _LoggerJs = __webpack_require__(8);
+
+	var _BackgroundAudioJs = __webpack_require__(6);
 
 	var logger = new _LoggerJs.Logger('eVN', '0.1a', true);
 
@@ -155,6 +157,8 @@
 		//	document.body.onclick=t.canvas.webkitRequestFullScreen
 	}, 500);
 
+	window.bga = _BackgroundAudioJs.BackgroundAudio;
+
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
@@ -173,7 +177,9 @@
 
 	var _CharacterJs = __webpack_require__(5);
 
-	var _SceneInstructorJs = __webpack_require__(6);
+	var _BackgroundAudioJs = __webpack_require__(6);
+
+	var _SceneInstructorJs = __webpack_require__(7);
 
 	var logger = null;
 	var defaultEvnData = {
@@ -276,11 +282,8 @@
 				this.images[key].src = this.eVNML.images[key];
 			}
 			for (var key in this.eVNML.audio) {
-				this.audio[key] = new Audio();
-				this.audio[key].src = this.eVNML.audio[key];
-			}
-
-			/* Instantiate characters */
+				this.audio[key] = new _BackgroundAudioJs.BackgroundAudio(this.eVNML.audio[key]);
+			} /* Instantiate characters */
 			for (var key in this.eVNML.characters) {
 				this.characters[key] = new _CharacterJs.Character(this.eVNML.characters[key]);
 			}this.parseScene(this.cdata.currentCollection, this.cdata.collectionIndex);
@@ -839,6 +842,61 @@
 /* 6 */
 /***/ function(module, exports) {
 
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+		value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var currentAudio;
+
+	/** A class for managing background audio */
+
+	var BackgroundAudio = (function () {
+		/**@param {string} mainAudio - Audio to use
+	  * @param {string} [introAudio] - Option intro, can be used to play
+	  * intro once, then loop <code>mainAudio</code> */
+
+		function BackgroundAudio(mainAudio, introAudio) {
+			_classCallCheck(this, BackgroundAudio);
+
+			this.audio = new Audio();
+			this.audio.src = mainAudio;
+		}
+
+		_createClass(BackgroundAudio, [{
+			key: "play",
+			value: function play() {
+				for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+					args[_key] = arguments[_key];
+				}
+
+				this.audio.play.apply(this.audio, args);
+				BackgroundAudio.currentAudio = this.audio;
+			}
+		}], [{
+			key: "currentAudio",
+			get: function get() {
+				return currentAudio;
+			},
+			set: function set(audio) {
+				return currentAudio = audio;
+			}
+		}]);
+
+		return BackgroundAudio;
+	})();
+
+	exports.BackgroundAudio = BackgroundAudio;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
 	/** A class for managing scene instruction methods */
 	'use strict';
 
@@ -1032,7 +1090,7 @@
 	exports.SceneInstructor = SceneInstructor;
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	/**A logging class, covering debug logs, warnings & errors
