@@ -131,7 +131,7 @@ export class Novel {
 
 					// Warn the end-developer if he possibly made a type mistake
 					} else if ( alpha[prop].constructor !== beta[prop].constructor ) {
-						eVN.logger.warn('Possible type mismatch on property "'+prop+'" while parsing eVNML.');
+						eVN.logger.warn('Possible type mismatch on property "'+prop+'" while parsing eVNML.')();
 						out[prop] = alpha[prop];
 
 					// Fall back to just overwriting the property
