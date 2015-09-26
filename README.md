@@ -15,6 +15,7 @@ What works:
 
 What needs to be done:
 ---
+* Loading audio as buffers
 * A way to insert sound effects
 * Animated dialogue printing (typewriter effect)
 * A "view" system so we can draw stuff like menus and scenes seperately (this is a big one)
