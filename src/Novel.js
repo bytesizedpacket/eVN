@@ -1,3 +1,5 @@
+"use strict";
+
 import { Visuals } from './Visuals.js';
 import { Character } from './Character.js';
 import { BackgroundAudio } from './BackgroundAudio.js';

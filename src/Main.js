@@ -7,6 +7,8 @@
  * @license {@link https://github.com/bytesizedpacket/eVN/blob/master/LICENSE | Attribution Assurance License (BSP edit)}
  * @version: 0.0.1a Pre-development version */
 
+"use strict";
+
 /* Fire up our logger */
 import { Novel } from './Novel.js';
 import { Logger } from './Logger.js';

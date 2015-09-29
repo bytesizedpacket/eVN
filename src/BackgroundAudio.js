@@ -1,3 +1,5 @@
+"use strict";
+
 var currentAudio;
 
 /** A class for managing background audio */

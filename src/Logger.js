@@ -1,3 +1,5 @@
+"use strict";
+
 /**A logging class, covering debug logs, warnings & errors
  * IMPORTANT: Each method returns a <code>function</code>!
  * Use like so:

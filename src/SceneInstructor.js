@@ -1,3 +1,5 @@
+"use strict";
+
 /** A class for managing scene instruction methods */
 export class SceneInstructor {
 	/** @param {object} scope - Scope to bind instruction methods to */

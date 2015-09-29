@@ -1,3 +1,5 @@
+"use strict"; 
+
 /** A class for managing data related to novel characters */
 export class Character {
 	/** @param {object} eVNM_char - The eVNML data to instantiate from */

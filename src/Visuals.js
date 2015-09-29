@@ -1,3 +1,5 @@
+"use strict";
+
 var logger = null;
 import * as text from './Visuals/text.js';
 import * as draw from './Visuals/draw.js';

@@ -53,9 +53,9 @@
 	 * @license {@link https://github.com/bytesizedpacket/eVN/blob/master/LICENSE | Attribution Assurance License (BSP edit)}
 	 * @version: 0.0.1a Pre-development version */
 
-	/* Fire up our logger */
-	'use strict';
+	"use strict";
 
+	/* Fire up our logger */
 	Object.defineProperty(exports, '__esModule', {
 		value: true
 	});
@@ -163,7 +163,7 @@
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, '__esModule', {
 		value: true
@@ -423,7 +423,7 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 
 	Object.defineProperty(exports, '__esModule', {
 		value: true
@@ -795,9 +795,9 @@
 /* 5 */
 /***/ function(module, exports) {
 
-	/** A class for managing data related to novel characters */
-	'use strict';
+	"use strict";
 
+	/** A class for managing data related to novel characters */
 	Object.defineProperty(exports, '__esModule', {
 		value: true
 	});
@@ -866,6 +866,9 @@
 
 			this.audio = new Audio();
 			this.audio.src = mainAudio;
+			/* Use  an XHR and pass the data to an audioContext to leverage
+	   * audio buffers instead of this. Maybe return a promise for
+	   * completion? */
 		}
 
 		_createClass(BackgroundAudio, [{
@@ -897,9 +900,9 @@
 /* 7 */
 /***/ function(module, exports) {
 
-	/** A class for managing scene instruction methods */
-	'use strict';
+	"use strict";
 
+	/** A class for managing scene instruction methods */
 	Object.defineProperty(exports, '__esModule', {
 		value: true
 	});
@@ -1093,14 +1096,14 @@
 /* 8 */
 /***/ function(module, exports) {
 
+	"use strict";
+
 	/**A logging class, covering debug logs, warnings & errors
 	 * IMPORTANT: Each method returns a <code>function</code>!
 	 * Use like so:
 	 * @example
 	 * var logger = new Logger('myLog', 'v0.5b', false);
 	 * logger.warn('Something may be wrong!')(); */
-	'use strict';
-
 	Object.defineProperty(exports, '__esModule', {
 		value: true
 	});
