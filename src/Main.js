@@ -55,3 +55,5 @@ setTimeout(function(){
 }, 500);
 import { BackgroundAudio } from './BackgroundAudio.js';
 window.bga = BackgroundAudio;
+import { Animator } from './Animator.js';
+window.anim = Animator;

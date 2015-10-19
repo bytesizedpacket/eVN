@@ -43,20 +43,19 @@ export class Visuals {
 		this.draw.background(ctx, background || '#FFF');
 		
 		/* CHARACTER LAYER */
-		novel.cdata.characters.sort( (a, b)=> a.priority - b.priority ); //Move this to where we mutate cd.characters?
+		novel.cdata.characters.sort( (a, b)=> {
+			if(a === null || b === null) return -1;
+			else return a.priority - b.priority;
+		}); //Move this to where we mutate cd.characters?
 		for(let char of cd.characters) {
+			if(char === null) continue;
 			var charName = char.character;
 			var imgName = characters[charName].images[char.mood ];
 			var img = novel.images[imgName];
 			var x = null;
 			var y = ctx.canvas.height - img.height;
 			
-			switch( char.position.toLowerCase() ) {
-				case 'left': x = ctx.canvas.width/4 - img.width/2; break;
-				case 'right': x = ctx.canvas.width/4*3 - img.width/2; break;
-				case 'middle': /* Falls through to default */
-				default: x = ctx.canvas.width/2 - img.width/2;
-			}
+			if(typeof char.position === 'number') x = char.position;
 			ctx.drawImage(img, x, y, img.width, img.height);
 		}
 

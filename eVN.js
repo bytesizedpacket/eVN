@@ -66,9 +66,11 @@
 
 	var _NovelJs = __webpack_require__(1);
 
-	var _LoggerJs = __webpack_require__(8);
+	var _LoggerJs = __webpack_require__(9);
 
 	var _BackgroundAudioJs = __webpack_require__(6);
+
+	var _AnimatorJs = __webpack_require__(8);
 
 	var logger = new _LoggerJs.Logger('eVN', '0.1a', true);
 
@@ -158,6 +160,8 @@
 	}, 500);
 
 	window.bga = _BackgroundAudioJs.BackgroundAudio;
+
+	window.anim = _AnimatorJs.Animator;
 
 /***/ },
 /* 1 */
@@ -499,7 +503,7 @@
 
 				/* CHARACTER LAYER */
 				novel.cdata.characters.sort(function (a, b) {
-					return a.priority - b.priority;
+					if (a === null || b === null) return -1;else return a.priority - b.priority;
 				}); //Move this to where we mutate cd.characters?
 				var _iteratorNormalCompletion = true;
 				var _didIteratorError = false;
@@ -509,21 +513,14 @@
 					for (var _iterator = cd.characters[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 						var char = _step.value;
 
+						if (char === null) continue;
 						var charName = char.character;
 						var imgName = characters[charName].images[char.mood];
 						var img = novel.images[imgName];
 						var x = null;
 						var y = ctx.canvas.height - img.height;
 
-						switch (char.position.toLowerCase()) {
-							case 'left':
-								x = ctx.canvas.width / 4 - img.width / 2;break;
-							case 'right':
-								x = ctx.canvas.width / 4 * 3 - img.width / 2;break;
-							case 'middle': /* Falls through to default */
-							default:
-								x = ctx.canvas.width / 2 - img.width / 2;
-						}
+						if (typeof char.position === 'number') x = char.position;
 						ctx.drawImage(img, x, y, img.width, img.height);
 					}
 
@@ -898,11 +895,9 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-
-	/** A class for managing scene instruction methods */
 	Object.defineProperty(exports, '__esModule', {
 		value: true
 	});
@@ -912,6 +907,10 @@
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var _AnimatorJs = __webpack_require__(8);
+
+	/** A class for managing scene instruction methods */
 
 	var SceneInstructor = (function () {
 		/** @param {object} scope - Scope to bind instruction methods to */
@@ -1027,7 +1026,14 @@
 		}, {
 			key: 'hide',
 			value: function hide(character) {
-				this.cdata.characters[character] = null;return false;
+				var charIndex = null;
+				for (var i = 0, l = this.cdata.characters.length; i < l; i++) {
+					if (this.cdata.characters[i] !== null && this.cdata.characters[i].character === character) {
+						charIndex = i;break;
+					}
+				}
+
+				if (charIndex !== null) this.cdata.characters[charIndex] = null;return false;
 			}
 
 			/**Shows a character on the screen. Skips to the next scene
@@ -1038,43 +1044,38 @@
 		}, {
 			key: 'show',
 			value: function show(charname, pos, wat, priority) {
+				if (pos === undefined) pos = 'middle';
+
 				/* Check if we already have a cdata character mapped to charname */
-				var cdChar = null;
-				var _iteratorNormalCompletion2 = true;
-				var _didIteratorError2 = false;
-				var _iteratorError2 = undefined;
-
-				try {
-					for (var _iterator2 = this.cdata.characters[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-						var c = _step2.value;
-
-						if (c.character === charname) {
-							cdChar = c;break;
-						}
-					}
-				} catch (err) {
-					_didIteratorError2 = true;
-					_iteratorError2 = err;
-				} finally {
-					try {
-						if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-							_iterator2['return']();
-						}
-					} finally {
-						if (_didIteratorError2) {
-							throw _iteratorError2;
-						}
+				var charIndex = null;
+				for (var i = 0, l = this.cdata.characters.length; i < l; i++) {
+					if (this.cdata.characters[i] !== null && this.cdata.characters[i].character === charname) {
+						charIndex = i;break;
 					}
 				}
 
-				if (cdChar !== null) {
-					cdChar = {
-						character: cdChar.character,
-						position: pos || cdChar.position || 'middle',
-						mood: cdChar.mood || 'default',
-						priority: priority || cdChar.priority || 1
-					};
-				} else this.cdata.characters.push({ character: charname, position: pos || 'middle', mood: 'default' });
+				var img = this.images[this.characters[charname].images[charIndex === null ? 'default' : this.cdata.characters[charIndex].mood]];
+				if (typeof pos === 'string') switch (pos) {
+					case 'left':
+						pos = this.canvas.width / 4 - img.width / 2;break;
+					case 'right':
+						pos = this.canvas.width / 4 * 3 - img.width / 2;break;
+					case 'middle': /* Falls through to default */
+					default:
+						pos = this.canvas.width / 2 - img.width / 2;
+				}
+
+				if (charIndex !== null) {
+					var char = this.cdata.characters[charIndex];
+					var toMove = pos - char.position;
+					new _AnimatorJs.Animator(function (n) {
+						return char.position = n;
+					}, 250, 'ease-out', toMove, char.position).start();
+
+					char.character = char.character;
+					char.mood = char.mood || 'default';
+					char.priority = priority || char.priority || 1;
+				} else this.cdata.characters.push({ character: charname, position: pos, mood: 'default' });
 
 				return true;
 			}
@@ -1094,6 +1095,134 @@
 
 /***/ },
 /* 8 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	/**Easily manage transitioning values over time*/
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+	var Animator = (function () {
+		/**@param {Function} func - When transitioning, `func(n)` is invoked, `n` being the new value of
+	  * the transition
+	  * @param {Integer} time - How much time in miliseconds should the transition take?
+	  * @param {String|Array} bezier - What path should be used? Either an array similar to CSS3's
+	  * cubic-bezier() or a shorthand (ease, ease-in, ease-out, eas-in-out, linear)
+	  * @param {Integer} to - Number we want to end up with
+	  * @param {Integer} [offset=0] - Offset to start transition at
+	  * @param {Integar} [gran=20] - Granularity of transition */
+
+		function Animator(func, time, bezier, to) {
+			var offset = arguments.length <= 4 || arguments[4] === undefined ? 0 : arguments[4];
+			var gran = arguments.length <= 5 || arguments[5] === undefined ? 20 : arguments[5];
+
+			_classCallCheck(this, Animator);
+
+			this._stop = false;
+			this.func = func;
+			this.time = Math.round(time / gran);
+			this.curve = cubicBezier(bezier, this.time);
+			this.to = to;
+			this.offset = offset;
+			this.gran = gran;
+			this.steps = 1;
+			this.accu = Math.round(Date.now() / gran);
+		}
+
+		_createClass(Animator, [{
+			key: 'start',
+			value: function start() {
+				this.step();
+				return this;
+			}
+		}, {
+			key: 'step',
+			value: function step() {
+				var _this = this;
+
+				if (this._stop) return;
+				this.func(Math.round(this.to * this.curve[this.steps] + this.offset));
+				var inaccu = Math.round(Date.now() / this.gran - this.accu - this.steps);
+				if (++this.steps < this.time) setTimeout(function (_) {
+					return _this.step();
+				}, this.gran - inaccu < 0 ? 0 : this.gran - inaccu);
+			}
+
+			/**Immediately halt the transition
+	   * @param {Boolean} finalize - Should the cut to the final step? */
+		}, {
+			key: 'stop',
+			value: function stop(finalize) {
+				this._stop = true;
+				if (finalize) this.func(this.to);
+			}
+		}]);
+
+		return Animator;
+	})();
+
+	exports.Animator = Animator;
+
+	function cubicBezier(p, steps, duration) {
+		var final = [];
+
+		if (typeof p === 'string') {
+			switch (p) {
+				case 'ease':
+					p = [.25, .1, .25, 1];break;
+				case 'ease-in-out':
+					p = [.42, 0, .58, 1];break;
+
+				case 'ease-in':
+					for (var i = 0; i < steps; i++) final.push(Math.pow(i / (steps - 1), 1.685));
+					return final;
+				case 'ease-out':
+					for (var i = 0; i < steps; i++) final.push(1 - Math.pow(1 - i / (steps - 1), 1.685));
+					return final;
+
+				case 'linear':
+				default:
+					for (var i = 0; i < steps; i++) final.push(i / (steps - 1));
+					return final;
+			}
+		}
+
+		var
+		// X coefficients
+		cx = 3 * p[0],
+		    bx = 3 * (p[2] - p[0]) - cx,
+		    ax = 1 - cx - bx,
+		   
+		// Y Coefficients
+		cy = 3 * p[1],
+		    by = 3 * (p[3] - p[1]) - cy,
+		    ay = 1 - cy - by,
+		    steps = steps - 1 || 99;
+
+		for (var i = 0; i < steps + 1; i++) {
+			var solvedX = i / steps;
+			for (var x2, d2, i2 = 0; i2 < 6; i2++) {
+				x2 = ((ax * solvedX + bx) * solvedX + cx) * solvedX - i / steps;
+				if (Math.abs(x2) < 1 / (200 * (duration || 50))) break;
+
+				d2 = (3 * ax * solvedX + 2 * bx) * solvedX + cx;
+				if (Math.abs(d2) < 1e-6) break;
+				solvedX = solvedX - x2 / d2;
+			}
+			final.push(((ay * solvedX + by) * solvedX + cy) * solvedX);
+		}
+
+		return final;
+	}
+
+/***/ },
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";

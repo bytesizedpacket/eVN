@@ -1,4 +1,5 @@
 "use strict";
+import { Animator } from './Animator.js';
 
 /** A class for managing scene instruction methods */
 export class SceneInstructor {
@@ -68,28 +69,46 @@ export class SceneInstructor {
 	}
 	
 	/**Hides a character from the screen. Does not skip to the next scene. */
-	hide(character) { this.cdata.characters[character] = null; return false; }
+	hide(character) {
+		var charIndex = null;
+		for(let i=0,l=this.cdata.characters.length; i<l; i++) {
+			if(this.cdata.characters[i] !== null
+			&& this.cdata.characters[i].character === character) { charIndex = i; break; }
+		}
+
+		if(charIndex !== null) this.cdata.characters[charIndex] = null; return false;
+	}
 
 	/**Shows a character on the screen. Skips to the next scene
 	 * @param {string} charname - Name of the character to show
 	 * @param {string} [pos] - Positio of the character on-screen
 	 * @param {???} [wat] - Old code had four argumetns. No idea why
 	 * @param {number} [priority] - Priority on screen. Lower numbers are on top. */
-	show(charname, pos, wat, priority) {
+	show(charname, pos='middle', wat, priority) {
 		/* Check if we already have a cdata character mapped to charname */
-		var cdChar = null;
-		for(let c of this.cdata.characters) {
-			if(c.character === charname) { cdChar = c; break; }
+		var charIndex = null;
+		for(let i=0,l=this.cdata.characters.length; i<l; i++) {
+			if(this.cdata.characters[i] !== null
+			&& this.cdata.characters[i].character === charname) { charIndex = i; break; }
 		}
 
-		if(cdChar !== null) {
-			cdChar = {
-				character: cdChar.character,
-				position: pos || cdChar.position || 'middle',
-				mood: cdChar.mood || 'default',
-				priority: priority || cdChar.priority || 1
-			};
-		} else this.cdata.characters.push({ character: charname, position: pos||'middle', mood: 'default' });
+		var img = this.images[ this.characters[charname].images[ charIndex === null? 'default' : this.cdata.characters[charIndex].mood ] ];
+		if(typeof pos === 'string') switch(pos) {
+			case 'left': pos = this.canvas.width/4 - img.width/2; break;
+			case 'right': pos = this.canvas.width/4*3 - img.width/2; break;
+			case 'middle': /* Falls through to default */
+			default: pos = this.canvas.width/2 - img.width/2;
+		}
+
+		if(charIndex !== null) {
+			var char = this.cdata.characters[charIndex];
+			var toMove = pos - char.position;
+			new Animator(n=> char.position=n, 250, 'ease-out', toMove, char.position).start();
+
+			char.character = char.character;
+			char.mood = char.mood || 'default';
+			char.priority = priority || char.priority || 1;
+		} else this.cdata.characters.push({ character: charname, position: pos, mood: 'default' });
 
 		return true;
 	}
