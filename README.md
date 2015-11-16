@@ -15,6 +15,8 @@ What works:
 
 What needs to be done:
 ---
+* Dialogue selection / choice menus
+* Flags
 * Loading audio as buffers
 * A way to insert sound effects
 * Animated dialogue printing (typewriter effect)
